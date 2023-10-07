@@ -7,6 +7,7 @@ export const actions = {
 		const data = await request.formData();
 		const firstName = data.get('first-name');
 		const lastName = data.get('last-name');
+		const email = data.get('email');
 		if (!firstName) {
 			return fail(400, { firstName, missing: true });
 		}
@@ -14,7 +15,7 @@ export const actions = {
 			return fail(400, { lastName, missing: true });
 		}
 
-		const skater = addSkater(firstName as string, lastName as string);
+		const skater = await addSkater(firstName as string, lastName as string, email as string);
 		return { success: true, skater };
 	}
 } satisfies Actions;

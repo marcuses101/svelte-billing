@@ -17,5 +17,9 @@
 		>Last Name
 		<input name="last-name" id="last-name" type="text" />
 	</label>
+	<label
+		>Email Address
+		<input name="email" id="email" type="text" />
+	</label>
 	<button type="submit">Submit</button>
 </form>

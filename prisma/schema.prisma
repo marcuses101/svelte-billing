@@ -1,0 +1,74 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:../dev.db"
+}
+
+// Define the Skater table
+model Skater {
+    id          String         @id @default(uuid())
+    firstName   String
+    lastName    String
+    email       String
+    dateOfBirth DateTime?
+    createdOn   DateTime       @default(now())
+    modifiedOn  DateTime?
+    lessons     SkaterLesson[]
+
+    @@unique([firstName, lastName])
+}
+
+model Role {
+    name     String     @id @unique
+    UserRole UserRole[]
+}
+
+// Define the User table
+model User {
+    id        String     @id @default(uuid())
+    email     String     @unique
+    firstName String?
+    lastName  String?
+    roles     UserRole[]
+    Coach     Coach?
+}
+
+model UserRole {
+    user     User   @relation(fields: [userId], references: [id])
+    userId   String
+    role     Role   @relation(fields: [roleName], references: [name])
+    roleName String
+
+    @@id([userId, roleName])
+}
+
+model Coach {
+    id                String   @id @default(uuid())
+    hourlyRateInCents Int
+    user              User     @relation(fields: [userId], references: [id])
+    userId            String   @unique
+    lessons           Lesson[]
+}
+
+model Lesson {
+    id                  String         @id @default(uuid())
+    lessonTimeInMinutes Int
+    date                DateTime
+    createdOn           DateTime
+    modifiedOn          DateTime?
+    coach               Coach          @relation(fields: [coachId], references: [id])
+    coachId             String
+    skaters             SkaterLesson[]
+}
+
+model SkaterLesson {
+    Skater   Skater @relation(fields: [skaterId], references: [id])
+    skaterId String
+    Lesson   Lesson @relation(fields: [lessonId], references: [id])
+    lessonId String
+
+    @@id([skaterId, lessonId])
+}

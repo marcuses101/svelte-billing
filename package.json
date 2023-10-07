@@ -34,7 +34,10 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"better-sqlite3": "^8.7.0",
-		"knex": "^2.5.1"
+		"@prisma/client": "^5.3.1",
+		"better-sqlite3": "^8.7.0"
+	},
+	"prisma": {
+		"seed": "bun run prisma/seed.ts"
 	}
 }

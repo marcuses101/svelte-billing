@@ -1,6 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 export const prisma = new PrismaClient();
 
+export function getCurrentCoachUser() {
+	return prisma.user.findUnique({
+		where: { email: 'mnjconnolly@gmail.com' },
+		include: { Coach: true }
+	});
+}
+
 export function getSkaters() {
 	return prisma.skater.findMany();
 }

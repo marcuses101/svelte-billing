@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { prisma } from '$lib/server/db';
 import { redirect, type Actions, fail } from '@sveltejs/kit';
 
@@ -15,7 +16,8 @@ export const actions = {
 		if (!user) {
 			return fail(400, { success: false, message: `no user found with email: ${email}` });
 		}
-		cookies.set('user_id', user.id, { path: '/' });
+
+		cookies.set('user_id', user.id, { path: '/', secure: !dev });
 		throw redirect(303, '/');
 	}
 } satisfies Actions;

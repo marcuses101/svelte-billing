@@ -1,5 +1,5 @@
 import { fail, error } from '@sveltejs/kit';
-import { getCurrentCoachUser, getSkaters, prisma } from '$lib/server/db';
+import { getSkaters, prisma } from '$lib/server/db';
 import type { Actions } from './$types';
 import { wrapErr, type Result, wrapOk } from '$lib/rustResult';
 

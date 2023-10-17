@@ -22,7 +22,6 @@ export const actions = {
 			where: { lessonId: lessonId as string }
 		});
 		const deleteLesson = prisma.lesson.delete({ where: { id: lessonId as string } });
-		const transaction = await prisma.$transaction([deleteSkaterLesson, deleteLesson]);
-		console.log(transaction);
+		await prisma.$transaction([deleteSkaterLesson, deleteLesson]);
 	}
 } satisfies Actions;

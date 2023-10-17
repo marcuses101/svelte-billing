@@ -20,6 +20,6 @@
 				class="input input-bordered w-full"
 			/>
 		</div>
-		<button class="btn" type="submit">Submit</button>
+		<button class="btn btn-primary" type="submit">Submit</button>
 	</form>
 </section>

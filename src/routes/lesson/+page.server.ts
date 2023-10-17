@@ -1,12 +1,18 @@
 import { prisma } from '$lib/server/db';
+import type { ServerLoad } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
-export async function load() {
+export const load: ServerLoad = async ({ locals }) => {
+	const coachId = locals.user?.Coach?.id;
+	if (!coachId) {
+		return { lessons: [] };
+	}
 	const lessons = await prisma.lesson.findMany({
-		include: { skaters: { include: { Skater: true } } }
+		include: { skaters: { include: { Skater: true } } },
+		where: { coachId }
 	});
 	return { lessons };
-}
+};
 
 export const actions = {
 	delete: async ({ request }) => {

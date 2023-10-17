@@ -38,40 +38,28 @@
 	const groupedLessons = Array.from(lessonsMap.entries()).sort();
 </script>
 
-<h1>Lessons</h1>
-<a href="/lesson/create">Add a lesson</a>
-{#each groupedLessons as [date, lessons]}
-	<h3>{date}</h3>
-	<ul>
-		{#each lessons as { skaters, lessonTimeInMinutes, id }}
-			<form method="POST" action="?/delete">
-				<input type="hidden" name="id" value={id} />
-				<li>
-					<section>
-						<article>
-							{lessonTimeInMinutes} minutes Skaters: {skaters}
+<section class="prose max-w-none">
+	<h1>Lessons</h1>
+	<a href="/lesson/create" class="btn">Add a lesson</a>
+	{#each groupedLessons as [date, lessons]}
+		<h3 class="text-lg">{date}</h3>
+		<ul>
+			{#each lessons as { skaters, lessonTimeInMinutes, id }}
+				<form method="POST" action="?/delete">
+					<input type="hidden" name="id" value={id} />
+					<li>
+						<article class="flex">
+							<article class="flex-1">
+								{lessonTimeInMinutes} minutes Skaters: {skaters}
+							</article>
+							<article>
+								<a class="btn btn-sm btn-neutral" href={`/lesson/${id}/edit`}> Edit </a>
+								<button class="btn btn-sm btn-error" type="submit">x</button>
+							</article>
 						</article>
-						<article>
-							<a href={`/lesson/${id}/edit`}>
-								<button type="button">Edit</button>
-							</a>
-							<button type="submit">x</button>
-						</article>
-					</section>
-				</li>
-			</form>
-		{/each}
-	</ul>
-{/each}
-
-<style>
-	li {
-		margin-block: 0.25rem;
-	}
-	section {
-		display: flex;
-	}
-	article:first-of-type {
-		flex: 1;
-	}
-</style>
+					</li>
+				</form>
+			{/each}
+		</ul>
+	{/each}
+</section>

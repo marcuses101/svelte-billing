@@ -1,17 +1,20 @@
-<script>
+<script lang="ts">
+	import type { LayoutData } from './$types';
 	import Header from './Header.svelte';
-	import './styles.css';
+	import '../app.css';
+	export let data: LayoutData;
 </script>
 
 <div class="app">
-	<Header />
+	<Header isLoggedIn={Boolean(data.user)} />
 
 	<main>
 		<slot />
 	</main>
-
-	<footer>
-		<p>Copyright {new Date().getFullYear()}</p>
+	<footer class="footer footer-center p-4 bg-neutral text-neutral-content">
+		<aside>
+			<p>Copyright {new Date().getFullYear()}</p>
+		</aside>
 	</footer>
 </div>
 
@@ -31,19 +34,5 @@
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
 	}
 </style>

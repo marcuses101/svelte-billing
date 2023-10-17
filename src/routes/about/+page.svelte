@@ -3,7 +3,7 @@
 	<meta name="description" content="About this app" />
 </svelte:head>
 
-<div class="text-column">
+<div class="prose max-w-none">
 	<h1>About this app</h1>
 
 	<p>

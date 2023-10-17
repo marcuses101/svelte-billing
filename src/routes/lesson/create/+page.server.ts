@@ -39,9 +39,9 @@ function validateForm(
 }
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({ request, locals }) => {
 		const data = await request.formData();
-		const coachUser = await getCurrentCoachUser();
+		const coachUser = locals.user;
 		if (!coachUser || !coachUser.Coach) {
 			const errorMessage = 'unable to find coach';
 			throw error(404, errorMessage);

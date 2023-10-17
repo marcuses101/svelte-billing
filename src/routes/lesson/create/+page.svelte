@@ -27,38 +27,57 @@
 	}
 </script>
 
-<h1>New Lesson</h1>
-{#if form?.success && typeof form.lesson === 'object'}
-	<p>{formatLessonAsString(form)}</p>
-{/if}
-<a href="/lesson">Back to lessons</a>
-<form method="POST">
-	<section>
-		<label for="date"> Date: </label>
-		<input id="date" type="date" name="date" bind:this={dateInput} />
-		<label for="time-in-minutes"> Lesson Duration (min): </label>
-		<input type="number" step="5" min="0" name="time-in-minutes" id="time-in-minutes" />
-		<label for="skaters">Skaters:</label>
-		<div>
-			{#each skaterSelectOptions as { label, value }}
-				<label>
-					<input type="checkbox" name="skaters" {value} />
-					{label}
+<section class="prose container mx-auto">
+	<div class="flex justify-between">
+		<h1>New Lesson</h1>
+		<a class="btn" href="/lesson">Back to lessons</a>
+	</div>
+	{#if form?.success && typeof form.lesson === 'object'}
+		<p>{formatLessonAsString(form)}</p>
+	{/if}
+	<form method="POST">
+		<section>
+			<div class="form-control w-full max-w-xs">
+				<label class="label" for="date">
+					<span class="label-text">Lesson Date</span>
 				</label>
-			{/each}
-		</div>
-	</section>
-	<button type="submit">Submit</button>
-</form>
-
-<style>
-	label {
-		display: block;
-		margin-block: 1rem;
-	}
-	section {
-		gap: 0.5rem;
-		display: grid;
-		grid-template-columns: 250px 350px;
-	}
-</style>
+				<input
+					id="date"
+					type="date"
+					name="date"
+					bind:this={dateInput}
+					placeholder="Type here"
+					class="input input-bordered w-full max-w-xs"
+				/>
+			</div>
+			<div class="form-control w-full max-w-xs">
+				<label class="label" for="time-in-minutes">
+					<span class="label-text">Lesson minutes</span>
+				</label>
+				<input
+					id="time-in-minutes"
+					type="number"
+					step="5"
+					min="0"
+					name="time-in-minutes"
+					placeholder="60"
+					class="input input-bordered w-full max-w-xs"
+				/>
+			</div>
+			<div class="form-control w-full max-w-xs border rounded border-black">
+				<label class="label" for="skaters"><span class="label-text">Skaters:</span></label>
+				<div>
+					{#each skaterSelectOptions as { label, value }}
+						<div class="form-control">
+							<label class="label cursor-pointer">
+								<span class="label-text">{label}</span>
+								<input type="checkbox" class="checkbox" name="skaters" {value} />
+							</label>
+						</div>
+					{/each}
+				</div>
+			</div>
+		</section>
+		<button class="btn" type="submit">Submit</button>
+	</form>
+</section>

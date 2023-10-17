@@ -42,6 +42,28 @@ async function main() {
 			}
 		}
 	});
+	const laurence = await prisma.user.upsert({
+		where: { email: 'laurencelessard@gmail.com' },
+		update: {},
+		create: {
+			email: 'laurencelessard@gmail.com',
+			firstName: 'Laurence',
+			lastName: 'Lessard',
+			roles: {
+				create: [
+					{
+						roleName: 'admin'
+					},
+					{ roleName: 'coach' }
+				]
+			},
+			Coach: {
+				create: {
+					hourlyRateInCents: 38_000
+				}
+			}
+		}
+	});
 	const numbers = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
 	const skaters: {
 		id: string;
@@ -65,7 +87,7 @@ async function main() {
 		skaters.push(skater);
 	}
 
-	console.log({ marcus, adminRole, clientRole, coachRole, skaters });
+	console.log({ marcus, laurence, adminRole, clientRole, coachRole, skaters });
 	console.log('Seeding complete');
 }
 

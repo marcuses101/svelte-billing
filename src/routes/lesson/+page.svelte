@@ -1,4 +1,6 @@
 <script lang="ts">
+	import LessonDisplay from './LessonDisplay.svelte';
+
 	export let data;
 	const dateFormat = new Intl.DateTimeFormat('en-CA', {
 		weekday: 'long',
@@ -8,58 +10,51 @@
 	}).format;
 	type FormattedLesson = {
 		id: string;
-		skaters: string;
+		skaters: string[];
 		lessonTimeInMinutes: number;
 		formattedDate: string;
 	};
 
 	const lessonsMap = data.lessons.reduce((acc, entry) => {
+		const dateKey = new Date(entry.date).toISOString().split('T')[0];
 		const formattedDate = dateFormat(entry.date);
-		const skaters = entry.skaters
-			.map((skater) => {
-				const fullName = `${skater.Skater.firstName} ${skater.Skater.lastName}`;
-				return fullName;
-			})
-			.join(', ');
+		const skaters = entry.skaters.map((skater) => {
+			const fullName = `${skater.Skater.firstName} ${skater.Skater.lastName}`;
+			return fullName;
+		});
 		const currentEntry = {
 			id: entry.id,
 			skaters,
 			lessonTimeInMinutes: entry.lessonTimeInMinutes,
 			formattedDate
 		};
-		if (!acc.has(formattedDate)) {
-			acc.set(formattedDate, [currentEntry]);
+		if (!acc.has(dateKey)) {
+			acc.set(dateKey, [currentEntry]);
 			return acc;
 		}
-		const array = acc.get(formattedDate)!;
+		const array = acc.get(dateKey)!;
 		array.push(currentEntry);
 		return acc;
 	}, new Map<string, FormattedLesson[]>());
-	const groupedLessons = Array.from(lessonsMap.entries()).sort();
+	const groupedLessons = Array.from(lessonsMap.entries()).sort(
+		(a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime()
+	);
 </script>
 
 <section class="prose max-w-none">
 	<h1>Lessons</h1>
-	<a href="/lesson/create" class="btn">Add a lesson</a>
+	<a
+		href="/lesson/create"
+		class="stats link-primary link-hover w-full shadow p-2 border border-dashed border-primary text-lg text-center"
+	>
+		Add Lesson
+	</a>
 	{#each groupedLessons as [date, lessons]}
-		<h3 class="text-lg">{date}</h3>
-		<ul>
+		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
+		<div class="grid gap-4">
 			{#each lessons as { skaters, lessonTimeInMinutes, id }}
-				<form method="POST" action="?/delete">
-					<input type="hidden" name="id" value={id} />
-					<li>
-						<article class="flex">
-							<article class="flex-1">
-								{lessonTimeInMinutes} minutes Skaters: {skaters}
-							</article>
-							<article>
-								<a class="btn btn-sm btn-neutral" href={`/lesson/${id}/edit`}> Edit </a>
-								<button class="btn btn-sm btn-error" type="submit">x</button>
-							</article>
-						</article>
-					</li>
-				</form>
+				<LessonDisplay {skaters} {lessonTimeInMinutes} {id} />
 			{/each}
-		</ul>
+		</div>
 	{/each}
 </section>

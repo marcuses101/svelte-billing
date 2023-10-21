@@ -17,7 +17,8 @@
 		{ href: '/about', displayText: 'About', visibility: 'all' },
 		{ href: '/lesson', displayText: 'Lesson', visibility: 'authenticated' },
 		{ href: '/skater', displayText: 'Skater', visibility: 'authenticated' },
-		{ href: '/login', displayText: 'Login', visibility: 'unauthenticated' }
+		{ href: '/coach', displayText: 'Coach', visibility: 'authenticated' },
+		{ href: '/billing', displayText: 'Billing', visibility: 'authenticated' }
 	];
 	const visibleLinks = links.filter((link) => {
 		if (link.visibility === 'all') {
@@ -30,43 +31,25 @@
 	});
 </script>
 
-<div class="drawer drawer-end">
+<div class="drawer drawer-closed lg:drawer-open">
 	<input bind:checked={isDrawerOpen} id="drawer-input" type="checkbox" class="drawer-toggle" />
-	<div class="drawer-content app">
-		<Header {isLoggedIn} links={visibleLinks} />
+	<div class="drawer-content flex flex-col min-h-[100dvh]">
+		<Header {isLoggedIn} />
 		<main>
 			<slot />
 		</main>
-		<footer class="footer footer-center p-4 bg-neutral text-neutral-content">
-			<aside>
-				<p>Copyright {new Date().getFullYear()}</p>
-			</aside>
-		</footer>
 	</div>
 	<div class="drawer-side">
 		<label for="drawer-input" aria-label="close sidebar" class="drawer-overlay" />
-		<ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+		<ul class="menu p-4 w-56 min-h-full bg-base-200 text-base-content">
 			{#each visibleLinks as { href, displayText }}
 				<li><a on:click={closeDrawer} {href}>{displayText}</a></li>
 			{/each}
-			{#if isLoggedIn}
-				<li>
-					<form method="POST" class="flex" on:submit={closeDrawer} action="/logout">
-						<button class="w-full text-left" on:click={closeDrawer} type="submit">Logout</button>
-					</form>
-				</li>
-			{/if}
 		</ul>
 	</div>
 </div>
 
 <style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
 	main {
 		flex: 1;
 		display: flex;

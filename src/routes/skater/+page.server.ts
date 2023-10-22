@@ -1,6 +1,8 @@
-import { getSkaters } from '$lib/server/db';
+import { prisma } from '$lib/server/db';
 
 export function load() {
-	const skaters = getSkaters();
+	const skaters = prisma.skater.findMany({
+		orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }]
+	});
 	return { skaters };
 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AddButton from '$lib/components/AddButton.svelte';
 	import LessonDisplay from './LessonDisplay.svelte';
 
 	export let data;
@@ -43,12 +44,7 @@
 
 <section class="prose max-w-none">
 	<h1>Lessons</h1>
-	<a
-		href="/lesson/create"
-		class="stats link-primary link-hover w-full shadow p-2 border border-dashed border-primary text-lg text-center"
-	>
-		Add Lesson
-	</a>
+	<AddButton href="/lesson/create">Add Lesson</AddButton>
 	{#each groupedLessons as [date, lessons]}
 		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
 		<div class="grid gap-4">

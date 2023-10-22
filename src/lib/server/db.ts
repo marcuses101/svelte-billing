@@ -9,7 +9,7 @@ export function getCurrentCoachUser() {
 }
 
 export function getSkaters() {
-	return prisma.skater.findMany();
+	return prisma.skater.findMany({ orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }] });
 }
 
 export function getSkaterById(id: string) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onNavigate } from '$app/navigation';
 	import type { LayoutData } from './$types';
 	import Header from './Header.svelte';
 	import '../app.css';
@@ -29,6 +30,17 @@
 		}
 		return !isLoggedIn;
 	});
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 </script>
 
 <div class="drawer drawer-closed lg:drawer-open">
@@ -52,8 +64,6 @@
 <style>
 	main {
 		flex: 1;
-		display: flex;
-		flex-direction: column;
 		padding: 1rem;
 		width: 100%;
 		box-sizing: border-box;

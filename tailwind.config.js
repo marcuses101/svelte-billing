@@ -6,6 +6,6 @@ export default {
 	},
 	plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography'), require('daisyui')],
 	daisyui: {
-		themes: ['garden']
+		themes: ['garden', 'cupcake']
 	}
 };

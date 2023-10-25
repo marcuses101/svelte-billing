@@ -3,12 +3,14 @@
 	import LessonDisplay from './LessonDisplay.svelte';
 
 	export let data;
+
 	const dateFormat = new Intl.DateTimeFormat('en-CA', {
 		weekday: 'long',
 		day: 'numeric',
 		month: 'short',
 		year: 'numeric'
 	}).format;
+
 	type FormattedLesson = {
 		id: string;
 		skaters: string[];

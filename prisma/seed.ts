@@ -22,7 +22,7 @@ async function main() {
 
 	const marcus = await prisma.user.upsert({
 		where: { email: 'mnjconnolly@gmail.com' },
-		update: {},
+		update: { Coach: { update: { hourlyRateInCents: 6_000 } } },
 		create: {
 			email: 'mconnolly@gmail.com',
 			firstName: 'Marcus',
@@ -37,14 +37,14 @@ async function main() {
 			},
 			Coach: {
 				create: {
-					hourlyRateInCents: 60_000
+					hourlyRateInCents: 6_000
 				}
 			}
 		}
 	});
 	const laurence = await prisma.user.upsert({
 		where: { email: 'laurencelessard@gmail.com' },
-		update: {},
+		update: { Coach: { update: { hourlyRateInCents: 3_800 } } },
 		create: {
 			email: 'laurencelessard@gmail.com',
 			firstName: 'Laurence',
@@ -59,7 +59,7 @@ async function main() {
 			},
 			Coach: {
 				create: {
-					hourlyRateInCents: 38_000
+					hourlyRateInCents: 3_800
 				}
 			}
 		}

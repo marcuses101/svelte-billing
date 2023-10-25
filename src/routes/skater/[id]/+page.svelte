@@ -1,6 +1,75 @@
 <script lang="ts">
+	import SkaterLessonDisplay from './SkaterLessonDisplay.svelte';
+
 	export let data;
+	const { lessons, skater } = data;
+
+	const dateFormat = new Intl.DateTimeFormat('en-CA', {
+		weekday: 'long',
+		day: 'numeric',
+		month: 'short',
+		year: 'numeric'
+	}).format;
+	const currencyFormatter = new Intl.NumberFormat('en-CA', {
+		style: 'currency',
+		currency: 'CAD'
+	});
+
+	const lessonsMap = lessons.reduce(
+		(acc, entry) => {
+			const dateKey = new Date(entry.date).toISOString().split('T')[0];
+			if (!dateKey) return acc;
+			const formattedDate = dateFormat(entry.date);
+			const currentEntry = {
+				id: entry.id,
+				date: entry.date,
+				type: entry.numberOfSkaters === 1 ? ('private' as const) : ('group' as const),
+				lessonTimeInMinutes: entry.lessonTimeInMinutes,
+				lessonCharge: currencyFormatter.format(entry.chargeInCents / 100),
+				formattedDate,
+				coachName: entry.coachName
+			};
+			if (!acc.has(dateKey)) {
+				acc.set(dateKey, [currentEntry]);
+				return acc;
+			}
+			const array = acc.get(dateKey)!;
+			array.push(currentEntry);
+			return acc;
+		},
+		new Map<
+			string,
+			{
+				id: string;
+				type: 'private' | 'group';
+				formattedDate: string;
+				lessonTimeInMinutes: number;
+				date: Date;
+				lessonCharge: string;
+				coachName: string;
+			}[]
+		>()
+	);
+
+	const groupedLessons = Array.from(lessonsMap.entries()).sort((a, b) => {
+		const aTime = a[1][0]?.date.getTime();
+		const bTime = b[1][0]?.date.getTime();
+		if (!aTime || !bTime) return 0;
+		return aTime - bTime;
+	});
 </script>
 
-<h1>Skater Info - {`${data.skater.firstName} ${data.skater.lastName}`}</h1>
-<a href={`/skater/${data.skater.id}/edit`}>Edit</a>
+<section class="prose max-w-none">
+	<div class="flex flex-row">
+		<h1 class="flex-1">Skater Info - {`${skater.firstName} ${skater.lastName}`}</h1>
+		<a class="btn btn-outline btn-primary" href={`/skater/${skater.id}/edit`}>Edit</a>
+	</div>
+	{#each groupedLessons as [date, lessons]}
+		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
+		<div class="grid gap-4">
+			{#each lessons as { lessonTimeInMinutes, type, coachName, lessonCharge }}
+				<SkaterLessonDisplay {lessonTimeInMinutes} {type} {coachName} {lessonCharge} />
+			{/each}
+		</div>
+	{/each}
+</section>

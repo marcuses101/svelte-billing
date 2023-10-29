@@ -1,4 +1,6 @@
 <script lang="ts">
+	import BackButton from '$lib/components/BackButton.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { onMount } from 'svelte';
 
 	export let data;
@@ -27,57 +29,58 @@
 	}
 </script>
 
-<section class="prose container mx-auto">
-	<div class="flex justify-between">
-		<h1>New Lesson</h1>
-		<a class="btn" href="/lesson">Back to lessons</a>
-	</div>
+<section class="prose container max-w-none">
+	<PageHeader title="New Lesson">
+		<BackButton href="/lesson">Back to Lessons</BackButton>
+	</PageHeader>
 	{#if form?.success && typeof form.lesson === 'object'}
 		<p>{formatLessonAsString(form)}</p>
 	{/if}
 	<form method="POST">
-		<section>
-			<div class="form-control w-full max-w-xs">
-				<label class="label" for="date">
-					<span class="label-text">Lesson Date</span>
-				</label>
-				<input
-					id="date"
-					type="date"
-					name="date"
-					bind:this={dateInput}
-					placeholder="Type here"
-					class="input input-bordered w-full max-w-xs"
-				/>
+		<div class="form-control w-full max-w-xs">
+			<label class="label" for="date">
+				<span class="label-text">Lesson Date</span>
+			</label>
+			<input
+				id="date"
+				type="date"
+				name="date"
+				bind:this={dateInput}
+				placeholder="Type here"
+				class="input input-bordered w-full max-w-xs"
+			/>
+		</div>
+		<div class="form-control w-full max-w-xs">
+			<label class="label" for="time-in-minutes">
+				<span class="label-text">Lesson minutes</span>
+			</label>
+			<input
+				id="time-in-minutes"
+				type="number"
+				step="5"
+				min="0"
+				name="time-in-minutes"
+				placeholder="60"
+				class="input input-bordered w-full max-w-xs"
+			/>
+		</div>
+		<div class="form-control w-full max-w-xs input input-bordered h-auto mt-4 pb-2">
+			<div class="grid gap-1">
+				<label class="label" for="skaters"><span class="label-text font-bold">Skaters:</span></label
+				>
+				{#each skaterSelectOptions as { label, value }}
+					<div class="form-control">
+						<label class="flex justify-between cursor-pointer">
+							<span class="label-text">{label}</span>
+							<input type="checkbox" class="checkbox" name="skaters" {value} />
+						</label>
+					</div>
+				{/each}
 			</div>
-			<div class="form-control w-full max-w-xs">
-				<label class="label" for="time-in-minutes">
-					<span class="label-text">Lesson minutes</span>
-				</label>
-				<input
-					id="time-in-minutes"
-					type="number"
-					step="5"
-					min="0"
-					name="time-in-minutes"
-					placeholder="60"
-					class="input input-bordered w-full max-w-xs"
-				/>
-			</div>
-			<div class="form-control w-full max-w-xs border rounded border-black">
-				<label class="label" for="skaters"><span class="label-text">Skaters:</span></label>
-				<div>
-					{#each skaterSelectOptions as { label, value }}
-						<div class="form-control">
-							<label class="label cursor-pointer">
-								<span class="label-text">{label}</span>
-								<input type="checkbox" class="checkbox" name="skaters" {value} />
-							</label>
-						</div>
-					{/each}
-				</div>
-			</div>
-		</section>
-		<button class="btn" type="submit">Submit</button>
+		</div>
+		<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
+			<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
+			<button class="btn btn-primary" type="submit">Submit</button>
+		</div>
 	</form>
 </section>

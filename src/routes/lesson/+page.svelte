@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AddButton from '$lib/components/AddButton.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import LessonDisplay from './LessonDisplay.svelte';
 
 	export let data;
@@ -20,6 +21,7 @@
 
 	const lessonsMap = data.lessons.reduce((acc, entry) => {
 		const dateKey = new Date(entry.date).toISOString().split('T')[0];
+		if (!dateKey) return acc;
 		const formattedDate = dateFormat(entry.date);
 		const skaters = entry.skaters.map((skater) => {
 			const fullName = `${skater.Skater.firstName} ${skater.Skater.lastName}`;
@@ -45,7 +47,7 @@
 </script>
 
 <section class="prose max-w-none">
-	<h1>Lessons</h1>
+	<PageHeader title="Lessons" />
 	<AddButton href="/lesson/create">Add Lesson</AddButton>
 	{#each groupedLessons as [date, lessons]}
 		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>

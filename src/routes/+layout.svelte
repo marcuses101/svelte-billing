@@ -3,6 +3,7 @@
 	import type { LayoutData } from './$types';
 	import Header from './Header.svelte';
 	import '../app.css';
+	import { page } from '$app/stores';
 	export let data: LayoutData;
 	const isLoggedIn = Boolean(data.user);
 	let isDrawerOpen = false;
@@ -18,7 +19,7 @@
 		{ href: '/about', displayText: 'About', visibility: 'all' },
 		{ href: '/lesson', displayText: 'Lesson', visibility: 'authenticated' },
 		{ href: '/skater', displayText: 'Skater', visibility: 'authenticated' },
-		{ href: '/coach', displayText: 'Coach', visibility: 'authenticated' },
+		{ href: '/coaches', displayText: 'Coaches', visibility: 'authenticated' },
 		{ href: '/billing', displayText: 'Billing', visibility: 'authenticated' }
 	];
 	const visibleLinks = links.filter((link) => {
@@ -55,7 +56,11 @@
 		<label for="drawer-input" aria-label="close sidebar" class="drawer-overlay" />
 		<ul class="menu p-4 w-56 min-h-full bg-base-200 text-base-content">
 			{#each visibleLinks as { href, displayText }}
-				<li><a on:click={closeDrawer} {href}>{displayText}</a></li>
+				<li>
+					<a class:active={$page.url.pathname.includes(href)} on:click={closeDrawer} {href}
+						>{displayText}</a
+					>
+				</li>
 			{/each}
 		</ul>
 	</div>

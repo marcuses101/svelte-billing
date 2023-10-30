@@ -48,7 +48,7 @@ export const actions = {
 		}
 		const formValidationResult = validateForm(data);
 		if (!formValidationResult.ok) {
-			return fail(400, formValidationResult.error);
+			return fail(400, { success: false, errors: formValidationResult.error });
 		}
 		const { lessonTimeInMinutes, date, skaterIds } = formValidationResult.value;
 		const createdLesson = await prisma.lesson.create({
@@ -62,6 +62,6 @@ export const actions = {
 			},
 			include: { skaters: { include: { Skater: true } } }
 		});
-		return { success: true, lesson: createdLesson };
+		return { success: true, lessonTimeInMinutes: createdLesson.lessonTimeInMinutes };
 	}
 } satisfies Actions;

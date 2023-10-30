@@ -1,6 +1,7 @@
 <script lang="ts">
 	import BackButton from '$lib/components/BackButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Toast from '$lib/components/Toast.svelte';
 	import type { ActionData } from './$types';
 	export let form: ActionData;
 	let skaterFullName = form?.skater?.firstName + ' ' + form?.skater?.lastName;
@@ -11,11 +12,7 @@
 		<BackButton href="/skater">Back to Skaters</BackButton>
 	</PageHeader>
 	{#if form?.success}
-		<div class="toast toast-center">
-			<div class="alert alert-success">
-				<span>New Skater Created - {skaterFullName}</span>
-			</div>
-		</div>
+		<Toast>New Skater Created - {skaterFullName}</Toast>
 	{/if}
 	<form method="POST">
 		<div class="form-control w-full max-w-xs">

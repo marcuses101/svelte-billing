@@ -1,8 +1,7 @@
 <script lang="ts">
 	import BackButton from '$lib/components/BackButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import { onMount } from 'svelte';
-
+	import Toast from '$lib/components/Toast.svelte';
 	export let data;
 	export let form;
 	let dateInput: HTMLInputElement;
@@ -10,31 +9,16 @@
 		value: id,
 		label: `${firstName} ${lastName}`
 	}));
-
-	onMount(() => {
-		dateInput.valueAsDate = new Date();
-	});
-
-	function formatLessonAsString(formData: typeof form): string {
-		if (formData === null || typeof formData.lesson !== 'object') return '';
-		const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'long' }).format;
-		const skaters = formData.lesson.skaters
-			.map((skater) => {
-				return `${skater.Skater.firstName} ${skater.Skater.lastName}`;
-			})
-			.join(',');
-		return `${formatDate(formData.lesson.date)}; ${
-			formData.lesson.lessonTimeInMinutes
-		}min; ${skaters}`;
-	}
 </script>
 
 <section class="prose container max-w-none">
 	<PageHeader title="New Lesson">
 		<BackButton href="/lesson">Back to Lessons</BackButton>
 	</PageHeader>
-	{#if form?.success && typeof form.lesson === 'object'}
-		<p>{formatLessonAsString(form)}</p>
+	{#if form?.success && form?.lessonTimeInMinutes}
+		<Toast>
+			{form?.lessonTimeInMinutes} minute lesson logged
+		</Toast>
 	{/if}
 	<form method="POST">
 		<div class="form-control w-full max-w-xs">

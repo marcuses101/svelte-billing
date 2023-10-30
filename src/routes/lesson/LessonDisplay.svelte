@@ -4,16 +4,16 @@
 	export let id: string;
 </script>
 
-<article class="flex gap-4 stats shadow p-2 border border-neutral-400">
+<article class="flex gap-4 rounded-xl shadow px-2 py-0 border border-neutral-400">
 	<article class="flex flex-col items-center">
 		<div class="stat-title">Minutes</div>
 		<div class="stat-value">{lessonTimeInMinutes}</div>
 	</article>
-	<article class="flex flex-col flex-1 flex-wrap gap-2">
+	<article class="flex flex-col flex-1 gap-2">
 		<div class="stat-title ps-2">Skater(s)</div>
-		<div class="flex gap-1">
+		<div class="flex flex-wrap gap-1 mb-1">
 			{#each skaters as skater}
-				<div class="badge">{skater}</div>
+				<div class="badge badge-ghost min-w-fit">{skater}</div>
 			{/each}
 			<div />
 		</div>

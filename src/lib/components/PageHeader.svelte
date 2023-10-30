@@ -9,7 +9,7 @@
 
 <div class="flex justify-between prose max-w-none mb-4">
 	<div>
-		<h1 class="prose-h1">{title}</h1>
+		<h1 class="prose-h1 mb-0">{title}</h1>
 		{#if subTitle}
 			<p class="m-0 text-neutral-500 mt-2">{subTitle}</p>
 		{/if}

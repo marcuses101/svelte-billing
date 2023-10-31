@@ -3,11 +3,13 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import CancelIcon from '$lib/icons/CancelIcon.svelte';
+	import PencilIcon from '$lib/icons/PencilIcon.svelte';
 	import CoachForm from '../CoachForm.svelte';
 	export let data;
-	const { firstName, lastName } = data.coach;
-	const toastMessage =
-		firstName && lastName ? `${firstName} ${lastName} updated!` : 'Coach updated!';
+	const { firstName, lastName, id } = data.coach;
+	const fullName = `${firstName} ${lastName}`;
+	const toastMessage = firstName && lastName ? `${fullName} updated!` : 'Coach updated!';
 
 	$: isEdit = $page.url.searchParams.get('edit') === 'true';
 </script>
@@ -19,19 +21,13 @@
 {/if}
 
 {#if isEdit}
-	<PageHeader title="Edit Coach Info">
+	<PageHeader title="Coach Info Edit">
+		<span slot="title-pre" style={`--transition-name:coach-${id}`}>
+			<span class="[view-transition-name:var(--transition-name)]">{fullName}</span>{' - '}
+		</span>
 		<div class="flex gap-1">
 			<a class="btn btn-outline btn-error" href={`/coaches/${$page.params.id}`}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="1.5"
-					stroke="currentColor"
-					class="w-6 h-6"
-				>
-					<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-				</svg>
+				<CancelIcon />
 				Cancel
 			</a>
 			<BackButton href="/coaches">Back to Coaches</BackButton>
@@ -39,24 +35,14 @@
 	</PageHeader>
 {:else}
 	<PageHeader title="Coach Info">
+		<span slot="title-pre" style={`--transition-name:coach-${id}`}>
+			<span class="[view-transition-name:var(--transition-name)]">{fullName}</span>{' - '}
+		</span>
 		<div class="flex gap-1">
 			<a class="btn btn-primary btn-outline" href={`/coaches/${$page.params.id}?edit=true`}>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke-width="1.5"
-					stroke="currentColor"
-					class="w-6 h-6"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-					/>
-				</svg>
-				Edit</a
-			>
+				<PencilIcon />
+				Edit
+			</a>
 			<BackButton href="/coaches">Back to Coaches</BackButton>
 		</div>
 	</PageHeader>

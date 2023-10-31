@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SkaterLessonDisplay from './SkaterLessonDisplay.svelte';
 
 	export let data;
@@ -59,17 +60,15 @@
 	});
 </script>
 
-<section class="prose max-w-none">
-	<div class="flex flex-row">
-		<h1 class="flex-1">Skater Info - {`${skater.firstName} ${skater.lastName}`}</h1>
-		<a class="btn btn-outline btn-primary" href={`/skater/${skater.id}/edit`}>Edit</a>
+<PageHeader title="Skater Info">
+	<span slot="title-pre">{`${skater.firstName} ${skater.lastName} - `}</span>
+	<a class="btn btn-outline btn-primary" href={`/skater/${skater.id}/edit`}>Edit</a>
+</PageHeader>
+{#each groupedLessons as [date, lessons]}
+	<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
+	<div class="grid gap-4">
+		{#each lessons as { lessonTimeInMinutes, type, coachName, lessonCharge }}
+			<SkaterLessonDisplay {lessonTimeInMinutes} {type} {coachName} {lessonCharge} />
+		{/each}
 	</div>
-	{#each groupedLessons as [date, lessons]}
-		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
-		<div class="grid gap-4">
-			{#each lessons as { lessonTimeInMinutes, type, coachName, lessonCharge }}
-				<SkaterLessonDisplay {lessonTimeInMinutes} {type} {coachName} {lessonCharge} />
-			{/each}
-		</div>
-	{/each}
-</section>
+{/each}

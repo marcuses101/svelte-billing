@@ -1,4 +1,6 @@
 <script lang="ts">
+	import BackButton from '$lib/components/BackButton.svelte';
+	import EditButton from '$lib/components/EditButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SkaterLessonDisplay from './SkaterLessonDisplay.svelte';
 
@@ -61,14 +63,29 @@
 </script>
 
 <PageHeader title="Skater Info">
-	<span slot="title-pre">{`${skater.firstName} ${skater.lastName} - `}</span>
-	<a class="btn btn-outline btn-primary" href={`/skater/${skater.id}/edit`}>Edit</a>
-</PageHeader>
-{#each groupedLessons as [date, lessons]}
-	<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
-	<div class="grid gap-4">
-		{#each lessons as { lessonTimeInMinutes, type, coachName, lessonCharge }}
-			<SkaterLessonDisplay {lessonTimeInMinutes} {type} {coachName} {lessonCharge} />
-		{/each}
-	</div>
-{/each}
+	<span slot="title-pre">
+		<span
+			style={`--transition-name:skater-${skater.id}`}
+			class="[view-transition-name:var(--transition-name)]"
+		>
+			{`${skater.firstName} ${skater.lastName}`}
+		</span>{' - '}
+	</span>
+	<div class="flex gap-2">
+		<EditButton href={`/skater/${skater.id}/edit`} />
+		<BackButton href={`/skater`}>Back to Skaters</BackButton>
+		<div />
+	</div></PageHeader
+>
+<section class="grid gap-6">
+	{#each groupedLessons as [date, lessons]}
+		<h3 class="text-xl">{dateFormat(new Date(date))}</h3>
+		<div class="grid gap-4">
+			{#each lessons as { lessonTimeInMinutes, type, coachName, lessonCharge }}
+				<SkaterLessonDisplay {lessonTimeInMinutes} {type} {coachName} {lessonCharge} />
+			{/each}
+		</div>
+	{:else}
+		<h3 class="text-xl">No Lessons logged</h3>
+	{/each}
+</section>

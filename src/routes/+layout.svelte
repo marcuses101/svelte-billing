@@ -16,7 +16,8 @@
 		displayText: string;
 		visibility: 'all' | 'authenticated' | 'unauthenticated';
 	}[] = [
-		{ href: '/about', displayText: 'About', visibility: 'all' },
+		{ href: '/about', displayText: 'About', visibility: 'unauthenticated' },
+		{ href: '/overview', displayText: 'Overview', visibility: 'authenticated' },
 		{ href: '/lesson', displayText: 'Lesson', visibility: 'authenticated' },
 		{ href: '/skater', displayText: 'Skater', visibility: 'authenticated' },
 		{ href: '/coaches', displayText: 'Coaches', visibility: 'authenticated' },

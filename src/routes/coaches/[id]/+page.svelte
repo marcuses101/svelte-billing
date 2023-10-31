@@ -1,6 +1,8 @@
 <script>
 	import { page } from '$app/stores';
 	import BackButton from '$lib/components/BackButton.svelte';
+	import CancelButton from '$lib/components/CancelButton.svelte';
+	import EditButton from '$lib/components/EditButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import CancelIcon from '$lib/icons/CancelIcon.svelte';
@@ -26,10 +28,7 @@
 			<span class="[view-transition-name:var(--transition-name)]">{fullName}</span>{' - '}
 		</span>
 		<div class="flex gap-1">
-			<a class="btn btn-outline btn-error" href={`/coaches/${$page.params.id}`}>
-				<CancelIcon />
-				Cancel
-			</a>
+			<CancelButton href={`/coaches/${$page.params.id}`} />
 			<BackButton href="/coaches">Back to Coaches</BackButton>
 		</div>
 	</PageHeader>

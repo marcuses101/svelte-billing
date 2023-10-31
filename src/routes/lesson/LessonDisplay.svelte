@@ -1,4 +1,6 @@
 <script lang="ts">
+	import EditButton from '$lib/components/EditButton.svelte';
+
 	export let lessonTimeInMinutes: number;
 	export let skaters: string[];
 	export let id: string;
@@ -19,7 +21,7 @@
 		</div>
 	</article>
 	<article class="flex self-center gap-2">
-		<a class="btn btn-sm btn-neutral" href={`/lesson/${id}/edit`}> Edit </a>
+		<EditButton href={`/lesson/${id}/edit`} size="small" />
 		<form method="POST" action="?/delete">
 			<input type="hidden" name="id" value={id} />
 			<button class="btn btn-sm btn-error" type="submit">x</button>

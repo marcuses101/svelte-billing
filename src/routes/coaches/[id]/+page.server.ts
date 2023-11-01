@@ -28,7 +28,6 @@ export const actions = {
 		const lastName = data.get('last-name');
 		const email = data.get('email');
 		const hourlyRateFormData = data.get('hourly-rate');
-		console.log({ firstName, lastName, email, hourlyRateFormData });
 		if (!firstName || typeof firstName !== 'string') {
 			return fail(400, { firstName, missing: true });
 		}

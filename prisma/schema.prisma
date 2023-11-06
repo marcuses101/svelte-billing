@@ -17,6 +17,7 @@ model Skater {
     createdOn   DateTime       @default(now())
     modifiedOn  DateTime?
     lessons     SkaterLesson[]
+    invoices    Invoice[]
 
     @@unique([firstName, lastName])
 }
@@ -65,11 +66,23 @@ model Lesson {
     skaters             SkaterLesson[]
 }
 
+model Invoice {
+    id            String         @id @default(uuid())
+    invoiceDate   DateTime
+    skater        Skater         @relation(fields: [skaterId], references: [id])
+    skaterId      String
+    skaterLessons SkaterLesson[]
+    createdOn     DateTime
+    modifiedOn    DateTime?
+}
+
 model SkaterLesson {
-    Skater   Skater @relation(fields: [skaterId], references: [id])
-    skaterId String
-    Lesson   Lesson @relation(fields: [lessonId], references: [id])
-    lessonId String
+    Skater    Skater   @relation(fields: [skaterId], references: [id])
+    skaterId  String
+    Lesson    Lesson   @relation(fields: [lessonId], references: [id])
+    lessonId  String
+    Invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+    invoiceId String?
 
     @@id([skaterId, lessonId])
 }

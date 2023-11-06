@@ -7,10 +7,10 @@
 
 <section class="prose max-w-none">
 	<PageHeader title="Skater List" />
-	<AddButton href="/skater/create">Add Skater</AddButton>
+	<AddButton href="/skaters/create">Add Skater</AddButton>
 	<section class="my-4 grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-2">
 		{#each data.skaters as skater}
-			<a class="btn" href={`/skater/${skater.id}`}>
+			<a class="btn" href={`/skaters/${skater.id}`}>
 				<span
 					style={`--transition-name:skater-${skater.id}`}
 					class="[view-transition-name:var(--transition-name)]"

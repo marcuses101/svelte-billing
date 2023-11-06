@@ -18,8 +18,8 @@
 	}[] = [
 		{ href: '/about', displayText: 'About', visibility: 'unauthenticated' },
 		{ href: '/overview', displayText: 'Overview', visibility: 'authenticated' },
-		{ href: '/lesson', displayText: 'Lesson', visibility: 'authenticated' },
-		{ href: '/skater', displayText: 'Skater', visibility: 'authenticated' },
+		{ href: '/lessons', displayText: 'Lessons', visibility: 'authenticated' },
+		{ href: '/skaters', displayText: 'Skaters', visibility: 'authenticated' },
 		{ href: '/coaches', displayText: 'Coaches', visibility: 'authenticated' },
 		{ href: '/billing', displayText: 'Billing', visibility: 'authenticated' }
 	];

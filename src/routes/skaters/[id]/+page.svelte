@@ -72,11 +72,10 @@
 		</span>{' - '}
 	</span>
 	<div class="flex gap-2">
-		<EditButton href={`/skater/${skater.id}/edit`} />
-		<BackButton href={`/skater`}>Back to Skaters</BackButton>
-		<div />
-	</div></PageHeader
->
+		<EditButton href={`/skaters/${skater.id}/edit`} />
+		<BackButton href={`/skaters`}>Back to Skaters</BackButton>
+	</div>
+</PageHeader>
 <section class="grid gap-6">
 	{#each groupedLessons as [date, lessons]}
 		<h3 class="text-xl">{dateFormat(new Date(date))}</h3>

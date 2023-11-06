@@ -5,6 +5,7 @@
 		"start": "PROTOCOL_HEADER=x-forwarded-proto HOST_HEADER=x-forwarded-host node build",
 		"dev": "vite dev",
 		"build": "vite build",
+		"migrate": "prisma db push",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",

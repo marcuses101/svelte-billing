@@ -48,7 +48,7 @@
 
 <section class="prose max-w-none">
 	<PageHeader title="Lessons" />
-	<AddButton href="/lesson/create">Add Lesson</AddButton>
+	<AddButton href="/lessons/create">Add Lesson</AddButton>
 	{#each groupedLessons as [date, lessons]}
 		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
 		<div class="grid gap-4">

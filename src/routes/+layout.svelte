@@ -43,6 +43,7 @@
 			});
 		});
 	});
+	$: baseSegment = '/' + $page.url.pathname.split('/')[1];
 </script>
 
 <div class="drawer drawer-closed lg:drawer-open">
@@ -58,9 +59,7 @@
 		<ul class="menu p-4 w-56 min-h-full bg-base-200 text-base-content">
 			{#each visibleLinks as { href, displayText }}
 				<li>
-					<a class:active={$page.url.pathname.includes(href)} on:click={closeDrawer} {href}
-						>{displayText}</a
-					>
+					<a class:active={baseSegment === href} on:click={closeDrawer} {href}>{displayText}</a>
 				</li>
 			{/each}
 		</ul>

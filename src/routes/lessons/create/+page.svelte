@@ -4,6 +4,7 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
+	import MultiSelect from './MultiSelect.svelte';
 	export let data;
 	export let form;
 	let dateInput: HTMLInputElement;
@@ -71,43 +72,7 @@
 				class="input input-bordered w-full max-w-xs"
 			/>
 		</div>
-
-		<div class="form-control w-full max-w-xs input input-bordered h-auto mt-4 pb-2">
-			{#each skaters as value}
-				<input type="hidden" name="skaters" {value} />
-			{/each}
-			<div class="grid gap-1">
-				<label class="label" for="skaters">
-					<span class="label-text font-bold">Skaters:</span>
-				</label>
-				<div class="flex gap-2 flex-wrap">
-					{#each selectedSkaters as { label, value } (value)}
-						<button
-							type="button"
-							transition:scale
-							class="btn btn-xs min-w-fit"
-							on:click={() => removeSkater(value)}
-						>
-							{label}
-						</button>
-					{/each}
-				</div>
-				<ul class="menu p-0 m-0">
-					{#each unselectedSkaters as { label, value } (value)}
-						<li transition:scale class="my-0 px-0">
-							<button
-								type="button"
-								on:click={() => {
-									skaters.push(value);
-									skaters = skaters;
-								}}>{label}</button
-							>
-						</li>
-					{/each}
-				</ul>
-			</div>
-		</div>
-
+		<MultiSelect name="skaters" options={skaterSelectOptions} />
 		<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
 			<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
 			<button class="btn btn-primary" type="submit">Submit</button>

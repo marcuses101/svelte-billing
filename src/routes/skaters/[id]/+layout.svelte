@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import BackButton from '$lib/components/BackButton.svelte';
-	import CancelButton from '$lib/components/CancelButton.svelte';
 	import EditButton from '$lib/components/EditButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import CancelIcon from '$lib/icons/CancelIcon.svelte';

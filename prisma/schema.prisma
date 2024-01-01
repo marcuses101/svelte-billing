@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:../dev.db"
+    provider = "postgresql"
+    url      = "postgresql://marcus:password@localhost:5432/svelte-billing"
 }
 
 // Define the Skater table
@@ -13,7 +13,7 @@ model Skater {
     firstName   String
     lastName    String
     email       String
-    dateOfBirth DateTime?
+    dateOfBirth DateTime       @db.Date
     createdOn   DateTime       @default(now())
     modifiedOn  DateTime?
     lessons     SkaterLesson[]
@@ -58,7 +58,7 @@ model Lesson {
     id                  String         @id @default(uuid())
     lessonTimeInMinutes Int
     lessonCostInCents   Int
-    date                DateTime
+    date                DateTime       @db.Date
     createdOn           DateTime
     modifiedOn          DateTime?
     coach               Coach          @relation(fields: [coachId], references: [id])
@@ -68,7 +68,7 @@ model Lesson {
 
 model Invoice {
     id            String         @id @default(uuid())
-    invoiceDate   DateTime
+    invoiceDate   DateTime       @db.Date
     skater        Skater         @relation(fields: [skaterId], references: [id])
     skaterId      String
     skaterLessons SkaterLesson[]

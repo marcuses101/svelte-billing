@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { format } from 'date-fns';
 	import LessonForm from '../../create/LessonForm.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import Toast from '$lib/components/Toast.svelte';
+	import BackButton from '$lib/components/BackButton.svelte';
 	export let data;
+	export let form;
 
 	const skaterOptions = data.skaters.map(({ id, firstName, lastName }) => ({
 		value: id,
@@ -12,8 +14,8 @@
 	const selectedOptions = data.lesson.skaters.map(({ Skater: { id, firstName, lastName } }) => {
 		return { value: id, label: `${firstName} ${lastName}` };
 	});
+	console.log(data.lesson.date);
 
-	console.log(data);
 	const date = format(data.lesson.date, 'yyyy-MM-dd');
 	const minutes = data.lesson.lessonTimeInMinutes;
 </script>
@@ -22,5 +24,9 @@
 	<span slot="title-post">
 		{' - '} <span>Edit </span>
 	</span>
+	<BackButton href="/lessons">Back to Lessons</BackButton>
 </PageHeader>
+{#if form?.success}
+	<Toast>Lesson Updated</Toast>
+{/if}
 <LessonForm {skaterOptions} {selectedOptions} {date} {minutes} />

@@ -2,6 +2,7 @@ import { getSkaters, prisma } from '$lib/server/db';
 import type { Actions, PageServerLoad } from './$types';
 import { wrapErr, type Result, wrapOk } from '$lib/rustResult';
 import { error, fail } from '@sveltejs/kit';
+import { format } from 'date-fns';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const lessonId = params.id;
@@ -47,7 +48,7 @@ function validateForm(
 }
 
 export const actions = {
-	default: async ({ request, locals }) => {
+	default: async ({ request, locals, params }) => {
 		const data = await request.formData();
 		const coachUser = locals.user;
 		if (!coachUser || !coachUser.Coach) {
@@ -59,13 +60,17 @@ export const actions = {
 			return fail(400, { success: false, errors: formValidationResult.error });
 		}
 		const { lessonTimeInMinutes, date, skaterIds } = formValidationResult.value;
-		const createdLesson = await prisma.lesson.create({
+		const createdLesson = await prisma.lesson.update({
+			where: { id: params.id },
 			data: {
-				date: new Date(date).toISOString(),
+				date: date,
 				lessonTimeInMinutes,
 				lessonCostInCents: (coachUser.Coach?.hourlyRateInCents / 60) * lessonTimeInMinutes,
-				createdOn: new Date(),
-				skaters: { create: skaterIds.map((id) => ({ Skater: { connect: { id } } })) },
+				modifiedOn: new Date(),
+				skaters: {
+					deleteMany: {},
+					create: skaterIds.map((id) => ({ Skater: { connect: { id } } }))
+				},
 				coach: { connect: { id: coachUser.Coach.id } }
 			},
 			include: { skaters: { include: { Skater: true } } }

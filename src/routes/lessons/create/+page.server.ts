@@ -50,10 +50,12 @@ export const actions = {
 		if (!formValidationResult.ok) {
 			return fail(400, { success: false, errors: formValidationResult.error });
 		}
-		const { lessonTimeInMinutes, date, skaterIds } = formValidationResult.value;
+		const { lessonTimeInMinutes, date: rawDate, skaterIds } = formValidationResult.value;
+
+		const date = new Date(rawDate).toISOString();
 		const createdLesson = await prisma.lesson.create({
 			data: {
-				date: new Date(date).toISOString(),
+				date,
 				lessonTimeInMinutes,
 				lessonCostInCents: (coachUser.Coach?.hourlyRateInCents / 60) * lessonTimeInMinutes,
 				createdOn: new Date(),
@@ -62,6 +64,7 @@ export const actions = {
 			},
 			include: { skaters: { include: { Skater: true } } }
 		});
+		console.log({ date, createdDate: createdLesson.date });
 		return { success: true, lessonTimeInMinutes: createdLesson.lessonTimeInMinutes };
 	}
 } satisfies Actions;

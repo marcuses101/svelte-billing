@@ -9,7 +9,8 @@
 		weekday: 'long',
 		day: 'numeric',
 		month: 'short',
-		year: 'numeric'
+		year: 'numeric',
+		timeZone: 'UTC'
 	}).format;
 
 	type FormattedLesson = {

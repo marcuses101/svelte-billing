@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { format } from 'date-fns';
 	import LessonForm from '../../create/LessonForm.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
@@ -14,9 +13,8 @@
 	const selectedOptions = data.lesson.skaters.map(({ Skater: { id, firstName, lastName } }) => {
 		return { value: id, label: `${firstName} ${lastName}` };
 	});
-	console.log(data.lesson.date);
+	const date = data.lesson.date.toISOString().split('T')[0];
 
-	const date = format(data.lesson.date, 'yyyy-MM-dd');
 	const minutes = data.lesson.lessonTimeInMinutes;
 </script>
 

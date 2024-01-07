@@ -2,7 +2,6 @@ import { getSkaters, prisma } from '$lib/server/db';
 import type { Actions, PageServerLoad } from './$types';
 import { wrapErr, type Result, wrapOk } from '$lib/rustResult';
 import { error, fail } from '@sveltejs/kit';
-import { format } from 'date-fns';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const lessonId = params.id;
@@ -59,11 +58,13 @@ export const actions = {
 		if (!formValidationResult.ok) {
 			return fail(400, { success: false, errors: formValidationResult.error });
 		}
-		const { lessonTimeInMinutes, date, skaterIds } = formValidationResult.value;
+		const { lessonTimeInMinutes, date: rawData, skaterIds } = formValidationResult.value;
+		const date = new Date(rawData).toISOString();
+
 		const createdLesson = await prisma.lesson.update({
 			where: { id: params.id },
 			data: {
-				date: date,
+				date,
 				lessonTimeInMinutes,
 				lessonCostInCents: (coachUser.Coach?.hourlyRateInCents / 60) * lessonTimeInMinutes,
 				modifiedOn: new Date(),

@@ -59,7 +59,7 @@ model Lesson {
     lessonTimeInMinutes Int
     lessonCostInCents   Int
     date                DateTime
-    createdOn           DateTime
+    createdOn           DateTime       @default(now())
     modifiedOn          DateTime?
     coach               Coach          @relation(fields: [coachId], references: [id])
     coachId             String
@@ -67,13 +67,21 @@ model Lesson {
 }
 
 model Invoice {
-    id            String         @id @default(uuid())
-    invoiceDate   DateTime
-    skater        Skater         @relation(fields: [skaterId], references: [id])
-    skaterId      String
-    skaterLessons SkaterLesson[]
-    createdOn     DateTime
-    modifiedOn    DateTime?
+    id             String         @id @default(uuid())
+    invoiceDate    DateTime
+    skater         Skater         @relation(fields: [skaterId], references: [id])
+    skaterId       String
+    skaterLessons  SkaterLesson[]
+    createdOn      DateTime       @default(now())
+    modifiedOn     DateTime?
+    InvoiceBatch   InvoiceBatch?  @relation(fields: [invoiceBatchId], references: [id])
+    invoiceBatchId String?
+}
+
+model InvoiceBatch {
+    id        String    @id @default(uuid())
+    invoices  Invoice[]
+    createdOn DateTime  @default(now())
 }
 
 model SkaterLesson {

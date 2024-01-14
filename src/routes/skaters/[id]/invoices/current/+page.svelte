@@ -28,7 +28,6 @@
 	const amountDue = formatCurrency(100.25);
 	const outstandingBalance = formatCurrency(20);
 	const payments: ComponentProps<InvoiceDisplay>['payments'] = [];
-	const currentBillTotal = formatCurrency(50);
 	const previousBillAmount = formatCurrency(40);
 </script>
 
@@ -40,7 +39,6 @@
 	{taxes}
 	{charges}
 	{payments}
-	{currentBillTotal}
 	{previousBillAmount}
 	{amountDue}
 	{chargesTotal}

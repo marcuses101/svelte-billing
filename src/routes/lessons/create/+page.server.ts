@@ -53,11 +53,13 @@ export const actions = {
 		const { lessonTimeInMinutes, date: rawDate, skaterIds } = formValidationResult.value;
 
 		const date = new Date(rawDate).toISOString();
+		const lessonCostInCents = (coachUser.Coach?.hourlyRateInCents / 60) * lessonTimeInMinutes;
 		const createdLesson = await prisma.lesson.create({
 			data: {
 				date,
 				lessonTimeInMinutes,
-				lessonCostInCents: (coachUser.Coach?.hourlyRateInCents / 60) * lessonTimeInMinutes,
+				lessonCostInCents,
+				lessonCostPerSkaterInCents: lessonCostInCents / skaterIds.length,
 				createdOn: new Date(),
 				skaters: { create: skaterIds.map((id) => ({ Skater: { connect: { id } } })) },
 				coach: { connect: { id: coachUser.Coach.id } }

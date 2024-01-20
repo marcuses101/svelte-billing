@@ -55,15 +55,16 @@ model Coach {
 }
 
 model Lesson {
-    id                  String         @id @default(uuid())
-    lessonTimeInMinutes Int
-    lessonCostInCents   Int
-    date                DateTime
-    createdOn           DateTime       @default(now())
-    modifiedOn          DateTime?
-    coach               Coach          @relation(fields: [coachId], references: [id])
-    coachId             String
-    skaters             SkaterLesson[]
+    id                         String         @id @default(uuid())
+    lessonTimeInMinutes        Int
+    lessonCostInCents          Int
+    lessonCostPerSkaterInCents Int
+    date                       DateTime
+    createdOn                  DateTime       @default(now())
+    modifiedOn                 DateTime?
+    coach                      Coach          @relation(fields: [coachId], references: [id])
+    coachId                    String
+    skaters                    SkaterLesson[]
 }
 
 model Invoice {

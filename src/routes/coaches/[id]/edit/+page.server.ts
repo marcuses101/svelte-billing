@@ -8,7 +8,7 @@ export const load: ServerLoad = async ({ params }) => {
 		include: { Coach: { select: { hourlyRateInCents: true } } }
 	});
 	if (!coachUser || !coachUser.Coach) {
-		throw error(404, `Coach with id ${params.id} not found`);
+		error(404, `Coach with id ${params.id} not found`);
 	}
 	const {
 		id,
@@ -51,6 +51,6 @@ export const actions = {
 			}
 		});
 
-		throw redirect(303, `/coaches/${id}?success=true`);
+		redirect(303, `/coaches/${id}?success=true`);
 	}
 } satisfies Actions;

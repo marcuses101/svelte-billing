@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 		where: { id: params.id }
 	});
 	if (!skaterInfo) {
-		throw error(404);
+		error(404);
 	}
 
 	return { skater: skaterInfo };

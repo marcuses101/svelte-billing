@@ -18,6 +18,6 @@ export const actions = {
 		}
 
 		cookies.set('user_id', user.id, { path: '/', secure: !dev });
-		throw redirect(303, '/');
+		redirect(303, '/');
 	}
 } satisfies Actions;

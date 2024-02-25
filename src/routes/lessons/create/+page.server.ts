@@ -44,7 +44,7 @@ export const actions = {
 		const coachUser = locals.user;
 		if (!coachUser || !coachUser.Coach) {
 			const errorMessage = 'unable to find coach';
-			throw error(404, errorMessage);
+			error(404, errorMessage);
 		}
 		const formValidationResult = validateForm(data);
 		if (!formValidationResult.ok) {

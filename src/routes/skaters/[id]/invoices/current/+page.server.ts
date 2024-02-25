@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		}
 	});
 	if (!skaterInfo) {
-		throw error(404);
+		error(404);
 	}
 	const { lessons: rawLessons, ...skater } = skaterInfo;
 	const lessons = rawLessons.map(({ Lesson: lesson }) => {

@@ -5,7 +5,7 @@ import { error, fail } from '@sveltejs/kit';
 export const load: PageServerLoad = async ({ params }) => {
 	const skater = await getSkaterById(params.id);
 	if (!skater) {
-		throw error(404);
+		error(404);
 	}
 	return { skater };
 };

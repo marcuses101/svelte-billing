@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		include: { skaters: { select: { Skater: true } } }
 	});
 	if (!lesson) {
-		throw error(404, `Lesson with the id ${lessonId} not found`);
+		error(404, `Lesson with the id ${lessonId} not found`);
 	}
 	return { skaters: getSkaters(), lesson };
 };
@@ -53,7 +53,7 @@ export const actions = {
 		const coachUser = locals.user;
 		if (!coachUser || !coachUser.Coach) {
 			const errorMessage = 'unable to find coach';
-			throw error(404, errorMessage);
+			error(404, errorMessage);
 		}
 		const formValidationResult = validateForm(data);
 		if (!formValidationResult.ok) {

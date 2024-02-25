@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	});
 
 	if (!invoice) {
-		throw error(404, 'Skater invoice not found');
+		error(404, 'Skater invoice not found');
 	}
 
 	const { lessons, chargesTotal } = invoice.skaterLessons.reduce(

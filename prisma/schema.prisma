@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = "file:../dev.db"
+    provider = "postgresql"
+    url      = "postgresql://marcus:password@localhost:5432/svelte-billing"
 }
 
 // Define the Skater table
@@ -94,4 +94,65 @@ model SkaterLesson {
     invoiceId String?
 
     @@id([skaterId, lessonId])
+}
+
+// Double Entry Bookkeeping 
+
+enum TransactionType {
+    Credit
+    Debit
+}
+
+model AccountType {
+    code    String    @id
+    Account Account[]
+}
+
+model Account {
+    id                 Int                  @id @default(autoincrement())
+    accountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
+    accountTypeCode    String
+    name               String
+    AccountTransaction AccountTransaction[]
+}
+
+enum AccountTransactionType {
+    SkaterInvoice
+    SkaterPayment
+    CoachOwe
+    CoachPay
+}
+
+model Ledger {
+    code               String               @id
+    name               String
+    AccountTransaction AccountTransaction[]
+    CreditTransactions LedgerTransaction[]  @relation("CreditLedger")
+    DebitTransactions  LedgerTransaction[]  @relation("DebitLedger")
+}
+
+model AccountTransaction {
+    ledgerCode    String
+    accountId     Int
+    date          DateTime
+    amountInCents Int
+
+    transactionType        TransactionType
+    accountTransactionType AccountTransactionType
+
+    ledger  Ledger  @relation(fields: [ledgerCode], references: [code])
+    account Account @relation(fields: [accountId], references: [id])
+
+    @@id([ledgerCode, accountId, date])
+}
+
+model LedgerTransaction {
+    creditLedger     Ledger   @relation("CreditLedger", fields: [creditLedgerCode], references: [code])
+    debitLedger      Ledger   @relation("DebitLedger", fields: [debitLedgerCode], references: [code])
+    creditLedgerCode String
+    debitLedgerCode  String
+    date             DateTime
+    amountInCents    Int
+
+    @@id([creditLedgerCode, debitLedgerCode, date])
 }

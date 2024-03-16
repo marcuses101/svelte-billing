@@ -1,8 +1,52 @@
 import { PrismaClient } from '@prisma/client';
+import { LEDGER_CODE, ACCOUNT_TYPE_CODE } from '../src/lib/server/defs';
 const prisma = new PrismaClient();
+
+async function seedAccounting() {
+	console.log('  Seeding accounting system');
+
+	// set up ledgers
+	const ledgers = await prisma.ledger.createMany({
+		data: [
+			{ code: LEDGER_CODE.ACCOUNTS_PAYABLE, name: 'Accounts Payable' },
+			{ code: LEDGER_CODE.ACCOUNTS_RECEIVABLE, name: 'Accounts Receivable' },
+			{ code: LEDGER_CODE.COMMISSION, name: 'Commission' },
+			{ code: LEDGER_CODE.CASH, name: 'Cash' }
+		]
+	});
+
+	const accountTypes = await prisma.accountType.createMany({
+		data: [{ code: ACCOUNT_TYPE_CODE.STUDENT }, { code: ACCOUNT_TYPE_CODE.COACH }]
+	});
+
+	const accounts = await prisma.account.createMany({
+		data: [
+			// Student Accounts
+			{ name: 'Student 1', accountTypeCode: ACCOUNT_TYPE_CODE.COACH },
+			{ name: 'Student 2', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 3', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 4', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 5', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 6', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 7', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 8', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 9', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			{ name: 'Student 10', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
+			// Coach Accounts
+			{ name: 'Coach 1', accountTypeCode: ACCOUNT_TYPE_CODE.COACH },
+			{ name: 'Coach 2', accountTypeCode: ACCOUNT_TYPE_CODE.COACH },
+			{ name: 'Coach 3', accountTypeCode: ACCOUNT_TYPE_CODE.COACH }
+		]
+	});
+
+	console.log({ ledgers, accounts, accountTypes });
+	// set up account types
+	console.log('  Seeding accounting system complete');
+}
 
 async function main() {
 	console.log('Seeding beginning');
+	console.log('  Seeding Roles');
 	const adminRole = await prisma.role.upsert({
 		where: { name: 'admin' },
 		create: { name: 'admin' },
@@ -19,7 +63,9 @@ async function main() {
 		create: { name: 'coach' },
 		update: {}
 	});
+	console.log('  Seeding Roles -- Complete');
 
+	console.log('  Seeding Users');
 	const marcus = await prisma.user.upsert({
 		where: { email: 'mnjconnolly@gmail.com' },
 		update: { Coach: { update: { hourlyRateInCents: 6_000 } } },
@@ -87,7 +133,10 @@ async function main() {
 		skaters.push(skater);
 	}
 
+	console.log('  Seeding Users -- Complete');
+
 	console.log({ marcus, laurence, adminRole, clientRole, coachRole, skaters });
+	await seedAccounting();
 	console.log('Seeding complete');
 }
 

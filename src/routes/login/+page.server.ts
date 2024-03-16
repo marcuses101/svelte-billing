@@ -5,7 +5,7 @@ import { redirect, type Actions, fail } from '@sveltejs/kit';
 export const actions = {
 	default: async ({ cookies, request }) => {
 		const formData = await request.formData();
-		const email = formData.get('email');
+		const email: FormDataEntryValue | null = formData.get('email');
 		if (typeof email !== 'string') {
 			return fail(400, { success: false, message: 'email must be of type string' });
 		}

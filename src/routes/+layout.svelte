@@ -20,6 +20,7 @@
 		{ href: '/overview', displayText: 'Overview', visibility: 'authenticated' },
 		{ href: '/lessons', displayText: 'Lessons', visibility: 'authenticated' },
 		{ href: '/skaters', displayText: 'Skaters', visibility: 'authenticated' },
+		{ href: '/payment', displayText: 'Payments', visibility: 'authenticated' },
 		{ href: '/coaches', displayText: 'Coaches', visibility: 'authenticated' },
 		{ href: '/billing', displayText: 'Billing', visibility: 'authenticated' }
 	];

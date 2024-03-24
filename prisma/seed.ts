@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { LEDGER_CODE, ACCOUNT_TYPE_CODE } from '../src/lib/server/defs';
+import { LEDGER_CODE, ACCOUNT_TYPE_CODE, ACCOUNT_TRANSACTION_TYPE } from '../src/lib/server/defs';
 const prisma = new PrismaClient();
 
 async function seedAccounting() {
@@ -11,7 +11,9 @@ async function seedAccounting() {
 			{ code: LEDGER_CODE.ACCOUNTS_PAYABLE, name: 'Accounts Payable' },
 			{ code: LEDGER_CODE.ACCOUNTS_RECEIVABLE, name: 'Accounts Receivable' },
 			{ code: LEDGER_CODE.COMMISSION, name: 'Commission' },
-			{ code: LEDGER_CODE.CASH, name: 'Cash' }
+			{ code: LEDGER_CODE.CASH, name: 'Cash' },
+			{ code: LEDGER_CODE.BILLING_REVENUE, name: 'Billing Revenue' },
+			{ code: LEDGER_CODE.COACH_INCOME, name: 'Coach Income' }
 		]
 	});
 
@@ -19,10 +21,39 @@ async function seedAccounting() {
 		data: [{ code: ACCOUNT_TYPE_CODE.STUDENT }, { code: ACCOUNT_TYPE_CODE.COACH }]
 	});
 
+	const accountTransactionTypes = await prisma.accountTransactionType.createMany({
+		data: [
+			{
+				code: ACCOUNT_TRANSACTION_TYPE.STUDENT_CHARGE,
+				type: 'Debit',
+				accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
+				description: 'Student Charge'
+			},
+			{
+				code: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT,
+				type: 'Credit',
+				accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
+				description: 'Student Payment'
+			},
+			{
+				code: ACCOUNT_TRANSACTION_TYPE.COACH_CHARGE,
+				type: 'Debit',
+				accountTypeCode: ACCOUNT_TYPE_CODE.COACH,
+				description: 'Coach Charge'
+			},
+			{
+				code: ACCOUNT_TRANSACTION_TYPE.COACH_PAYMENT,
+				type: 'Credit',
+				accountTypeCode: ACCOUNT_TYPE_CODE.COACH,
+				description: 'Coach Payment'
+			}
+		]
+	});
+
 	const accounts = await prisma.account.createMany({
 		data: [
 			// Student Accounts
-			{ name: 'Student 1', accountTypeCode: ACCOUNT_TYPE_CODE.COACH },
+			{ name: 'Student 1', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
 			{ name: 'Student 2', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
 			{ name: 'Student 3', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
 			{ name: 'Student 4', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
@@ -39,7 +70,7 @@ async function seedAccounting() {
 		]
 	});
 
-	console.log({ ledgers, accounts, accountTypes });
+	console.log({ ledgers, accounts, accountTypes, accountTransactionTypes });
 	// set up account types
 	console.log('  Seeding accounting system complete');
 }
@@ -68,9 +99,9 @@ async function main() {
 	console.log('  Seeding Users');
 	const marcus = await prisma.user.upsert({
 		where: { email: 'mnjconnolly@gmail.com' },
-		update: { Coach: { update: { hourlyRateInCents: 6_000 } } },
+		update: { Coach: { update: { hourlyRateInCents: 3_800 } } },
 		create: {
-			email: 'mconnolly@gmail.com',
+			email: 'mnjconnolly@gmail.com',
 			firstName: 'Marcus',
 			lastName: 'Connolly',
 			roles: {
@@ -88,6 +119,7 @@ async function main() {
 			}
 		}
 	});
+
 	const laurence = await prisma.user.upsert({
 		where: { email: 'laurencelessard@gmail.com' },
 		update: { Coach: { update: { hourlyRateInCents: 3_800 } } },

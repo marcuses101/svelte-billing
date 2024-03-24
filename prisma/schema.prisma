@@ -103,47 +103,56 @@ enum TransactionType {
     Debit
 }
 
+// Coach
+// Skater
 model AccountType {
     code    String    @id
+
     Account Account[]
+    AccountTransactionType AccountTransactionType[]
+}
+
+// Student Charge
+// Student Payment
+// Coach Charge
+// Coach Pay
+model AccountTransactionType {
+    code        String          @id
+    description String
+    type        TransactionType
+    accountTypeCode String
+
+    accountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
+    AccountTransaction AccountTransaction[]
 }
 
 model Account {
-    id                 Int                  @id @default(autoincrement())
+    id              Int    @id @default(autoincrement())
+    name            String
+    accountTypeCode String
+
     accountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
-    accountTypeCode    String
-    name               String
     AccountTransaction AccountTransaction[]
-}
-
-enum AccountTransactionType {
-    SkaterInvoice
-    SkaterPayment
-    CoachOwe
-    CoachPay
-}
-
-model Ledger {
-    code               String               @id
-    name               String
-    AccountTransaction AccountTransaction[]
-    CreditTransactions LedgerTransaction[]  @relation("CreditLedger")
-    DebitTransactions  LedgerTransaction[]  @relation("DebitLedger")
 }
 
 model AccountTransaction {
-    ledgerCode    String
-    accountId     Int
-    date          DateTime
-    amountInCents Int
+    accountId                  Int
+    date                       DateTime
+    amountInCents              Int
+    accountTransactionTypeCode String
 
-    transactionType        TransactionType
-    accountTransactionType AccountTransactionType
+    account                Account                @relation(fields: [accountId], references: [id])
+    accountTransactionType AccountTransactionType @relation(fields: [accountTransactionTypeCode], references: [code])
 
-    ledger  Ledger  @relation(fields: [ledgerCode], references: [code])
-    account Account @relation(fields: [accountId], references: [id])
+    @@id([accountId, accountTransactionTypeCode, date])
+}
 
-    @@id([ledgerCode, accountId, date])
+model Ledger {
+    code String @id
+    name String
+
+    CreditTransactions LedgerTransaction[] @relation("CreditLedger")
+    DebitTransactions  LedgerTransaction[] @relation("DebitLedger")
 }
 
 model LedgerTransaction {

@@ -1,7 +1,6 @@
 import { prisma } from './db';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from './defs';
 
-// Billing Revenue
 export async function logStudentCharge(
 	studentAccountId: number,
 	amountInCents: number,

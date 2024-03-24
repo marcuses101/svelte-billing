@@ -13,7 +13,8 @@ export const load: PageServerLoad = async ({ params }) => {
 	if (!lesson) {
 		error(404, `Lesson with the id ${lessonId} not found`);
 	}
-	return { skaters: getSkaters(), lesson };
+	const skaters = await getSkaters();
+	return { skaters, lesson };
 };
 
 function validateForm(

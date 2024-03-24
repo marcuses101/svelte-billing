@@ -3,8 +3,9 @@ import { getSkaters, prisma } from '$lib/server/db';
 import type { Actions } from './$types';
 import { wrapErr, type Result, wrapOk } from '$lib/rustResult';
 
-export function load() {
-	return { skaters: getSkaters() };
+export async function load() {
+	const skaters = await getSkaters();
+	return { skaters };
 }
 
 function validateForm(

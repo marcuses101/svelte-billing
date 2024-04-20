@@ -2,7 +2,7 @@ import { prisma } from './db';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from './defs';
 
 export async function logStudentCharge(
-	studentAccountId: number,
+	studentAccountId: string,
 	amountInCents: number,
 	date: Date
 ) {
@@ -29,7 +29,7 @@ export async function logStudentCharge(
 }
 
 export async function logStudentPayment(
-	studentAccountId: number,
+	studentAccountId: string,
 	amountInCents: number,
 	date: Date
 ) {
@@ -55,7 +55,7 @@ export async function logStudentPayment(
 	console.log({ accountTransaction, ledgerTransaction });
 }
 
-export async function logCoachCharge(coachAccountId: number, amountInCents: number, date: Date) {
+export async function logCoachCharge(coachAccountId: string, amountInCents: number, date: Date) {
 	const [accountTransaction, ledgerTransaction] = await prisma.$transaction([
 		prisma.accountTransaction.create({
 			data: {
@@ -77,7 +77,7 @@ export async function logCoachCharge(coachAccountId: number, amountInCents: numb
 	console.log({ accountTransaction, ledgerTransaction });
 }
 
-export async function logCoachPayment(coachAccountId: number, amountInCents: number, date: Date) {
+export async function logCoachPayment(coachAccountId: string, amountInCents: number, date: Date) {
 	const [accountTransaction, ledgerTransaction] = await prisma.$transaction([
 		prisma.accountTransaction.create({
 			data: {

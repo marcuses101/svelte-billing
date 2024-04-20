@@ -62,10 +62,10 @@ export const actions = {
 				lessonCostInCents,
 				lessonCostPerSkaterInCents: lessonCostInCents / skaterIds.length,
 				createdOn: new Date(),
-				skaters: { create: skaterIds.map((id) => ({ Skater: { connect: { id } } })) },
-				coach: { connect: { id: coachUser.Coach.id } }
+				SkaterLessons: { create: skaterIds.map((id) => ({ Skater: { connect: { id } } })) },
+				Coach: { connect: { id: coachUser.Coach.id } }
 			},
-			include: { skaters: { include: { Skater: true } } }
+			include: { SkaterLessons: { include: { Skater: true } } }
 		});
 		console.log({ date, createdDate: createdLesson.date });
 		return { success: true, lessonTimeInMinutes: createdLesson.lessonTimeInMinutes };

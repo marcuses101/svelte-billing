@@ -18,3 +18,9 @@ export const LEDGER_CODE = {
 	BILLING_REVENUE: 'BILLING_REVENUE',
 	COACH_INCOME: 'COACH_INCOME'
 } as const;
+
+export const ROLES = {
+	ADMIN: 'ADMIN',
+	COACH: 'COACH',
+	CLIENT: 'CLIENT'
+};

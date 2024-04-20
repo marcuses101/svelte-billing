@@ -1,6 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import { prisma } from '$lib/server/db';
 import type { Actions } from './$types';
+import { ACCOUNT_TYPE_CODE } from '$lib/server/defs';
 
 export const actions = {
 	default: async ({ request }) => {
@@ -28,8 +29,18 @@ export const actions = {
 				firstName,
 				lastName,
 				email,
-				roles: { create: [{ roleName: 'coach' }] },
-				Coach: { create: { hourlyRateInCents } }
+				UserRoles: { create: [{ roleName: 'coach' }] },
+				Coach: {
+					create: {
+						hourlyRateInCents,
+						Account: {
+							create: {
+								accountTypeCode: ACCOUNT_TYPE_CODE.COACH,
+								name: `${firstName} ${lastName} Coach Account`
+							}
+						}
+					}
+				}
 			}
 		});
 		return { success: true, coach };

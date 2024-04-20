@@ -9,15 +9,18 @@ datasource db {
 
 // Define the Skater table
 model Skater {
-    id          String         @id @default(uuid())
-    firstName   String
-    lastName    String
-    email       String
-    dateOfBirth DateTime?
-    createdOn   DateTime       @default(now())
-    modifiedOn  DateTime?
-    lessons     SkaterLesson[]
-    invoices    Invoice[]
+    id                String              @id @default(uuid())
+    firstName         String
+    lastName          String
+    email             String
+    dateOfBirth       DateTime?
+    createdOn         DateTime            @default(now())
+    modifiedOn        DateTime?
+    lessons           SkaterLesson[]
+    invoices          Invoice[]
+    Account           Account             @relation(fields: [accountId], references: [id])
+    accountId         String
+    AdditionalCharges AdditionalCharges[]
 
     @@unique([firstName, lastName])
 }
@@ -33,25 +36,28 @@ model User {
     email     String     @unique
     firstName String?
     lastName  String?
-    roles     UserRole[]
+    UserRoles UserRole[]
     Coach     Coach?
 }
 
 model UserRole {
     user     User   @relation(fields: [userId], references: [id])
     userId   String
-    role     Role   @relation(fields: [roleName], references: [name])
+    Role     Role   @relation(fields: [roleName], references: [name])
     roleName String
 
     @@id([userId, roleName])
 }
 
 model Coach {
-    id                String   @id @default(uuid())
-    hourlyRateInCents Int
-    user              User     @relation(fields: [userId], references: [id])
-    userId            String   @unique
-    lessons           Lesson[]
+    id                  String               @id @default(uuid())
+    hourlyRateInCents   Int
+    user                User                 @relation(fields: [userId], references: [id])
+    userId              String               @unique
+    lessons             Lesson[]
+    CoachPayrollRecords CoachPayrollRecord[]
+    Account             Account              @relation(fields: [accountId], references: [id])
+    accountId           String               @unique
 }
 
 model Lesson {
@@ -62,36 +68,71 @@ model Lesson {
     date                       DateTime
     createdOn                  DateTime       @default(now())
     modifiedOn                 DateTime?
-    coach                      Coach          @relation(fields: [coachId], references: [id])
+    Coach                      Coach          @relation(fields: [coachId], references: [id])
     coachId                    String
-    skaters                    SkaterLesson[]
+    SkaterLessons              SkaterLesson[]
+}
+
+// used for additional charges such as competition fees
+model AdditionalCharges {
+    id            String   @id @default(uuid())
+    description   String
+    amountInCents Int
+    date          DateTime @db.Date
+    Skater        Skater   @relation(fields: [skaterId], references: [id])
+    skaterId      String
 }
 
 model Invoice {
-    id             String         @id @default(uuid())
-    invoiceDate    DateTime
-    skater         Skater         @relation(fields: [skaterId], references: [id])
-    skaterId       String
-    skaterLessons  SkaterLesson[]
-    createdOn      DateTime       @default(now())
-    modifiedOn     DateTime?
-    InvoiceBatch   InvoiceBatch?  @relation(fields: [invoiceBatchId], references: [id])
-    invoiceBatchId String?
+    id               String             @id @default(uuid())
+    invoiceDate      DateTime           @db.Date
+    Skater           Skater             @relation(fields: [skaterId], references: [id])
+    skaterId         String
+    createdOn        DateTime           @default(now())
+    modifiedOn       DateTime?
+    BillingBatch     BillingBatch?      @relation(fields: [invoiceBatchId], references: [id])
+    invoiceBatchId   String?
+    InvoiceLineItems InvoiceLineItems[]
 }
 
-model InvoiceBatch {
+model InvoiceLineItems {
+    id            String   @id @default(uuid())
+    description   String
+    amountInCents Int
+    date          DateTime @db.Date
+
+    Invoice   Invoice @relation(fields: [invoiceId], references: [id])
+    invoiceId String
+}
+
+model CoachPayrollRecord {
+    id                    String                  @id @default(uuid())
+    Coach                 Coach                   @relation(fields: [coachId], references: [id])
+    CoachPayrollLineItems CoachPayrollLineItems[]
+    coachId               String
+}
+
+model CoachPayrollLineItems {
+    id            String   @id @default(uuid())
+    description   String
+    amountInCents Int
+    date          DateTime @db.Date
+
+    CoachPayrollRecord   CoachPayrollRecord @relation(fields: [coachPayrollRecordId], references: [id])
+    coachPayrollRecordId String
+}
+
+model BillingBatch {
     id        String    @id @default(uuid())
-    invoices  Invoice[]
+    Invoices  Invoice[]
     createdOn DateTime  @default(now())
 }
 
 model SkaterLesson {
-    Skater    Skater   @relation(fields: [skaterId], references: [id])
-    skaterId  String
-    Lesson    Lesson   @relation(fields: [lessonId], references: [id])
-    lessonId  String
-    Invoice   Invoice? @relation(fields: [invoiceId], references: [id])
-    invoiceId String?
+    Skater   Skater @relation(fields: [skaterId], references: [id])
+    skaterId String
+    Lesson   Lesson @relation(fields: [lessonId], references: [id])
+    lessonId String
 
     @@id([skaterId, lessonId])
 }
@@ -106,9 +147,9 @@ enum TransactionType {
 // Coach
 // Skater
 model AccountType {
-    code    String    @id
+    code String @id
 
-    Account Account[]
+    Account                Account[]
     AccountTransactionType AccountTransactionType[]
 }
 
@@ -117,34 +158,41 @@ model AccountType {
 // Coach Charge
 // Coach Pay
 model AccountTransactionType {
-    code        String          @id
-    description String
-    type        TransactionType
+    code            String          @id
+    description     String
+    type            TransactionType
     accountTypeCode String
 
-    accountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
+    AccountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
     AccountTransaction AccountTransaction[]
 }
 
 model Account {
-    id              Int    @id @default(autoincrement())
+    id              String @id @default(uuid())
     name            String
     accountTypeCode String
 
-    accountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
+    AccountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
     AccountTransaction AccountTransaction[]
+    Skater             Skater[]
+    Coach              Coach?
+
+    @@unique([name, accountTypeCode])
 }
 
+// maybe account transactions should have an associated ledger transaction. could be optional? TBD
 model AccountTransaction {
-    accountId                  Int
+    id                         String   @id @default(uuid())
+    accountId                  String
     date                       DateTime
     amountInCents              Int
     accountTransactionTypeCode String
+    ledgerTransactionId        String?  @unique
 
-    account                Account                @relation(fields: [accountId], references: [id])
-    accountTransactionType AccountTransactionType @relation(fields: [accountTransactionTypeCode], references: [code])
+    LedgerTransaction LedgerTransaction? @relation(fields: [ledgerTransactionId], references: [id])
 
-    @@id([accountId, accountTransactionTypeCode, date])
+    Account                Account                @relation(fields: [accountId], references: [id])
+    AccountTransactionType AccountTransactionType @relation(fields: [accountTransactionTypeCode], references: [code])
 }
 
 model Ledger {
@@ -156,12 +204,13 @@ model Ledger {
 }
 
 model LedgerTransaction {
-    creditLedger     Ledger   @relation("CreditLedger", fields: [creditLedgerCode], references: [code])
-    debitLedger      Ledger   @relation("DebitLedger", fields: [debitLedgerCode], references: [code])
+    id               String   @id @default(uuid())
+    CreditLedger     Ledger   @relation("CreditLedger", fields: [creditLedgerCode], references: [code])
+    DebitLedger      Ledger   @relation("DebitLedger", fields: [debitLedgerCode], references: [code])
     creditLedgerCode String
     debitLedgerCode  String
     date             DateTime
     amountInCents    Int
 
-    @@id([creditLedgerCode, debitLedgerCode, date])
+    AccountTrasaction AccountTransaction?
 }

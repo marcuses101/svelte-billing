@@ -6,27 +6,33 @@
 	export let data;
 	const {
 		skater: { firstName, lastName },
-		lessons
+		lineItems
 	} = data;
 	const id = 'TBD';
 	const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' }).format;
 	const invoiceDate = formatDate(new Date());
 	const taxes: ComponentProps<InvoiceDisplay>['taxes'] = [
-		{ description: 'HST', percentage: '13%', taxAmount: formatCurrency(69) }
+		{ description: 'HST', percentage: '13%', taxAmount: formatCurrency(69, false) }
 	];
-	const charges: ComponentProps<InvoiceDisplay>['charges'] = lessons.map(
-		({ date, chargeInCents, coachName, lessonTimeInMinutes, numberOfSkaters }) => {
-			const lessonType = numberOfSkaters > 1 ? 'group' : 'private';
+	const charges: ComponentProps<InvoiceDisplay>['charges'] = lineItems.map(
+		({ date, amountInCents, description }) => {
 			return {
-				description: `${lessonTimeInMinutes} minute ${lessonType} lesson (${coachName})`,
+				description,
 				formattedDate: formatDate(date),
-				chargeAmount: formatCurrency(chargeInCents / 100)
+				chargeAmount: formatCurrency(amountInCents)
 			};
 		}
 	);
-	const chargesTotal = formatCurrency(60);
-	const amountDue = formatCurrency(100.25);
-	const outstandingBalance = formatCurrency(20);
+
+	// TODO determine actual charges
+	const chargesTotalInCents = lineItems.reduce(
+		(acc, { amountInCents }) => (acc += amountInCents),
+		0
+	);
+	const chargesTotal = formatCurrency(chargesTotalInCents);
+
+	const amountDue = formatCurrency(100.25, false);
+	const outstandingBalance = formatCurrency(20, false);
 	const payments: ComponentProps<InvoiceDisplay>['payments'] = [];
 	const previousBillAmount = formatCurrency(40);
 </script>

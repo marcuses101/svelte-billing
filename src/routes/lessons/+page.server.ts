@@ -8,7 +8,7 @@ export const load: ServerLoad = async ({ locals }) => {
 		return { lessons: [] };
 	}
 	const lessons = await prisma.lesson.findMany({
-		include: { skaters: { include: { Skater: true } } },
+		include: { SkaterLessons: { include: { Skater: true } } },
 		where: { coachId }
 	});
 	return { lessons };

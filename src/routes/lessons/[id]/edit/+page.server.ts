@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const lessonId = params.id;
 	const lesson = await prisma.lesson.findUnique({
 		where: { id: lessonId },
-		include: { skaters: { select: { Skater: true } } }
+		include: { SkaterLessons: { select: { Skater: true } } }
 	});
 	if (!lesson) {
 		error(404, `Lesson with the id ${lessonId} not found`);
@@ -77,13 +77,13 @@ export const actions = {
 				lessonCostInCents,
 				lessonCostPerSkaterInCents,
 				modifiedOn: new Date(),
-				skaters: {
+				SkaterLessons: {
 					deleteMany: {},
 					create: skaterIds.map((id) => ({ Skater: { connect: { id } } }))
 				},
-				coach: { connect: { id: coachUser.Coach.id } }
+				Coach: { connect: { id: coachUser.Coach.id } }
 			},
-			include: { skaters: { include: { Skater: true } } }
+			include: { SkaterLessons: { include: { Skater: true } } }
 		});
 		return { success: true, lessonTimeInMinutes: createdLesson.lessonTimeInMinutes };
 	}

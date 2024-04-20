@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { ACCOUNT_TYPE_CODE } from './defs';
 export const prisma = new PrismaClient();
 
 export function getCurrentCoachUser() {
@@ -17,5 +18,17 @@ export function getSkaterById(id: string) {
 }
 
 export async function addSkater(firstName: string, lastName: string, email: string) {
-	return prisma.skater.create({ data: { firstName, lastName, email } });
+	return prisma.skater.create({
+		data: {
+			firstName,
+			lastName,
+			email,
+			Account: {
+				create: {
+					name: `${firstName} ${lastName}`,
+					accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT
+				}
+			}
+		}
+	});
 }

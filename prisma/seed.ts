@@ -1,5 +1,14 @@
-import { PrismaClient } from '@prisma/client';
-import { LEDGER_CODE, ACCOUNT_TYPE_CODE, ACCOUNT_TRANSACTION_TYPE } from '../src/lib/server/defs';
+import util from 'util';
+import { Account, Coach, Lesson, PrismaClient, Role, Skater } from '@prisma/client';
+import {
+	LEDGER_CODE,
+	ACCOUNT_TYPE_CODE,
+	ACCOUNT_TRANSACTION_TYPE,
+	ROLES
+} from '../src/lib/server/defs';
+import { calculateLessonCost } from '../src/lib/calculateLessonCost';
+import { generateBillingBatch } from '../src/lib/server/generateBillingBatch';
+
 const prisma = new PrismaClient();
 
 async function seedAccounting() {
@@ -50,53 +59,12 @@ async function seedAccounting() {
 		]
 	});
 
-	const accounts = await prisma.account.createMany({
-		data: [
-			// Student Accounts
-			{ name: 'Student 1', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 2', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 3', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 4', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 5', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 6', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 7', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 8', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 9', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			{ name: 'Student 10', accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT },
-			// Coach Accounts
-			{ name: 'Coach 1', accountTypeCode: ACCOUNT_TYPE_CODE.COACH },
-			{ name: 'Coach 2', accountTypeCode: ACCOUNT_TYPE_CODE.COACH },
-			{ name: 'Coach 3', accountTypeCode: ACCOUNT_TYPE_CODE.COACH }
-		]
-	});
-
-	console.log({ ledgers, accounts, accountTypes, accountTransactionTypes });
-	// set up account types
 	console.log('  Seeding accounting system complete');
+	return { ledgers, accountTypes, accountTransactionTypes };
 }
 
-async function main() {
-	console.log('Seeding beginning');
-	console.log('  Seeding Roles');
-	const adminRole = await prisma.role.upsert({
-		where: { name: 'admin' },
-		create: { name: 'admin' },
-		update: {}
-	});
-	const clientRole = await prisma.role.upsert({
-		where: { name: 'client' },
-		create: { name: 'client' },
-		update: {}
-	});
-
-	const coachRole = await prisma.role.upsert({
-		where: { name: 'coach' },
-		create: { name: 'coach' },
-		update: {}
-	});
-	console.log('  Seeding Roles -- Complete');
-
-	console.log('  Seeding Users');
+async function seedCoaches() {
+	console.log('Seeding Coaches');
 	const marcus = await prisma.user.upsert({
 		where: { email: 'mnjconnolly@gmail.com' },
 		update: { Coach: { update: { hourlyRateInCents: 3_800 } } },
@@ -104,7 +72,7 @@ async function main() {
 			email: 'mnjconnolly@gmail.com',
 			firstName: 'Marcus',
 			lastName: 'Connolly',
-			roles: {
+			UserRoles: {
 				create: [
 					{
 						roleName: 'admin'
@@ -114,10 +82,17 @@ async function main() {
 			},
 			Coach: {
 				create: {
-					hourlyRateInCents: 6_000
+					hourlyRateInCents: 6_000,
+					Account: {
+						create: {
+							name: 'Marcus Connolly Coach Account',
+							accountTypeCode: ACCOUNT_TYPE_CODE.COACH
+						}
+					}
 				}
 			}
-		}
+		},
+		include: { Coach: true }
 	});
 
 	const laurence = await prisma.user.upsert({
@@ -127,7 +102,7 @@ async function main() {
 			email: 'laurencelessard@gmail.com',
 			firstName: 'Laurence',
 			lastName: 'Lessard',
-			roles: {
+			UserRoles: {
 				create: [
 					{
 						roleName: 'admin'
@@ -137,21 +112,31 @@ async function main() {
 			},
 			Coach: {
 				create: {
-					hourlyRateInCents: 3_800
+					hourlyRateInCents: 3_800,
+					Account: {
+						create: {
+							name: 'Laurence Lessard Coach Account',
+							accountTypeCode: ACCOUNT_TYPE_CODE.COACH
+						}
+					}
 				}
 			}
-		}
+		},
+		include: { Coach: true }
 	});
+	return [marcus, laurence];
+}
+
+type SkaterEntry = Skater & { Account: Account };
+
+/**
+ * Creates and returns 10 skaters
+ * */
+async function seedSkaters() {
+	console.log('Seed Skaters');
 	const numbers = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
-	const skaters: {
-		id: string;
-		firstName: string;
-		lastName: string;
-		email: string;
-		dateOfBirth: Date | null;
-		createdOn: Date;
-		modifiedOn: Date | null;
-	}[] = [];
+
+	const skaters: SkaterEntry[] = [];
 	for (const num of numbers) {
 		const skater = await prisma.skater.upsert({
 			where: { firstName_lastName: { firstName: 'Skater', lastName: num } },
@@ -159,16 +144,126 @@ async function main() {
 			create: {
 				firstName: 'Skater',
 				lastName: num,
-				email: `skater_${num.toLowerCase()}@gmail.com`
-			}
+				email: `skater_${num.toLowerCase()}@gmail.com`,
+				Account: {
+					create: {
+						accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
+						name: `Skater ${num} Client Account`
+					}
+				}
+			},
+			include: { Account: true }
 		});
 		skaters.push(skater);
 	}
+	console.log('Seed Skaters Complete');
+	return skaters;
+}
 
-	console.log('  Seeding Users -- Complete');
+async function createLesson(
+	coach: Coach,
+	lessonTimeInMinutes: number,
+	skaterIds: { skaterId: string }[],
+	date: string
+) {
+	const { hourlyRateInCents, id: coachId } = coach;
+	const { lessonCostInCents, lessonCostPerSkaterInCents } = calculateLessonCost(
+		lessonTimeInMinutes,
+		hourlyRateInCents,
+		skaterIds.length
+	);
+	const lesson = await prisma.lesson.create({
+		data: {
+			coachId,
+			date: new Date(date).toISOString(),
+			lessonTimeInMinutes,
+			lessonCostInCents,
+			lessonCostPerSkaterInCents,
+			SkaterLessons: { createMany: { data: skaterIds } }
+		}
+	});
+	return lesson;
+}
 
-	console.log({ marcus, laurence, adminRole, clientRole, coachRole, skaters });
-	await seedAccounting();
+async function seedLessons(
+	skaters: Awaited<ReturnType<typeof seedSkaters>>,
+	coaches: Awaited<ReturnType<typeof seedCoaches>>
+) {
+	const lessons: Lesson[] = [];
+	for (const coachUser of coaches) {
+		const coach = coachUser.Coach!;
+		const skaterIds: { skaterId: string }[] = skaters
+			.slice(0, 3)
+			.map((skater) => ({ skaterId: skater.id }));
+		const lesson1 = await createLesson(coach, 60, skaterIds, '2024-02-01');
+		const lesson2 = await createLesson(coach, 45, [{ skaterId: skaters.at(4)!.id }], '2024-02-07');
+		const lesson3 = await createLesson(
+			coach,
+			90,
+			skaters.slice(5).map(({ id }) => ({ skaterId: id })),
+			'2024-03-01'
+		);
+		const lesson4 = await createLesson(
+			coach,
+			90,
+			skaters.slice(3, 5).map(({ id }) => ({ skaterId: id })),
+			'2024-03-20'
+		);
+		lessons.push(lesson1);
+		lessons.push(lesson2);
+		lessons.push(lesson3);
+		lessons.push(lesson4);
+	}
+	return lessons;
+}
+
+async function seedBillingBatch() {
+	const batch = await generateBillingBatch();
+	if (batch.ok) {
+		return batch.value;
+	}
+	return batch;
+}
+async function seedRoles() {
+	console.log('  Seeding Roles');
+	const roles: Role[] = [];
+	for (const roleName of Object.values(ROLES)) {
+		const role = await prisma.role.upsert({
+			where: { name: roleName },
+			create: { name: roleName },
+			update: {}
+		});
+		roles.push(role);
+	}
+	console.log('  Seeding Roles -- Complete');
+	return roles;
+}
+
+async function main() {
+	console.log('Seeding beginning');
+	const roles = await seedRoles();
+	const { ledgers, accountTypes, accountTransactionTypes } = await seedAccounting();
+	const coaches = await seedCoaches();
+	const skaters = await seedSkaters();
+	const lessons = await seedLessons(skaters, coaches);
+	const billingBatch = await seedBillingBatch();
+	console.log(
+		util.inspect(
+			{
+				ledgers,
+				accountTypes,
+				accountTransactionTypes,
+				coaches,
+				skaters,
+				roles,
+				lessons,
+				billingBatch
+			},
+			false,
+			null,
+			true /* enable colors */
+		)
+	);
 	console.log('Seeding complete');
 }
 

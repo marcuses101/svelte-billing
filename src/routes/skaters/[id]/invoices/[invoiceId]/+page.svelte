@@ -2,19 +2,20 @@
 	import type { ComponentProps } from 'svelte';
 	import InvoiceDisplay from '../current/InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
+
 	export let data;
-	const { invoice, skater, lessons, chargesTotal } = data;
-	const { invoiceDate: invoiceDateDate } = invoice;
+
+	const { invoice, skater, lessonsTotalInCents } = data;
+
 	const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' }).format;
-	const invoiceDate = formatDate(invoiceDateDate);
-	const charges: ComponentProps<InvoiceDisplay>['charges'] = lessons.map(
-		({ lessonCostPerSkaterInCents, date, numberOfSkaters, lessonTimeInMinutes }) => ({
+
+	const invoiceDate = formatDate(invoice.invoiceDate);
+
+	const charges: ComponentProps<InvoiceDisplay>['charges'] = invoice.InvoiceLineItems.map(
+		({ amountInCents, date, description }) => ({
 			formattedDate: formatDate(date),
-			chargeAmount: formatCurrency(lessonCostPerSkaterInCents / 100),
-			description:
-				numberOfSkaters === 1
-					? `${lessonTimeInMinutes} minute private lessons`
-					: `${lessonTimeInMinutes} minute group lesson (${numberOfSkaters} skaters)`
+			chargeAmount: formatCurrency(amountInCents),
+			description
 		})
 	);
 	const props: ComponentProps<InvoiceDisplay> = {
@@ -28,7 +29,7 @@
 		outstandingBalance: '',
 		taxes: [],
 		amountDue: '',
-		chargesTotal: formatCurrency(chargesTotal / 100)
+		chargesTotal: formatCurrency(lessonsTotalInCents)
 	};
 </script>
 

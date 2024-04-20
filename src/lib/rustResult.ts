@@ -1,5 +1,5 @@
-export type Ok<T> = { ok: true; value: T };
-export type Err<E> = { ok: false; error: E };
+export type Ok<T> = { ok: true; value: T; error?: never };
+export type Err<E> = { ok: false; value?: never; error: E };
 export type Result<T, E = unknown> = Ok<T> | Err<E>;
 
 export function wrapOk<T>(input: T): Ok<T> {
@@ -12,18 +12,13 @@ export function wrapErr<E = unknown>(error: E): Err<E> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function makeSafe<TArgs extends any[], TReturn>(
 	func: (...args: TArgs) => TReturn
-): (...args: TArgs) => Result<TReturn> {
-	return (...args: TArgs) => {
+): (...args: TArgs) => Promise<Ok<Awaited<TReturn>> | Err<unknown>> {
+	return async (...args: TArgs) => {
 		try {
-			return {
-				ok: true,
-				value: func(...args)
-			};
+			const value = await func(...args);
+			return wrapOk(value);
 		} catch (e) {
-			return {
-				ok: false,
-				error: e
-			};
+			return wrapErr(e);
 		}
 	};
 }

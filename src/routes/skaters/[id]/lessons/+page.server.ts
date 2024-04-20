@@ -10,8 +10,8 @@ export const load: PageServerLoad = async ({ params }) => {
 				select: {
 					Lesson: {
 						include: {
-							_count: { select: { skaters: true } },
-							coach: {
+							_count: { select: { SkaterLessons: true } },
+							Coach: {
 								select: { user: { select: { firstName: true, lastName: true, email: true } } }
 							}
 						}
@@ -25,9 +25,9 @@ export const load: PageServerLoad = async ({ params }) => {
 	}
 	const { lessons: rawLessons, ...skater } = skaterInfo;
 	const lessons = rawLessons.map(({ Lesson: lesson }) => {
-		const numberOfSkaters = lesson._count.skaters;
+		const numberOfSkaters = lesson._count.SkaterLessons;
 		const chargeInCents = Math.ceil(lesson.lessonCostInCents / numberOfSkaters);
-		const { firstName, lastName, email } = lesson.coach.user;
+		const { firstName, lastName, email } = lesson.Coach.user;
 		const coachName = firstName && lastName ? `${firstName} ${lastName}` : email;
 		return {
 			id: lesson.id,

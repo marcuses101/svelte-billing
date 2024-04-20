@@ -1,10 +1,10 @@
-import { generateInvoiceBatch } from '$lib/server/generateInvoiceBatch';
+import { generateBillingBatch } from '$lib/server/generateBillingBatch';
 import type { Actions } from './$types';
 
 export const actions = {
-	generateBills: async (event) => {
+	generateBills: async () => {
 		try {
-			await generateInvoiceBatch();
+			await generateBillingBatch();
 			return { success: true };
 		} catch (e) {
 			console.log(e);

@@ -10,9 +10,11 @@
 		value: id,
 		label: `${firstName} ${lastName}`
 	}));
-	const selectedOptions = data.lesson.skaters.map(({ Skater: { id, firstName, lastName } }) => {
-		return { value: id, label: `${firstName} ${lastName}` };
-	});
+	const selectedOptions = data.lesson.SkaterLessons.map(
+		({ Skater: { id, firstName, lastName } }) => {
+			return { value: id, label: `${firstName} ${lastName}` };
+		}
+	);
 	const date = data.lesson.date.toISOString().split('T')[0];
 
 	const minutes = data.lesson.lessonTimeInMinutes;

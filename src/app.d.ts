@@ -1,13 +1,13 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { Coach, User } from '@prisma/client';
+import type { Coach, User, UserRole } from '@prisma/client';
 
 // for information about these interfaces
 declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			user: (User & { Coach?: Coach | null }) | null;
+			user: (User & { Coach?: Coach | null; UserRoles?: UserRole[] | null }) | null;
 		}
 		// interface PageData {}
 		// interface Platform {}

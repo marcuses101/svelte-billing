@@ -6,7 +6,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (cookieId) {
 		const user = await prisma.user.findUnique({
 			where: { id: event.cookies.get('user_id') },
-			include: { Coach: true }
+			include: { Coach: true, UserRoles: true }
 		});
 		event.locals.user = user;
 	} else {

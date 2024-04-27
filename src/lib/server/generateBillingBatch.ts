@@ -82,7 +82,7 @@ export async function generateBillingBatch(
 		const newInvoice = await prisma.invoice.create({
 			data: {
 				invoiceBatchId: billingBatch.id,
-				skaterId,
+                skaterId,
 				invoiceDate,
 				InvoiceLineItems: {
 					createMany: {

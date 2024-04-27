@@ -75,14 +75,15 @@ async function seedCoaches() {
 			UserRoles: {
 				create: [
 					{
-						roleName: 'admin'
+						roleName: ROLES.ADMIN
 					},
-					{ roleName: 'coach' }
+					{ roleName: ROLES.COACH }
 				]
 			},
 			Coach: {
 				create: {
 					hourlyRateInCents: 6_000,
+					commissionPercentage: 0,
 					Account: {
 						create: {
 							name: 'Marcus Connolly Coach Account',
@@ -105,14 +106,15 @@ async function seedCoaches() {
 			UserRoles: {
 				create: [
 					{
-						roleName: 'admin'
+						roleName: ROLES.ADMIN
 					},
-					{ roleName: 'coach' }
+					{ roleName: ROLES.COACH }
 				]
 			},
 			Coach: {
 				create: {
 					hourlyRateInCents: 3_800,
+					commissionPercentage: 5,
 					Account: {
 						create: {
 							name: 'Laurence Lessard Coach Account',

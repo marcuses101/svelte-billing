@@ -42,7 +42,6 @@ export const load: PageServerLoad = async ({ params }) => {
 			invoiceId: 'TBD'
 		};
 	});
-	console.log(skater, lineItems);
 
 	return { skater, lineItems };
 };

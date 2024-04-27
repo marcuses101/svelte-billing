@@ -19,7 +19,7 @@ model Skater {
     lessons           SkaterLesson[]
     invoices          Invoice[]
     Account           Account             @relation(fields: [accountId], references: [id])
-    accountId         String
+    accountId         String              @unique
     AdditionalCharges AdditionalCharges[]
 
     @@unique([firstName, lastName])
@@ -50,14 +50,15 @@ model UserRole {
 }
 
 model Coach {
-    id                  String               @id @default(uuid())
-    hourlyRateInCents   Int
-    user                User                 @relation(fields: [userId], references: [id])
-    userId              String               @unique
-    lessons             Lesson[]
-    CoachPayrollRecords CoachPayrollRecord[]
-    Account             Account              @relation(fields: [accountId], references: [id])
-    accountId           String               @unique
+    id                   String               @id @default(uuid())
+    hourlyRateInCents    Int
+    commissionPercentage Int
+    user                 User                 @relation(fields: [userId], references: [id])
+    userId               String               @unique
+    lessons              Lesson[]
+    CoachPayrollRecords  CoachPayrollRecord[]
+    Account              Account              @relation(fields: [accountId], references: [id])
+    accountId            String               @unique
 }
 
 model Lesson {
@@ -174,7 +175,7 @@ model Account {
 
     AccountType        AccountType          @relation(fields: [accountTypeCode], references: [code])
     AccountTransaction AccountTransaction[]
-    Skater             Skater[]
+    Skater             Skater?
     Coach              Coach?
 
     @@unique([name, accountTypeCode])

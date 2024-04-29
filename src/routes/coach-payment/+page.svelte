@@ -2,9 +2,10 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
 	import { formatCurrency } from '$lib/formatCurrency.js';
-	let selectedSkaterId: null | string = null;
+
 	export let data;
-	const options = data.skaters.map(({ id, firstName, lastName }) => ({
+
+	const options = data.coaches.map(({ id, user: { firstName, lastName } }) => ({
 		label: `${firstName} ${lastName}`,
 		value: id
 	}));
@@ -15,17 +16,16 @@
 	});
 </script>
 
-<PageHeader title="Skater Payments Recieved" />
+<PageHeader title="Coach Payments Recieved" />
 
 <form class="flex flex-col md:flex-row gap-2 mb-8" method="POST">
 	<select
-		name="skater-id"
-		bind:value={selectedSkaterId}
-		id="skater-id"
+		name="coach-id"
+		id="coach-id"
 		class="select select-bordered w-full flex md:max-w-sm"
 		required
 	>
-		<option disabled selected value={null}>Skater Name</option>
+		<option disabled selected value={null}>Coach Name</option>
 		{#each options as { label, value }}
 			<option {value}>{label}</option>
 		{/each}
@@ -48,6 +48,10 @@
 			<td>{date}</td>
 			<td>{name}</td>
 			<td class="text-right">{amount}</td>
+		</tr>
+	{:else}
+		<tr>
+			<td>No Payments Recorded</td>
 		</tr>
 	{/each}
 </StyledTable>

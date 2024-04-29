@@ -9,7 +9,7 @@
 
 <div class="flex justify-between prose max-w-none mb-4">
 	<div>
-		<h1 class="prose-h1 mb-0">
+		<h1 class="mb-0">
 			<slot name="title-pre" />
 			{title}
 			<slot name="title-post" />

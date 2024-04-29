@@ -34,13 +34,13 @@ async function seedAccounting() {
 		data: [
 			{
 				code: ACCOUNT_TRANSACTION_TYPE.STUDENT_CHARGE,
-				type: 'Debit',
+				type: 'Credit',
 				accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
 				description: 'Student Charge'
 			},
 			{
 				code: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT,
-				type: 'Credit',
+				type: 'Debit',
 				accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
 				description: 'Student Payment'
 			},

@@ -4,7 +4,8 @@ import {
 	LEDGER_CODE,
 	ACCOUNT_TYPE_CODE,
 	ACCOUNT_TRANSACTION_TYPE,
-	ROLES
+	ROLES,
+	LEDGER_TYPE
 } from '../src/lib/server/defs';
 import { calculateLessonCost } from '../src/lib/calculateLessonCost';
 import { generateBillingBatch } from '../src/lib/server/generateBillingBatch';
@@ -14,15 +15,40 @@ const prisma = new PrismaClient();
 async function seedAccounting() {
 	console.log('  Seeding accounting system');
 
+	const ledgerTypes = await prisma.ledgerType.createMany({
+		data: [
+			{ code: LEDGER_TYPE.ASSET, positiveTransactionType: 'Debit' },
+			{ code: LEDGER_TYPE.EXPENSE, positiveTransactionType: 'Debit' },
+			{ code: LEDGER_TYPE.EQUITY, positiveTransactionType: 'Credit' },
+			{ code: LEDGER_TYPE.REVENUE, positiveTransactionType: 'Credit' },
+			{ code: LEDGER_TYPE.LIABILITY, positiveTransactionType: 'Credit' }
+		]
+	});
+
 	// set up ledgers
 	const ledgers = await prisma.ledger.createMany({
 		data: [
-			{ code: LEDGER_CODE.ACCOUNTS_PAYABLE, name: 'Accounts Payable' },
-			{ code: LEDGER_CODE.ACCOUNTS_RECEIVABLE, name: 'Accounts Receivable' },
-			{ code: LEDGER_CODE.COMMISSION, name: 'Commission' },
-			{ code: LEDGER_CODE.CASH, name: 'Cash' },
-			{ code: LEDGER_CODE.BILLING_REVENUE, name: 'Billing Revenue' },
-			{ code: LEDGER_CODE.COACH_INCOME, name: 'Coach Income' }
+			{
+				code: LEDGER_CODE.ACCOUNTS_RECEIVABLE,
+				name: 'Accounts Receivable',
+				ledgerTypeCode: LEDGER_TYPE.ASSET
+			},
+			{
+				code: LEDGER_CODE.INVOICING,
+				name: 'Invoicing Liability',
+				ledgerTypeCode: LEDGER_TYPE.LIABILITY
+			},
+			{
+				code: LEDGER_CODE.ACCOUNTS_PAYABLE,
+				name: 'Accounts Payable',
+				ledgerTypeCode: LEDGER_TYPE.LIABILITY
+			},
+			{ code: LEDGER_CODE.CASH, name: 'Cash', ledgerTypeCode: LEDGER_TYPE.ASSET },
+			{
+				code: LEDGER_CODE.COMMISSION,
+				name: 'Commission Revenue',
+				ledgerTypeCode: LEDGER_TYPE.REVENUE
+			}
 		]
 	});
 
@@ -60,7 +86,7 @@ async function seedAccounting() {
 	});
 
 	console.log('  Seeding accounting system complete');
-	return { ledgers, accountTypes, accountTransactionTypes };
+	return { ledgerTypes, ledgers, accountTypes, accountTransactionTypes };
 }
 
 async function seedCoaches() {

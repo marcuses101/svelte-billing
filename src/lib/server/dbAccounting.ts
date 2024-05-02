@@ -1,6 +1,7 @@
 import { prisma } from './db';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from './defs';
 
+/* Todo 
 export async function logStudentCharge(
 	studentAccountId: string,
 	amountInCents: number,
@@ -27,6 +28,7 @@ export async function logStudentCharge(
 
 	console.log({ accountTransaction, ledgerTransaction });
 }
+*/
 
 export async function logStudentPayment(
 	studentAccountId: string,
@@ -55,6 +57,8 @@ export async function logStudentPayment(
 	console.log({ accountTransaction, ledgerTransaction });
 }
 
+/* TODO
+
 export async function logCoachCharge(coachAccountId: string, amountInCents: number, date: Date) {
 	const [accountTransaction, ledgerTransaction] = await prisma.$transaction([
 		prisma.accountTransaction.create({
@@ -76,6 +80,8 @@ export async function logCoachCharge(coachAccountId: string, amountInCents: numb
 	]);
 	console.log({ accountTransaction, ledgerTransaction });
 }
+
+*/
 
 export async function logCoachPayment(coachAccountId: string, amountInCents: number, date: Date) {
 	const [accountTransaction, ledgerTransaction] = await prisma.$transaction([

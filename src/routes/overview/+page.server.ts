@@ -1,6 +1,7 @@
 import { prisma } from '$lib/server/db';
 import type { $Enums } from '@prisma/client';
 import type { PageServerLoad } from './$types';
+import { LEDGER_CODE } from '$lib/server/defs';
 
 export const load: PageServerLoad = async () => {
 	const skaterInfo = await prisma.skater.findMany({
@@ -26,11 +27,11 @@ export const load: PageServerLoad = async () => {
 			}
 		}
 	});
+
 	const coachBalances = coachInfo.map(
 		({ id: coachId, user: { firstName, lastName }, Account: { AccountTransaction } }) => {
 			const fullName = `${firstName} ${lastName}`;
 			const balance = AccountTransaction.reduce((acc, transaction) => {
-				console.log(transaction);
 				const type: $Enums.TransactionType = transaction.AccountTransactionType.type;
 				if (type === 'Credit') {
 					return acc - transaction.amountInCents;

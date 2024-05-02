@@ -4,6 +4,7 @@
 	export let lastName: string = '';
 	export let email: string = '';
 	export let hourlyRateInCents: number | undefined = undefined;
+	export let commissionPercentage: number = 0;
 	export let showReset: boolean = true;
 </script>
 
@@ -49,6 +50,21 @@
 			name="email"
 			id="email"
 			placeholder="john_doe@unknown.com"
+			class="input input-bordered w-full max-w-xs"
+			required
+		/>
+	</div>
+	<div class="form-control w-full max-w-xs">
+		<label for="permission-percentage" class="label">
+			<span class="label-text">Hourly Rate (in cents)</span>
+		</label>
+		<input
+			{disabled}
+			value={commissionPercentage}
+			type="number"
+			name="permission-percentage"
+			id="hourly-rate"
+			min="0"
 			class="input input-bordered w-full max-w-xs"
 			required
 		/>

@@ -6,13 +6,13 @@ export const load: PageServerLoad = async ({ params }) => {
 	const skaterInfo = await prisma.skater.findUnique({
 		where: { id: params.id },
 		include: {
-			lessons: {
+			SkaterLessons: {
 				select: {
 					Lesson: {
 						include: {
 							_count: { select: { SkaterLessons: true } },
 							Coach: {
-								select: { user: { select: { firstName: true, lastName: true, email: true } } }
+								select: { User: { select: { firstName: true, lastName: true, email: true } } }
 							}
 						}
 					}
@@ -23,11 +23,11 @@ export const load: PageServerLoad = async ({ params }) => {
 	if (!skaterInfo) {
 		error(404);
 	}
-	const { lessons: rawLessons, ...skater } = skaterInfo;
+	const { SkaterLessons: rawLessons, ...skater } = skaterInfo;
 	const lessons = rawLessons.map(({ Lesson: lesson }) => {
 		const numberOfSkaters = lesson._count.SkaterLessons;
 		const chargeInCents = Math.ceil(lesson.lessonCostInCents / numberOfSkaters);
-		const { firstName, lastName, email } = lesson.Coach.user;
+		const { firstName, lastName, email } = lesson.Coach.User;
 		const coachName = firstName && lastName ? `${firstName} ${lastName}` : email;
 		return {
 			id: lesson.id,

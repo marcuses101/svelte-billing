@@ -6,7 +6,7 @@ import { validateRole } from '$lib/validateRole';
 
 export const load: PageServerLoad = async () => {
 	const coaches = await prisma.coach.findMany({
-		select: { id: true, user: { select: { firstName: true, lastName: true } } }
+		select: { id: true, User: { select: { firstName: true, lastName: true } } }
 	});
 
 	const payments = await prisma.accountTransaction.findMany({
@@ -18,7 +18,7 @@ export const load: PageServerLoad = async () => {
 				include: {
 					Coach: {
 						select: {
-							user: {
+							User: {
 								select: {
 									firstName: true,
 									lastName: true
@@ -35,7 +35,7 @@ export const load: PageServerLoad = async () => {
 	const paymentEntries = payments.map((payment) => {
 		const date = payment.date;
 		const amountInCents = payment.amountInCents;
-		const user = payment.Account.Coach?.user;
+		const user = payment.Account.Coach?.User;
 		const name = user ? `${user.firstName} ${user.lastName}` : 'unknown user';
 		return { date, amountInCents, name };
 	});
@@ -69,21 +69,17 @@ export const actions = {
 				message: `No account found associated to skater id "${coachId}"`
 			});
 		}
-		const date = new Date();
 		try {
-			await prisma.ledgerTransaction.create({
+			await prisma.accountTransaction.create({
 				data: {
 					amountInCents,
-					date: new Date(),
-					// TODO validate that this is the correct way to record a payment to a coach
-					debitLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE,
-					creditLedgerCode: LEDGER_CODE.CASH,
-					AccountTrasaction: {
+					accountId: account.id,
+					accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_PAYMENT,
+					LedgerTransaction: {
 						create: {
-							date,
 							amountInCents,
-							accountId: account.id,
-							accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_PAYMENT
+							debitLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE,
+							creditLedgerCode: LEDGER_CODE.CASH
 						}
 					}
 				}

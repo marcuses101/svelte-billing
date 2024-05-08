@@ -5,7 +5,7 @@ import type { Actions } from './$types';
 export const load: ServerLoad = async ({ params }) => {
 	const coachUser = await prisma.user.findUnique({
 		where: { id: params.id },
-		include: { Coach: { select: { hourlyRateInCents: true } } }
+		include: { Coach: { select: { hourlyRateInCents: true, commissionPercentage: true } } }
 	});
 	if (!coachUser || !coachUser.Coach) {
 		error(404, `Coach with id ${params.id} not found`);
@@ -15,9 +15,9 @@ export const load: ServerLoad = async ({ params }) => {
 		email,
 		firstName,
 		lastName,
-		Coach: { hourlyRateInCents }
+		Coach: { hourlyRateInCents, commissionPercentage }
 	} = coachUser;
-	return { coach: { id, email, lastName, firstName, hourlyRateInCents } };
+	return { coach: { id, email, lastName, firstName, hourlyRateInCents, commissionPercentage } };
 };
 
 export const actions = {

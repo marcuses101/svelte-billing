@@ -56,7 +56,7 @@
 	</div>
 	<div class="form-control w-full max-w-xs">
 		<label for="permission-percentage" class="label">
-			<span class="label-text">Hourly Rate (in cents)</span>
+			<span class="label-text">Commission Percentage</span>
 		</label>
 		<input
 			{disabled}

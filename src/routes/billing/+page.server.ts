@@ -1,14 +1,15 @@
+import { wrapErr } from '$lib/rustResult';
 import { generateBillingBatch } from '$lib/server/generateBillingBatch';
 import type { Actions } from './$types';
 
 export const actions = {
 	generateBills: async () => {
 		try {
-			await generateBillingBatch();
-			return { success: true };
+			const data = await generateBillingBatch();
+			return data;
 		} catch (e) {
 			console.log(e);
-			return { error: true };
+			return wrapErr({ message: 'An unknown error occured' });
 		}
 	}
 } satisfies Actions;

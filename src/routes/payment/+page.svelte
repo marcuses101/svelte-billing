@@ -49,5 +49,9 @@
 			<td>{name}</td>
 			<td class="text-right">{amount}</td>
 		</tr>
+	{:else}
+		<tr>
+			<td>No payments logged</td>
+		</tr>
 	{/each}
 </StyledTable>

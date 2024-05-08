@@ -69,20 +69,17 @@ export const actions = {
 				message: `No account found associated to skater id "${skaterId}"`
 			});
 		}
-		const date = new Date();
 		try {
-			await prisma.ledgerTransaction.create({
+			await prisma.accountTransaction.create({
 				data: {
 					amountInCents,
-					date: new Date(),
-					debitLedgerCode: LEDGER_CODE.CASH,
-					creditLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE,
-					AccountTrasaction: {
+					accountId: account.id,
+					accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT,
+					LedgerTransaction: {
 						create: {
-							date,
 							amountInCents,
-							accountId: account.id,
-							accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT
+							debitLedgerCode: LEDGER_CODE.CASH,
+							creditLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE
 						}
 					}
 				}

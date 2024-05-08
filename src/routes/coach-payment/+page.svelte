@@ -5,7 +5,7 @@
 
 	export let data;
 
-	const options = data.coaches.map(({ id, user: { firstName, lastName } }) => ({
+	const options = data.coaches.map(({ id, User: { firstName, lastName } }) => ({
 		label: `${firstName} ${lastName}`,
 		value: id
 	}));

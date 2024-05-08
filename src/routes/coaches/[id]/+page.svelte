@@ -4,8 +4,9 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import PencilIcon from '$lib/icons/PencilIcon.svelte';
+	import CoachForm from '../CoachForm.svelte';
 	export let data;
-	const { firstName, lastName, id } = data.coach;
+	const { firstName, lastName, id, email, hourlyRateInCents, commissionPercentage } = data.coach;
 	const fullName = `${firstName} ${lastName}`;
 	const toastMessage = firstName && lastName ? `${fullName} updated!` : 'Coach updated!';
 </script>
@@ -28,3 +29,12 @@
 		<BackButton href="/coaches">Back to Coaches</BackButton>
 	</div>
 </PageHeader>
+
+<CoachForm
+	disabled={true}
+	firstName={firstName ?? ''}
+	lastName={lastName ?? ''}
+	email={email ?? ''}
+	hourlyRateInCents={hourlyRateInCents ?? 0}
+	commissionPercentage={commissionPercentage ?? 0}
+/>

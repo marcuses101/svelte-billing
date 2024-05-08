@@ -140,7 +140,7 @@ async function seedCoaches() {
 			Coach: {
 				create: {
 					hourlyRateInCents: 3_800,
-					commissionPercentage: 5,
+					commissionPercentage: 10,
 					Account: {
 						create: {
 							name: 'Laurence Lessard Coach Account',
@@ -247,9 +247,11 @@ async function seedLessons(
 
 async function seedBillingBatch() {
 	const batch = await generateBillingBatch();
+	/*
 	if (batch.ok) {
 		return batch.value;
 	}
+    */
 	return batch;
 }
 async function seedRoles() {

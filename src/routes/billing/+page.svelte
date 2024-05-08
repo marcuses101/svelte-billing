@@ -1,16 +1,22 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+
+	export let form;
 </script>
 
-<div class="prose">
-	<h1>Billing</h1>
-	{#if $page.form?.success}
-		<p>Invoice data generated</p>
+<PageHeader title="Billing" />
+{#if form && form?.ok}
+	<p>Invoice data generated</p>
+	<div class="rounded-xl p-4 shadow-xl bg-neutral text-neutral-content">
+		<pre><code>{JSON.stringify(form.value, null, 2)}</code></pre>
+	</div>
+{/if}
+{#if form && !form.ok}
+	<p>Failed to generate Invoices Data</p>
+	{#if form.error.message}
+		<p class="text-error">{form.error.message}</p>
 	{/if}
-	{#if $page.form?.error}
-		<p>Failed to generate Invoices Data</p>
-	{/if}
-	<form method="POST" action="?/generateBills">
-		<button class="btn btn-primary" type="submit">Generate Bills</button>
-	</form>
-</div>
+{/if}
+<form method="POST" action="?/generateBills">
+	<button class="btn btn-primary" type="submit">Generate Bills</button>
+</form>

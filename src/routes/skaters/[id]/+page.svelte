@@ -1,4 +1,12 @@
 <script lang="ts">
+	import SkaterForm from '../SkaterForm.svelte';
+	export let data;
+	const { firstName, lastName, email } = data.skater;
 </script>
 
-<h2>Overview</h2>
+<SkaterForm
+	disabled={true}
+	firstName={firstName ?? ''}
+	lastName={lastName ?? ''}
+	email={email ?? ''}
+/>

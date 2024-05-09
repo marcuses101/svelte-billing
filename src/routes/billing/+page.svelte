@@ -1,4 +1,5 @@
 <script lang="ts">
+	import JsonDisplay from '$lib/components/JsonDisplay.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 
 	export let form;
@@ -7,9 +8,7 @@
 <PageHeader title="Billing" />
 {#if form && form?.ok}
 	<p>Invoice data generated</p>
-	<div class="rounded-xl p-4 shadow-xl bg-neutral text-neutral-content">
-		<pre><code>{JSON.stringify(form.value, null, 2)}</code></pre>
-	</div>
+	<JsonDisplay data={form.value} />
 {/if}
 {#if form && !form.ok}
 	<p>Failed to generate Invoices Data</p>

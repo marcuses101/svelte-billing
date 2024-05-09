@@ -67,8 +67,8 @@ model Coach {
     accountId String  @unique
     Account   Account @relation(fields: [accountId], references: [id])
 
-    Lessons             Lesson[]
-    CoachPayrollRecords CoachPaySlip[]
+    Lessons       Lesson[]
+    CoachPaySlips CoachPaySlip[]
 }
 
 model Lesson {
@@ -148,31 +148,51 @@ model InvoiceLineItem {
 }
 
 model CoachPaySlip {
-    id      String @id @default(uuid())
-    Coach   Coach  @relation(fields: [coachId], references: [id])
-    coachId String
+    id                           String   @id @default(uuid())
+    date                         DateTime @default(now()) @db.Date
+    amountDueInCents             Int
+    previousPaySlipAmountInCents Int?
+    chargesTotalInCents          Int
+    outstandingBalanceInCents    Int
+    commissionAmountInCents      Int
+    coachRevenueInCents          Int
 
-    CoachPayrollLineItems CoachPaySlipLineItem[]
-    AccountTransaction    AccountTransaction?
+    // TODO add additional data
+
+    coachId String
+    Coach   Coach  @relation(fields: [coachId], references: [id])
+
+    billingBatchId String?
+    BillingBatch   BillingBatch? @relation(fields: [billingBatchId], references: [id])
+
+    previousCoachPaySlipId String?       @unique
+    PreviousCoachPaySlip   CoachPaySlip? @relation("CoachPaySlipHistory", fields: [previousCoachPaySlipId], references: [id])
+    NextCoachPaySlip       CoachPaySlip? @relation("CoachPaySlipHistory")
+
+    CoachPaySlipLineItems CoachPaySlipLineItem[]
+
+    CoachPaymentAccountTransactions AccountTransaction[] @relation("CoachPayment")
+    PaySlipChargeAccountTransaction AccountTransaction?
 }
 
 model CoachPaySlipLineItem {
-    id                   String   @id @default(uuid())
-    description          String
-    amountInCents        Int
-    date                 DateTime @db.Date
-    coachPayrollRecordId String
+    id            String   @id @default(uuid())
+    description   String
+    amountInCents Int
+    date          DateTime @db.Date
+
+    coachPaySlipId String
+    CoachPaySlip   CoachPaySlip @relation(fields: [coachPaySlipId], references: [id])
 
     lessonId String @unique
-
-    Lesson       Lesson       @relation(fields: [lessonId], references: [id])
-    CoachPaySlip CoachPaySlip @relation(fields: [coachPayrollRecordId], references: [id])
+    Lesson   Lesson @relation(fields: [lessonId], references: [id])
 }
 
 model BillingBatch {
-    id        String    @id @default(uuid())
-    Invoices  Invoice[]
-    createdOn DateTime  @default(now())
+    id            String         @id @default(uuid())
+    Invoices      Invoice[]
+    CoachPaySlips CoachPaySlip[]
+    createdOn     DateTime       @default(now())
 }
 
 model SkaterLesson {
@@ -241,9 +261,11 @@ model AccountTransaction {
     paymentRecordedInvoiceId String? @unique
     paymentInvoiceId         String? @unique
     coachPaySlipId           String? @unique
+    coachPaymentPaySlipId    String? @unique
 
     InvoiceCharged         Invoice?           @relation("InvoiceCharge", fields: [chargeInvoiceId], references: [id])
     PaymentRecordedInvoice Invoice?           @relation("SkaterPayment", fields: [paymentRecordedInvoiceId], references: [id])
+    CoachPaymentPaySlip    CoachPaySlip?      @relation("CoachPayment", fields: [coachPaymentPaySlipId], references: [id])
     CoachPaySlip           CoachPaySlip?      @relation(fields: [coachPaySlipId], references: [id])
     LedgerTransaction      LedgerTransaction?
 

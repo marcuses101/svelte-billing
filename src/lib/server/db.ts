@@ -9,6 +9,20 @@ export function getCurrentCoachUser() {
 	});
 }
 
+export async function getPayslipById(id: string) {
+	const paySlip = await prisma.coachPaySlip.findUnique({
+		where: { id },
+		include: {
+			CoachPaySlipLineItems: true,
+			CoachPaymentAccountTransactions: true,
+			Coach: { include: { User: true } }
+		}
+	});
+	return paySlip;
+}
+
+export type PaySlipData = Exclude<Awaited<ReturnType<typeof getPayslipById>>, null>;
+
 export function getSkaters() {
 	return prisma.skater.findMany({ orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }] });
 }

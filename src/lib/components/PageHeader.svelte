@@ -7,7 +7,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<div class="flex justify-between prose max-w-none mb-4">
+<div class="flex justify-between prose max-w-none mb-8">
 	<div>
 		<h1 class="mb-0">
 			<slot name="title-pre" />

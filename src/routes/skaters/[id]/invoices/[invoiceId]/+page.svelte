@@ -2,12 +2,11 @@
 	import type { ComponentProps } from 'svelte';
 	import InvoiceDisplay from '../current/InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
+	import { formatDate } from '$lib/formatDate';
 
 	export let data;
 
 	const { invoice, skater, lessonsTotalInCents } = data;
-
-	const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' }).format;
 
 	const invoiceDate = formatDate(invoice.invoiceDate);
 

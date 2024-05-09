@@ -1,35 +1,6 @@
 import { prisma } from './db';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from './defs';
 
-/* Todo 
-export async function logStudentCharge(
-	studentAccountId: string,
-	amountInCents: number,
-	date: Date
-) {
-	const [accountTransaction, ledgerTransaction] = await prisma.$transaction([
-		prisma.accountTransaction.create({
-			data: {
-				amountInCents,
-				date,
-				accountId: studentAccountId,
-				accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_CHARGE
-			}
-		}),
-		prisma.ledgerTransaction.create({
-			data: {
-				amountInCents,
-				date,
-				debitLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE,
-				creditLedgerCode: LEDGER_CODE.BILLING_REVENUE
-			}
-		})
-	]);
-
-	console.log({ accountTransaction, ledgerTransaction });
-}
-*/
-
 export async function logStudentPayment(
 	studentAccountId: string,
 	amountInCents: number,

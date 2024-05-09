@@ -169,20 +169,20 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 			return wrapErr({ message: 'No un-invoiced Skater Lessons found' });
 		}
 
-		const populatedBillingBatch = await tx.billingBatch.findUniqueOrThrow({
-			where: { id: billingBatch.id },
-			include: {
-				Invoices: {
-					include: {
-						InvoiceLineItems: true,
-						Skater: { select: { firstName: true, lastName: true } }
-					}
-				}
-			}
-		});
-
 		const coaches = await tx.coach.findMany({
 			include: {
+				CoachPaySlips: { where: { NextCoachPaySlip: { is: null } }, take: 1 },
+				Account: {
+					include: {
+						AccountTransaction: {
+							where: {
+								accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_PAYMENT,
+								CoachPaymentPaySlip: { is: null }
+							}
+						}
+					}
+				},
+
 				Lessons: {
 					include: { _count: { select: { SkaterLessons: true } } },
 					where: { CoachPaySlipLineItem: { is: null } }
@@ -194,23 +194,48 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 			if (coach.Lessons.length === 0) {
 				continue;
 			}
-			const lessonSum = coach.Lessons.reduce(
+			const chargesTotalInCents = coach.Lessons.reduce(
 				(acc, { lessonCostInCents }) => (acc += lessonCostInCents),
 				0
 			);
-			const commissionPercentage = coach.commissionPercentage;
-			const coachIncome = ((100 - commissionPercentage) / 100) * lessonSum;
-			const commissionRevenue = (commissionPercentage / 100) * lessonSum;
 
-			if (coachIncome + commissionRevenue !== lessonSum) {
-				log({ lessonSum, coachIncome, commissionRevenue });
+			const previousPaySlip = coach.CoachPaySlips[0];
+			const previousPaySlipAmountInCents = previousPaySlip?.amountDueInCents ?? 0;
+
+			const coachPaymentAccountTransactions = coach.Account.AccountTransaction;
+			const paymentsTotal = coachPaymentAccountTransactions.reduce(
+				(acc, { amountInCents }) => acc + amountInCents,
+				0
+			);
+			// TODO maybe use complete account transactions to determine the outstanding balance
+
+			const commissionPercentage = coach.commissionPercentage;
+			const coachRevenueInCents = ((100 - commissionPercentage) / 100) * chargesTotalInCents;
+			const commissionAmountInCents = (commissionPercentage / 100) * chargesTotalInCents;
+
+			if (coachRevenueInCents + commissionAmountInCents !== chargesTotalInCents) {
+				log({
+					lessonSum: chargesTotalInCents,
+					coachIncome: coachRevenueInCents,
+					commissionRevenue: commissionAmountInCents
+				});
 				throw new Error('Commision Calculation Error');
 			}
+			const outstandingBalanceInCents = previousPaySlipAmountInCents - paymentsTotal;
+			const amountDueInCents = coachRevenueInCents + outstandingBalanceInCents;
 
 			await tx.coachPaySlip.create({
 				data: {
+					billingBatchId: billingBatch.id,
+					previousCoachPaySlipId: previousPaySlip?.id,
 					coachId: coach.id,
-					CoachPayrollLineItems: {
+					amountDueInCents,
+					coachRevenueInCents,
+					chargesTotalInCents,
+					commissionAmountInCents,
+					outstandingBalanceInCents,
+					previousPaySlipAmountInCents,
+					CoachPaySlipLineItems: {
 						createMany: {
 							data: coach.Lessons.map(
 								({
@@ -230,14 +255,14 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 							)
 						}
 					},
-					AccountTransaction: {
+					PaySlipChargeAccountTransaction: {
 						create: {
-							amountInCents: coachIncome,
+							amountInCents: coachRevenueInCents,
 							accountId: coach.accountId,
 							accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_CHARGE,
 							LedgerTransaction: {
 								create: {
-									amountInCents: coachIncome,
+									amountInCents: coachRevenueInCents,
 									debitLedgerCode: LEDGER_CODE.INVOICING,
 									creditLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE
 								}
@@ -248,10 +273,10 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 			});
 
 			// Commission Revenue
-			if (commissionRevenue > 0) {
+			if (commissionAmountInCents > 0) {
 				await tx.ledgerTransaction.create({
 					data: {
-						amountInCents: commissionRevenue,
+						amountInCents: commissionAmountInCents,
 						debitLedgerCode: LEDGER_CODE.INVOICING,
 						creditLedgerCode: LEDGER_CODE.COMMISSION
 					}
@@ -259,11 +284,19 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 			}
 		}
 
-		return wrapOk(populatedBillingBatch);
+		const populatedBillingBatch = await tx.billingBatch.findUniqueOrThrow({
+			where: { id: billingBatch.id },
+			include: {
+				Invoices: {
+					include: {
+						InvoiceLineItems: true,
+						Skater: { select: { firstName: true, lastName: true } }
+					}
+				}
+			}
+		});
 
-		// SkaterLessons generate Invoice Line Items.
-		// Each skater that received a lesson should get an invoice
-		// ??? What about skaters with outstanding balances?
+		return wrapOk(populatedBillingBatch);
 	});
 	/*
 

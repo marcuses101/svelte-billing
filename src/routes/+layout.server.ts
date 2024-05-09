@@ -4,6 +4,7 @@ import type { LayoutServerLoad } from './$types';
 const publicRoutes = ['/', '/login', '/about'];
 
 export const load: LayoutServerLoad = ({ locals, url }) => {
+	console.log(locals.user);
 	if (locals.user) {
 		return { user: locals.user };
 	}

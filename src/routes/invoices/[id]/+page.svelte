@@ -3,10 +3,9 @@
 	import { page } from '$app/stores';
 	import InvoiceDisplay from '../../skaters/[id]/invoices/current/InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
+	import { formatDate } from '$lib/formatDate';
 	import type { ComponentProps } from 'svelte';
 	export let data;
-
-	const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' }).format;
 
 	const charges: ComponentProps<InvoiceDisplay>['charges'] = data.invoice.InvoiceLineItems.map(
 		({ amountInCents, date, description }) => ({

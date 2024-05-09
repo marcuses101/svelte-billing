@@ -28,7 +28,7 @@
 		<article
 			class="flex-1 min-w-[min(300px,100%)] justify-between card overflow-hidden bg-base-300 text-base-content"
 		>
-			<h3 class="text-lg m-4 font-semibold">Previous Bill</h3>
+			<h3 class="text-xl m-4 font-semibold">Previous Bill</h3>
 			<table class="table">
 				<tbody>
 					<tr>
@@ -37,19 +37,8 @@
 					</tr>
 					{#each payments as payment}
 						<tr>
-							<td>Payment - {payment.paymentAmount}</td>
-							<td>CR {payment.paymentAmount}</td>
-						</tr>
-					{:else}
-						<tr>
-							<td>Payment</td>
-							<td
-								>CR {new Intl.NumberFormat('en-CA', {
-									style: 'currency',
-									currency: 'CAD',
-									currencyDisplay: 'narrowSymbol'
-								}).format(0)}
-							</td>
+							<td>Payment - {payment.formattedDate}</td>
+							<td> {payment.paymentAmount}</td>
 						</tr>
 					{/each}
 					<tr>
@@ -66,7 +55,7 @@
 		<article
 			class="flex-1 min-w-[min(300px,100%)] justify-between card overflow-hidden bg-base-300 text-base-content"
 		>
-			<h3 class="text-lg m-4 font-semibold">Current Bill</h3>
+			<h3 class="text-xl m-4 font-semibold">Current Bill</h3>
 			<table class="table">
 				<tbody>
 					<tr>
@@ -87,13 +76,13 @@
 						<td>Amount Due</td>
 						<td>{amountDue}</td>
 					</tr>
-				</tbody><tbody />
+				</tbody>
 			</table>
 		</article>
 	</section>
-	<section class="mb-4 card bg-base-300 text-base-content">
-		<h3 class="text-lg m-4 font-semibold">Detailed Charges</h3>
-		<table class="table table-xs md:table-md">
+	<section class="mb-4 card bg-base-300 text-base-content overflow-hidden">
+		<h3 class="text-xl m-4 font-semibold">Detailed Charges</h3>
+		<table class="table">
 			<thead>
 				<tr>
 					<th>Date</th>
@@ -109,13 +98,11 @@
 						<td>{charge.chargeAmount}</td>
 					</tr>
 				{/each}
-				{#each payments as payment}
-					<tr>
-						<td>{payment.formattedDate}</td>
-						<td>Payment received</td>
-						<td>{payment.paymentAmount}</td>
-					</tr>
-				{/each}
+				<tr class="bg-neutral text-neutral-content text-lg">
+					<td>Charges Total</td>
+					<td></td>
+					<td>{chargesTotal}</td>
+				</tr>
 			</tbody>
 		</table>
 	</section>

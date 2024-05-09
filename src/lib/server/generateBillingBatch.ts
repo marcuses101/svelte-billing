@@ -118,8 +118,9 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 				0
 			);
 
-			const outstandingBalanceInCents = lastInvoice?.amountDueInCents ?? 0;
-			const amountDueInCents = outstandingBalanceInCents + chargesTotalInCents - paymentsTotal;
+			const previousAmountDueInCents = lastInvoice?.amountDueInCents ?? 0;
+			const outstandingBalanceInCents = previousAmountDueInCents - paymentsTotal;
+			const amountDueInCents = outstandingBalanceInCents + chargesTotalInCents;
 
 			const newInvoice = await tx.invoice.create({
 				data: {

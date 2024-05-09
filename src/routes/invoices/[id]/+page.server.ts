@@ -5,7 +5,11 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ params }) => {
 	const invoice = await prisma.invoice.findUnique({
 		where: { id: params.id },
-		include: { Skater: { select: { firstName: true, lastName: true } }, InvoiceLineItems: true }
+		include: {
+			Skater: { select: { firstName: true, lastName: true } },
+			InvoiceLineItems: true,
+			SkaterPaymentAccountTransactions: true
+		}
 	});
 
 	if (!invoice) {

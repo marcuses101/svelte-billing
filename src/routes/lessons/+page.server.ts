@@ -9,7 +9,7 @@ export const load: ServerLoad = async ({ locals }) => {
 	}
 	const lessons = await prisma.lesson.findMany({
 		include: { SkaterLessons: { include: { Skater: true } } },
-		where: { coachId }
+		where: { coachId, CoachPaySlipLineItem: { is: null } }
 	});
 	return { lessons };
 };

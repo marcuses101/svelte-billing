@@ -1,23 +1,13 @@
-import { prisma } from '$lib/server/db';
-import { fail, error, type ServerLoad, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
+import { getCoachById, prisma } from '$lib/server/db';
+import { fail, error, redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 
-export const load: ServerLoad = async ({ params }) => {
-	const coachUser = await prisma.user.findUnique({
-		where: { id: params.id },
-		include: { Coach: { select: { hourlyRateInCents: true, commissionPercentage: true } } }
-	});
-	if (!coachUser || !coachUser.Coach) {
-		error(404, `Coach with id ${params.id} not found`);
+export const load: PageServerLoad = async ({ params: { id } }) => {
+	const coach = await getCoachById(id);
+	if (!coach) {
+		error(404, `Coach with id ${id} not found`);
 	}
-	const {
-		id,
-		email,
-		firstName,
-		lastName,
-		Coach: { hourlyRateInCents, commissionPercentage }
-	} = coachUser;
-	return { coach: { id, email, lastName, firstName, hourlyRateInCents, commissionPercentage } };
+	return { coach };
 };
 
 export const actions = {

@@ -6,7 +6,11 @@
 	import CoachForm from '../../CoachForm.svelte';
 
 	export let data;
-	const { firstName, lastName, id } = data.coach;
+	const {
+		User: { firstName, lastName, email },
+		id,
+		hourlyRateInCents
+	} = data.coach;
 	const fullName = `${firstName} ${lastName}`;
 </script>
 
@@ -22,8 +26,8 @@
 
 <CoachForm
 	showReset={false}
-	firstName={data.coach.firstName ?? ''}
-	lastName={data.coach.lastName ?? ''}
-	email={data.coach.email ?? ''}
-	hourlyRateInCents={data.coach.hourlyRateInCents ?? ''}
+	firstName={firstName ?? ''}
+	lastName={lastName ?? ''}
+	email={email ?? ''}
+	hourlyRateInCents={hourlyRateInCents ?? ''}
 />

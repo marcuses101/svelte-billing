@@ -2,10 +2,10 @@ import { PrismaClient } from '@prisma/client';
 import { ACCOUNT_TYPE_CODE } from './defs';
 export const prisma = new PrismaClient();
 
-export function getCurrentCoachUser() {
-	return prisma.user.findUnique({
-		where: { email: 'mnjconnolly@gmail.com' },
-		include: { Coach: true }
+export function getCoachById(id: string) {
+	return prisma.coach.findUnique({
+		where: { id },
+		include: { User: true }
 	});
 }
 

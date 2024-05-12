@@ -6,7 +6,7 @@
 	import PencilIcon from '$lib/icons/PencilIcon.svelte';
 	import CoachForm from '../CoachForm.svelte';
 	export let data;
-	const { firstName, lastName, id, email, hourlyRateInCents, commissionPercentage } = data.coach;
+	const { firstName, lastName, email } = data.coach.User;
 	const fullName = `${firstName} ${lastName}`;
 	const toastMessage = firstName && lastName ? `${fullName} updated!` : 'Coach updated!';
 </script>
@@ -18,7 +18,7 @@
 {/if}
 
 <PageHeader title="Coach Info">
-	<span slot="title-pre" style={`--transition-name:coach-${id}`}>
+	<span slot="title-pre" style={`--transition-name:coach-${data.coach.id}`}>
 		<span class="[view-transition-name:var(--transition-name)]">{fullName}</span>{' - '}
 	</span>
 	<div class="flex gap-1">
@@ -35,6 +35,6 @@
 	firstName={firstName ?? ''}
 	lastName={lastName ?? ''}
 	email={email ?? ''}
-	hourlyRateInCents={hourlyRateInCents ?? 0}
-	commissionPercentage={commissionPercentage ?? 0}
+	hourlyRateInCents={data.coach.hourlyRateInCents ?? 0}
+	commissionPercentage={data.coach.commissionPercentage ?? 0}
 />

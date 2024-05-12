@@ -23,6 +23,7 @@
 			amount: formatCurrency(line.amountInCents)
 		};
 	});
+	// TODO show commission;
 </script>
 
 <div class="max-w-none">

@@ -1,12 +1,13 @@
 import util from 'util';
-import { Account, Coach, Lesson, PrismaClient, Role, Skater } from '@prisma/client';
+import { Account, Coach, CoachRate, Lesson, PrismaClient, Role, Skater } from '@prisma/client';
 import {
 	LEDGER_CODE,
 	ACCOUNT_TYPE_CODE,
 	ACCOUNT_TRANSACTION_TYPE,
 	ROLES,
-	LEDGER_TYPE
-} from '../src/lib/server/defs';
+	LEDGER_TYPE,
+	SKATER_TYPE
+} from '../src/lib/defs';
 import { calculateLessonCost } from '../src/lib/calculateLessonCost';
 import { generateBillingBatch } from '../src/lib/server/generateBillingBatch';
 
@@ -91,10 +92,8 @@ async function seedAccounting() {
 
 async function seedCoaches() {
 	console.log('Seeding Coaches');
-	const marcus = await prisma.user.upsert({
-		where: { email: 'mnjconnolly@gmail.com' },
-		update: { Coach: { update: { hourlyRateInCents: 3_800 } } },
-		create: {
+	const marcus = await prisma.user.create({
+		data: {
 			email: 'mnjconnolly@gmail.com',
 			firstName: 'Marcus',
 			lastName: 'Connolly',
@@ -108,8 +107,16 @@ async function seedCoaches() {
 			},
 			Coach: {
 				create: {
-					hourlyRateInCents: 6_000,
 					commissionPercentage: 0,
+					CoachRate: {
+						createMany: {
+							data: [
+								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 60_000 },
+								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 70_000 },
+								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 120_000 }
+							]
+						}
+					},
 					Account: {
 						create: {
 							name: 'Marcus Connolly Coach Account',
@@ -119,13 +126,11 @@ async function seedCoaches() {
 				}
 			}
 		},
-		include: { Coach: true }
+		include: { Coach: { include: { CoachRate: true } } }
 	});
 
-	const laurence = await prisma.user.upsert({
-		where: { email: 'laurencelessard@gmail.com' },
-		update: { Coach: { update: { hourlyRateInCents: 3_800 } } },
-		create: {
+	const laurence = await prisma.user.create({
+		data: {
 			email: 'laurencelessard@gmail.com',
 			firstName: 'Laurence',
 			lastName: 'Lessard',
@@ -139,8 +144,16 @@ async function seedCoaches() {
 			},
 			Coach: {
 				create: {
-					hourlyRateInCents: 3_800,
 					commissionPercentage: 10,
+					CoachRate: {
+						createMany: {
+							data: [
+								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 40_000 },
+								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 50_000 },
+								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 60_000 }
+							]
+						}
+					},
 					Account: {
 						create: {
 							name: 'Laurence Lessard Coach Account',
@@ -150,13 +163,22 @@ async function seedCoaches() {
 				}
 			}
 		},
-		include: { Coach: true }
+		include: { Coach: { include: { CoachRate: true } } }
 	});
 	return [marcus, laurence];
 }
+async function seedSkaterType() {
+	console.log('Seed Skater Types');
+	await prisma.skaterType.createMany({
+		data: [
+			{ code: SKATER_TYPE.RESIDENT },
+			{ code: SKATER_TYPE.US },
+			{ code: SKATER_TYPE.INTERNATIONAL }
+		]
+	});
+}
 
 type SkaterEntry = Skater & { Account: Account };
-
 /**
  * Creates and returns 10 skaters
  * */
@@ -166,13 +188,12 @@ async function seedSkaters() {
 
 	const skaters: SkaterEntry[] = [];
 	for (const num of numbers) {
-		const skater = await prisma.skater.upsert({
-			where: { firstName_lastName: { firstName: 'Skater', lastName: num } },
-			update: {},
-			create: {
+		const skater = await prisma.skater.create({
+			data: {
 				firstName: 'Skater',
 				lastName: num,
 				email: `skater_${num.toLowerCase()}@gmail.com`,
+				SkaterType: { connect: { code: SKATER_TYPE.RESIDENT } },
 				Account: {
 					create: {
 						accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
@@ -190,24 +211,22 @@ async function seedSkaters() {
 
 async function createLesson(
 	coach: Coach,
+	coachRates: CoachRate[],
 	lessonTimeInMinutes: number,
-	skaterIds: { skaterId: string }[],
+	skaters: { skaterId: string; skaterTypeCode: string }[],
 	date: string
 ) {
-	const { hourlyRateInCents, id: coachId } = coach;
-	const { lessonCostInCents, lessonCostPerSkaterInCents } = calculateLessonCost(
-		lessonTimeInMinutes,
-		hourlyRateInCents,
-		skaterIds.length
-	);
+	const { id: coachId } = coach;
+	const { lessonCostInCents } = calculateLessonCost(lessonTimeInMinutes, coachRates, skaters);
 	const lesson = await prisma.lesson.create({
 		data: {
 			coachId,
 			date: new Date(date).toISOString(),
 			lessonTimeInMinutes,
 			lessonCostInCents,
-			lessonCostPerSkaterInCents,
-			SkaterLessons: { createMany: { data: skaterIds } }
+			SkaterLessons: {
+				createMany: { data: skaters.map((skater) => ({ skaterId: skater.skaterId })) }
+			}
 		}
 	});
 	return lesson;
@@ -219,22 +238,30 @@ async function seedLessons(
 ) {
 	const lessons: Lesson[] = [];
 	for (const coachUser of coaches) {
-		const coach = coachUser.Coach!;
-		const skaterIds: { skaterId: string }[] = skaters
+		const { CoachRate, ...coach } = coachUser.Coach!;
+		const skaterIds: { skaterId: string; skaterTypeCode: string }[] = skaters
 			.slice(0, 3)
-			.map((skater) => ({ skaterId: skater.id }));
-		const lesson1 = await createLesson(coach, 60, skaterIds, '2024-02-01');
-		const lesson2 = await createLesson(coach, 45, [{ skaterId: skaters.at(4)!.id }], '2024-02-07');
+			.map((skater) => ({ skaterId: skater.id, skaterTypeCode: skater.skaterTypeCode }));
+		const lesson1 = await createLesson(coach, CoachRate, 60, skaterIds, '2024-02-01');
+		const lesson2 = await createLesson(
+			coach,
+			CoachRate,
+			45,
+			[{ skaterId: skaters.at(4)!.id, skaterTypeCode: skaters.at(4)?.skaterTypeCode! }],
+			'2024-02-07'
+		);
 		const lesson3 = await createLesson(
 			coach,
+			CoachRate,
 			90,
-			skaters.slice(5).map(({ id }) => ({ skaterId: id })),
+			skaters.slice(5).map(({ id, skaterTypeCode }) => ({ skaterId: id, skaterTypeCode })),
 			'2024-03-01'
 		);
 		const lesson4 = await createLesson(
 			coach,
+			CoachRate,
 			90,
-			skaters.slice(3, 5).map(({ id }) => ({ skaterId: id })),
+			skaters.slice(3, 5).map(({ id, skaterTypeCode }) => ({ skaterId: id, skaterTypeCode })),
 			'2024-03-20'
 		);
 		lessons.push(lesson1);
@@ -273,8 +300,9 @@ async function main() {
 	console.log('Seeding beginning');
 	const roles = await seedRoles();
 	const { ledgers, accountTypes, accountTransactionTypes } = await seedAccounting();
-	const coaches = await seedCoaches();
+	const skaterTypes = await seedSkaterType();
 	const skaters = await seedSkaters();
+	const coaches = await seedCoaches();
 	const lessons = await seedLessons(skaters, coaches);
 	const billingBatch = await seedBillingBatch();
 	console.log(
@@ -283,6 +311,7 @@ async function main() {
 				ledgers,
 				accountTypes,
 				accountTransactionTypes,
+				skaterTypes,
 				coaches,
 				skaters,
 				roles,

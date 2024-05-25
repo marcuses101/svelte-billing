@@ -60,7 +60,6 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 								id: true,
 								date: true,
 								SkaterLessons: true,
-								lessonCostPerSkaterInCents: true,
 								lessonTimeInMinutes: true,
 								Coach: {
 									select: { id: true, User: { select: { firstName: true, lastName: true } } }
@@ -89,7 +88,6 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 						id: lessonId,
 						date: lessonDate,
 						lessonTimeInMinutes,
-						lessonCostPerSkaterInCents,
 						_count: { SkaterLessons: numberOfSkaters },
 						Coach: {
 							User: { firstName: coachFirstName, lastName: coachLastName }
@@ -98,7 +96,7 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 				}) => ({
 					skaterLessonSkaterId: skaterId,
 					skaterLessonLessonId: lessonId,
-					amountInCents: lessonCostPerSkaterInCents,
+					amountInCents: 9999, //TODO figure out this calculation
 					date: lessonDate,
 					description: getLineItemDescription(
 						numberOfSkaters,

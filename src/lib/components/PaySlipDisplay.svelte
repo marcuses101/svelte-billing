@@ -50,7 +50,7 @@
 					{#each payments as payment}
 						<tr>
 							<td>Payment - {payment.paymentDate}</td>
-							<td> {payment.paymentAmount}</td>
+							<td>{payment.paymentAmount}</td>
 						</tr>
 					{/each}
 					<tr>

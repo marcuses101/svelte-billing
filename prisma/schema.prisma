@@ -7,6 +7,12 @@ datasource db {
     url      = "postgresql://marcus:password@localhost:5432/svelte-billing"
 }
 
+model SkaterType {
+    code      String      @id
+    Skater    Skater[]
+    CoachRate CoachRate[]
+}
+
 // Define the Skater table
 model Skater {
     id          String    @id @default(uuid())
@@ -17,11 +23,14 @@ model Skater {
     createdOn   DateTime  @default(now())
     modifiedOn  DateTime?
 
-    accountId String @unique
+    accountId String  @unique
+    Account   Account @relation(fields: [accountId], references: [id])
+
+    skaterTypeCode String
+    SkaterType     SkaterType @relation(fields: [skaterTypeCode], references: [code])
 
     SkaterLessons     SkaterLesson[]
     Invoices          Invoice[]
-    Account           Account            @relation(fields: [accountId], references: [id])
     AdditionalCharges AdditionalCharge[]
 
     @@unique([firstName, lastName])
@@ -58,7 +67,6 @@ model UserRole {
 
 model Coach {
     id                   String @id @default(uuid())
-    hourlyRateInCents    Int
     commissionPercentage Int
 
     userId String @unique
@@ -69,13 +77,25 @@ model Coach {
 
     Lessons       Lesson[]
     CoachPaySlips CoachPaySlip[]
+    CoachRate     CoachRate[]
+}
+
+model CoachRate {
+    hourlyRateInCents Int
+
+    coachId        String
+    skaterTypeCode String
+
+    Coach      Coach      @relation(fields: [coachId], references: [id])
+    SkaterType SkaterType @relation(fields: [skaterTypeCode], references: [code])
+
+    @@id([coachId, skaterTypeCode])
 }
 
 model Lesson {
     id                         String    @id @default(uuid())
     lessonTimeInMinutes        Int
     lessonCostInCents          Int
-    lessonCostPerSkaterInCents Int
     date                       DateTime
     createdOn                  DateTime  @default(now())
     modifiedOn                 DateTime?

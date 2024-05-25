@@ -3,6 +3,14 @@ export const ACCOUNT_TYPE_CODE = {
 	COACH: 'COACH'
 } as const;
 
+export const SKATER_TYPE = {
+	RESIDENT: 'RESIDENT',
+	US: 'US',
+	INTERNATIONAL: 'INTERNATIONAL'
+} as const;
+
+export type SkaterType = (typeof SKATER_TYPE)[keyof typeof SKATER_TYPE];
+
 export const ACCOUNT_TRANSACTION_TYPE = {
 	STUDENT_CHARGE: 'STUDENT_CHARGE',
 	STUDENT_PAYMENT: 'STUDENT_PAYMENT',

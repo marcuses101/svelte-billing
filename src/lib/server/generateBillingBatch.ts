@@ -1,7 +1,7 @@
 import { inspect } from 'node:util';
 import { prisma } from './db';
 import { wrapErr, wrapOk } from '$lib/rustResult';
-import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from './defs';
+import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '../defs';
 
 type NewInvoice = {
 	InvoiceLineItems: {

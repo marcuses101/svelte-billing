@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
     provider = "postgresql"
-    url      = "postgresql://marcus:password@localhost:5432/svelte-billing"
+    url      = env("DATABASE_URL")
 }
 
 model SkaterType {

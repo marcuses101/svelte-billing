@@ -1,5 +1,5 @@
 import { prisma } from '$lib/server/db';
-import { type LedgerCode, type LedgerType } from '$lib/server/defs';
+import { type LedgerCode, type LedgerType } from '$lib/defs';
 import type { $Enums } from '@prisma/client';
 import type { PageServerLoad } from './$types';
 

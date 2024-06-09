@@ -1,5 +1,5 @@
 import util from 'util';
-import { Account, Coach, CoachRate, Lesson, PrismaClient, Role, Skater } from '@prisma/client';
+import { Account, Coach, Lesson, PrismaClient, Role, Skater } from '@prisma/client';
 import {
 	LEDGER_CODE,
 	ACCOUNT_TYPE_CODE,
@@ -8,7 +8,6 @@ import {
 	LEDGER_TYPE,
 	SKATER_TYPE
 } from '../src/lib/defs';
-import { calculateLessonCost } from '../src/lib/calculateLessonCost';
 import { generateBillingBatch } from '../src/lib/server/generateBillingBatch';
 
 const prisma = new PrismaClient();
@@ -111,9 +110,9 @@ async function seedCoaches() {
 					CoachRate: {
 						createMany: {
 							data: [
-								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 60_000 },
-								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 70_000 },
-								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 120_000 }
+								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 60_00 },
+								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 70_00 },
+								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 120_00 }
 							]
 						}
 					},
@@ -148,9 +147,9 @@ async function seedCoaches() {
 					CoachRate: {
 						createMany: {
 							data: [
-								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 40_000 },
-								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 50_000 },
-								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 60_000 }
+								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 40_00 },
+								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 50_00 },
+								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 60_00 }
 							]
 						}
 					},
@@ -211,19 +210,16 @@ async function seedSkaters() {
 
 async function createLesson(
 	coach: Coach,
-	coachRates: CoachRate[],
 	lessonTimeInMinutes: number,
 	skaters: { skaterId: string; skaterTypeCode: string }[],
 	date: string
 ) {
 	const { id: coachId } = coach;
-	const { lessonCostInCents } = calculateLessonCost(lessonTimeInMinutes, coachRates, skaters);
 	const lesson = await prisma.lesson.create({
 		data: {
 			coachId,
 			date: new Date(date).toISOString(),
 			lessonTimeInMinutes,
-			lessonCostInCents,
 			SkaterLessons: {
 				createMany: { data: skaters.map((skater) => ({ skaterId: skater.skaterId })) }
 			}
@@ -242,24 +238,21 @@ async function seedLessons(
 		const skaterIds: { skaterId: string; skaterTypeCode: string }[] = skaters
 			.slice(0, 3)
 			.map((skater) => ({ skaterId: skater.id, skaterTypeCode: skater.skaterTypeCode }));
-		const lesson1 = await createLesson(coach, CoachRate, 60, skaterIds, '2024-02-01');
+		const lesson1 = await createLesson(coach, 60, skaterIds, '2024-02-01');
 		const lesson2 = await createLesson(
 			coach,
-			CoachRate,
 			45,
 			[{ skaterId: skaters.at(4)!.id, skaterTypeCode: skaters.at(4)?.skaterTypeCode! }],
 			'2024-02-07'
 		);
 		const lesson3 = await createLesson(
 			coach,
-			CoachRate,
 			90,
 			skaters.slice(5).map(({ id, skaterTypeCode }) => ({ skaterId: id, skaterTypeCode })),
 			'2024-03-01'
 		);
 		const lesson4 = await createLesson(
 			coach,
-			CoachRate,
 			90,
 			skaters.slice(3, 5).map(({ id, skaterTypeCode }) => ({ skaterId: id, skaterTypeCode })),
 			'2024-03-20'

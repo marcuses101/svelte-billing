@@ -1,33 +1,31 @@
 import type { Actions, PageServerLoad } from './$types';
 import { getSkaterById, prisma } from '$lib/server/db';
 import { error, fail } from '@sveltejs/kit';
+import { validateSkaterForm } from '../../create/validateSkaterForm';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const skater = await getSkaterById(params.id);
 	if (!skater) {
 		error(404);
 	}
+	console.log(skater);
 	return { skater };
 };
 
 export const actions = {
 	default: async ({ request, params }) => {
 		const data = await request.formData();
-		const firstName = data.get('first-name') as string;
-		const lastName = data.get('last-name') as string;
-		const email = data.get('email') as string;
-		if (!firstName) {
-			return fail(400, { firstName, missing: true });
+		console.log(data);
+		const validationResult = validateSkaterForm(data);
+		if (!validationResult.ok) {
+			const { missingFields } = validationResult.error;
+			console.log(missingFields);
+			return fail(400, { success: false, missingFields });
 		}
-		if (!lastName) {
-			return fail(400, { lastName, missing: true });
-		}
-		if (!email) {
-			return fail(400, { email, missing: true });
-		}
+		const { firstName, lastName, email, skaterTypeCode } = validationResult.value;
 		await prisma.skater.update({
 			where: { id: params.id },
-			data: { firstName, lastName, email }
+			data: { firstName, lastName, email, skaterTypeCode }
 		});
 
 		return { success: true };

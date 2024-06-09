@@ -95,7 +95,6 @@ model CoachRate {
 model Lesson {
     id                         String    @id @default(uuid())
     lessonTimeInMinutes        Int
-    lessonCostInCents          Int
     date                       DateTime
     createdOn                  DateTime  @default(now())
     modifiedOn                 DateTime?

@@ -1,10 +1,9 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-const publicRoutes = ['/', '/login', '/about'];
+const publicRoutes = ['/', '/login', '/about', '/lessons/calculator'];
 
 export const load: LayoutServerLoad = ({ locals, url }) => {
-	console.log(locals.user);
 	if (locals.user) {
 		return { user: locals.user };
 	}

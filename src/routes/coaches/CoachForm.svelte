@@ -1,11 +1,21 @@
 <script lang="ts">
+	import { SKATER_TYPE, type SkaterType } from '$lib/defs';
+	const skaterTypeRateIds = Object.values(SKATER_TYPE).map((type) => ({
+		skaterTypeCode: type,
+		id: `hourly-rate-${type}`,
+		label: `Hourly Rate ${type}`
+	}));
 	export let disabled: boolean = false;
 	export let firstName: string = '';
 	export let lastName: string = '';
 	export let email: string = '';
-	export let hourlyRateInCents: number | undefined = undefined;
 	export let commissionPercentage: number = 0;
 	export let showReset: boolean = true;
+	export let rates: Record<SkaterType, number> = {
+		RESIDENT: 60_00,
+		US: 60_00,
+		INTERNATIONAL: 60_00
+	};
 </script>
 
 <form method="POST">
@@ -55,35 +65,37 @@
 		/>
 	</div>
 	<div class="form-control w-full max-w-xs">
-		<label for="permission-percentage" class="label">
+		<label for="commission-percentage" class="label">
 			<span class="label-text">Commission Percentage</span>
 		</label>
 		<input
 			{disabled}
 			value={commissionPercentage}
 			type="number"
-			name="permission-percentage"
-			id="hourly-rate"
+			name="commission-percentage"
+			id="commission-percentage"
 			min="0"
 			class="input input-bordered w-full max-w-xs"
 			required
 		/>
 	</div>
-	<div class="form-control w-full max-w-xs">
-		<label for="hourly-rate" class="label">
-			<span class="label-text">Hourly Rate (in cents)</span>
-		</label>
-		<input
-			{disabled}
-			value={hourlyRateInCents}
-			type="number"
-			name="hourly-rate"
-			id="hourly-rate"
-			min="0"
-			class="input input-bordered w-full max-w-xs"
-			required
-		/>
-	</div>
+	{#each skaterTypeRateIds as { id, label, skaterTypeCode }}
+		<div class="form-control w-full max-w-xs">
+			<label for={id} class="label">
+				<span class="label-text">{label}</span>
+			</label>
+			<input
+				{disabled}
+				bind:value={rates[skaterTypeCode]}
+				type="number"
+				name={id}
+				{id}
+				min="0"
+				class="input input-bordered w-full max-w-xs"
+				required
+			/>
+		</div>
+	{/each}
 	{#if !disabled}
 		<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
 			{#if showReset}

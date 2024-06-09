@@ -1,6 +1,7 @@
 import { getCoachById, prisma } from '$lib/server/db';
-import { fail, error, redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { validateCoachForm } from '../../create/validateCoachForm';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const coach = await getCoachById(params.id);
@@ -14,33 +15,35 @@ export const actions = {
 	default: async ({ request, params }) => {
 		const data = await request.formData();
 		const id = params.id;
-		const firstName = data.get('first-name');
-		const lastName = data.get('last-name');
-		const email = data.get('email');
-		const hourlyRateFormData = data.get('hourly-rate');
-		if (!firstName || typeof firstName !== 'string') {
-			return fail(400, { firstName, missing: true });
+		const coachFormValidationResult = validateCoachForm(data);
+		console.log({ coachFormValidationResult });
+
+		if (!coachFormValidationResult.ok) {
+			return coachFormValidationResult.error;
 		}
-		if (!lastName || typeof lastName !== 'string') {
-			return fail(400, { lastName, missing: true });
-		}
-		if (!email || typeof email !== 'string') {
-			return fail(400, { email, missing: true });
-		}
-		if (!hourlyRateFormData || typeof hourlyRateFormData !== 'string') {
-			return fail(400, { hourlyRateFormData, missing: true });
-		}
-		const hourlyRateInCents = parseInt(hourlyRateFormData);
-		await prisma.user.update({
-			where: { id },
-			data: {
-				firstName,
-				lastName,
-				email,
-				Coach: { update: { hourlyRateInCents } }
+		const { firstName, lastName, email, commissionPercentage, coachRates } =
+			coachFormValidationResult.value;
+		await prisma.$transaction(async (tx) => {
+			await tx.coach.update({
+				where: { id },
+				data: {
+					commissionPercentage,
+					User: {
+						update: {
+							firstName,
+							lastName,
+							email
+						}
+					}
+				}
+			});
+			for (const rate of coachRates) {
+				await tx.coachRate.update({
+					where: { coachId_skaterTypeCode: { coachId: id, skaterTypeCode: rate.skaterTypeCode } },
+					data: { hourlyRateInCents: rate.hourlyRateInCents }
+				});
 			}
 		});
-
 		redirect(303, `/coaches/${id}?success=true`);
 	}
 } satisfies Actions;

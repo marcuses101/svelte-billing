@@ -1,12 +1,21 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import BackButton from '$lib/components/BackButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import PencilIcon from '$lib/icons/PencilIcon.svelte';
 	import CoachForm from '../CoachForm.svelte';
+	import type { SkaterType } from '$lib/defs';
+
 	export let data;
 	const { firstName, lastName, email } = data.coach.User;
+	const rates = data.coach.CoachRate.reduce(
+		(acc, { skaterTypeCode, hourlyRateInCents }) => {
+			acc[skaterTypeCode as SkaterType] = hourlyRateInCents;
+			return acc;
+		},
+		{} as Record<SkaterType, number>
+	);
 	const fullName = `${firstName} ${lastName}`;
 	const toastMessage = firstName && lastName ? `${fullName} updated!` : 'Coach updated!';
 </script>
@@ -35,6 +44,6 @@
 	firstName={firstName ?? ''}
 	lastName={lastName ?? ''}
 	email={email ?? ''}
-	hourlyRateInCents={data.coach.hourlyRateInCents ?? 0}
+	{rates}
 	commissionPercentage={data.coach.commissionPercentage ?? 0}
 />

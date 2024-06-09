@@ -1,8 +1,9 @@
-import { prisma } from '$lib/server/db';
+import { calculateLessonQuery, prisma } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getLineItemDescription } from '$lib/server/generateBillingBatch';
 import type { InvoiceLineItem } from '@prisma/client';
+import { calculateLesson } from '$lib/calculateLessonCost';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const skaterInfo = await prisma.skater.findUnique({
@@ -10,25 +11,26 @@ export const load: PageServerLoad = async ({ params }) => {
 		include: {
 			SkaterLessons: {
 				select: {
-					Lesson: {
-						include: {
-							_count: { select: { SkaterLessons: true } },
-							Coach: {
-								select: { User: { select: { firstName: true, lastName: true, email: true } } }
-							}
-						}
-					}
+					Lesson: calculateLessonQuery
 				}
 			}
 		}
 	});
+
 	if (!skaterInfo) {
 		error(404);
 	}
+
 	const { SkaterLessons: rawLessons, ...skater } = skaterInfo;
 	const lineItems: InvoiceLineItem[] = rawLessons.map(({ Lesson: lesson }) => {
 		const numberOfSkaters = lesson._count.SkaterLessons;
-		const lessonCostPerSkaterInCents = lesson.lessonCostPerSkaterInCents;
+		const { skatersWithCost } = calculateLesson(lesson);
+		const skaterCost = skatersWithCost.find((entry) => {
+			entry.skaterId === skaterInfo.id;
+		});
+		if (!skaterCost) {
+			throw new Error('skater cost not found');
+		}
 		const lessonTimeInMinutes = lesson.lessonTimeInMinutes;
 
 		const { firstName, lastName } = lesson.Coach.User;
@@ -37,7 +39,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		return {
 			id: lesson.id,
 			date: lesson.date,
-			amountInCents: lessonCostPerSkaterInCents,
+			amountInCents: skaterCost.amountInCents,
 			description,
 			invoiceId: 'TBD',
 			skaterLessonLessonId: lesson.id,

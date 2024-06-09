@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { SKATER_TYPE, type SkaterType } from '$lib/defs';
+
 	export let disabled: boolean = false;
 	export let firstName = '';
 	export let lastName = '';
 	export let email = '';
+	export let skaterTypeCode: SkaterType = 'RESIDENT';
+	const types = Object.values(SKATER_TYPE);
 </script>
 
 <form method="POST">
@@ -54,6 +58,21 @@
 			class="input input-bordered w-full max-w-xs"
 		/>
 	</div>
+	<label class="form-control w-full max-w-xs">
+		<div class="label">
+			<span class="label-text">Skater Type</span>
+		</div>
+		<select
+			name="skater-type-code"
+			{disabled}
+			bind:value={skaterTypeCode}
+			class="select select-bordered w-full max-w-xs"
+		>
+			{#each types as type}
+				<option selected={type === skaterTypeCode} value={type}>{type}</option>
+			{/each}
+		</select>
+	</label>
 	<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
 		<slot name="buttons">
 			{#if !disabled}

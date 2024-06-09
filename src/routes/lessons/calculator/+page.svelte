@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { calculateLessonCost } from '$lib/calculateLessonCost';
-	import JsonDisplay from '$lib/components/JsonDisplay.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { SKATER_TYPE, type SkaterType } from '$lib/defs';
 	import { formatCurrency } from '$lib/formatCurrency';

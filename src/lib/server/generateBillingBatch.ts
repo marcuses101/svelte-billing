@@ -2,6 +2,7 @@ import { inspect } from 'node:util';
 import { prisma } from './db';
 import { wrapErr, wrapOk } from '$lib/rustResult';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '../defs';
+import { calculateLessonCost } from '$lib/calculateLessonCost';
 
 type NewInvoice = {
 	InvoiceLineItems: {
@@ -59,10 +60,11 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 								_count: { select: { SkaterLessons: true } },
 								id: true,
 								date: true,
-								SkaterLessons: true,
+								SkaterLessons: { include: { Skater: { select: { skaterTypeCode: true } } } },
 								lessonTimeInMinutes: true,
 								Coach: {
-									select: { id: true, User: { select: { firstName: true, lastName: true } } }
+									select: { id: true, User: { select: { firstName: true, lastName: true } } },
+									include: { CoachRate: true }
 								}
 							}
 						}
@@ -89,21 +91,29 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 						date: lessonDate,
 						lessonTimeInMinutes,
 						_count: { SkaterLessons: numberOfSkaters },
+						SkaterLessons,
 						Coach: {
+							CoachRate,
 							User: { firstName: coachFirstName, lastName: coachLastName }
 						}
 					}
-				}) => ({
-					skaterLessonSkaterId: skaterId,
-					skaterLessonLessonId: lessonId,
-					amountInCents: 9999, //TODO figure out this calculation
-					date: lessonDate,
-					description: getLineItemDescription(
-						numberOfSkaters,
-						lessonTimeInMinutes,
-						`${coachFirstName} ${coachLastName}`
-					)
-				})
+				}) => {
+					const skaters = SkaterLessons.map((entry) => {
+						return { skaterId: entry.skaterId, skaterTypeCode: entry.Skater.skaterTypeCode };
+					});
+					const {} = calculateLessonCost(lessonTimeInMinutes, CoachRate, skaters);
+					return {
+						skaterLessonSkaterId: skaterId,
+						skaterLessonLessonId: lessonId,
+						amountInCents: 9999, //TODO figure out this calculation
+						date: lessonDate,
+						description: getLineItemDescription(
+							numberOfSkaters,
+							lessonTimeInMinutes,
+							`${coachFirstName} ${coachLastName}`
+						)
+					};
+				}
 			);
 
 			const chargesTotalInCents = lineItemsData.reduce(
@@ -169,6 +179,7 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 
 		const coaches = await tx.coach.findMany({
 			include: {
+				CoachRate: true,
 				CoachPaySlips: { where: { NextCoachPaySlip: { is: null } }, take: 1 },
 				Account: {
 					include: {
@@ -182,7 +193,9 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 				},
 
 				Lessons: {
-					include: { _count: { select: { SkaterLessons: true } } },
+					include: {
+						SkaterLessons: { include: { Skater: { select: { id: true, skaterTypeCode: true } } } }
+					},
 					where: { CoachPaySlipLineItem: { is: null } }
 				}
 			}
@@ -192,8 +205,24 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 			if (coach.Lessons.length === 0) {
 				continue;
 			}
+			// calculate the total lessons
+
 			const chargesTotalInCents = coach.Lessons.reduce(
-				(acc, { lessonCostInCents }) => (acc += lessonCostInCents),
+				(acc, { lessonTimeInMinutes, SkaterLessons }) => {
+					const skaters = SkaterLessons.map((entry) => {
+						return {
+							skaterId: entry.skaterId,
+							skaterTypeCode: entry.Skater.skaterTypeCode
+						};
+					});
+					const { lessonCostInCents } = calculateLessonCost(
+						lessonTimeInMinutes,
+						coach.CoachRate,
+						skaters
+					);
+					acc += lessonCostInCents;
+					return acc;
+				},
 				0
 			);
 
@@ -236,18 +265,23 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 					CoachPaySlipLineItems: {
 						createMany: {
 							data: coach.Lessons.map(
-								({
-									date,
-									id: lessonId,
-									lessonCostInCents,
-									lessonTimeInMinutes,
-									_count: { SkaterLessons: skaterCount }
-								}) => {
+								({ date, id: lessonId, lessonTimeInMinutes, SkaterLessons }) => {
+									const skaters = SkaterLessons.map((entry) => {
+										return {
+											skaterId: entry.skaterId,
+											skaterTypeCode: entry.Skater.skaterTypeCode
+										};
+									});
+									const { lessonCostInCents } = calculateLessonCost(
+										lessonTimeInMinutes,
+										coach.CoachRate,
+										skaters
+									);
 									return {
 										date,
 										lessonId,
 										amountInCents: lessonCostInCents,
-										description: `${lessonTimeInMinutes} minute lesson. ${skaterCount} skater(s)`
+										description: `${lessonTimeInMinutes} minute lesson. ${SkaterLessons.length} skater(s)`
 									};
 								}
 							)

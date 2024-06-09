@@ -39,3 +39,15 @@ export function calculateLessonCost(
 
 	return { hourlySurplusInCents, lessonCostInCents, skatersWithCost };
 }
+
+export function calculateLesson(lesson: {
+	lessonTimeInMinutes: number;
+	SkaterLessons: { Skater: { id: string; skaterTypeCode: string } }[];
+	Coach: { CoachRate: { skaterTypeCode: string; hourlyRateInCents: number }[] };
+}) {
+	const skaters = lesson.SkaterLessons.map((entry) => {
+		return { skaterId: entry.Skater.id, skaterTypeCode: entry.Skater.skaterTypeCode };
+	});
+
+	return calculateLessonCost(lesson.lessonTimeInMinutes, lesson.Coach.CoachRate, skaters);
+}

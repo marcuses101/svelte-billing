@@ -1,4 +1,5 @@
-import { prisma } from '$lib/server/db';
+import { calculateLesson } from '$lib/calculateLessonCost';
+import { calculateLessonQuery, prisma } from '$lib/server/db';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -8,14 +9,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		include: {
 			SkaterLessons: {
 				select: {
-					Lesson: {
-						include: {
-							_count: { select: { SkaterLessons: true } },
-							Coach: {
-								select: { User: { select: { firstName: true, lastName: true, email: true } } }
-							}
-						}
-					}
+					Lesson: calculateLessonQuery
 				}
 			}
 		}
@@ -26,7 +20,12 @@ export const load: PageServerLoad = async ({ params }) => {
 	const { SkaterLessons: rawLessons, ...skater } = skaterInfo;
 	const lessons = rawLessons.map(({ Lesson: lesson }) => {
 		const numberOfSkaters = lesson._count.SkaterLessons;
-		const chargeInCents = Math.ceil(lesson.lessonCostInCents / numberOfSkaters);
+		const { lessonCostInCents, skatersWithCost } = calculateLesson(lesson);
+		const maybeCharge = skatersWithCost.find((entry) => entry.skaterId === skaterInfo.id);
+		if (!maybeCharge) {
+			throw new Error('skater not found');
+		}
+		const { amountInCents: chargeInCents } = maybeCharge;
 		const { firstName, lastName, email } = lesson.Coach.User;
 		const coachName = firstName && lastName ? `${firstName} ${lastName}` : email;
 		return {
@@ -36,7 +35,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			numberOfSkaters,
 			coachName,
 			lessonTimeInMinutes: lesson.lessonTimeInMinutes,
-			cost: lesson.lessonCostInCents
+			cost: lessonCostInCents
 		};
 	});
 

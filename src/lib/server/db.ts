@@ -5,7 +5,7 @@ export const prisma = new PrismaClient();
 export function getCoachById(id: string) {
 	return prisma.coach.findUnique({
 		where: { id },
-		include: { User: true }
+		include: { User: true, CoachRate: true }
 	});
 }
 
@@ -52,3 +52,17 @@ export async function addSkater(
 		}
 	});
 }
+
+export const calculateLessonQuery = {
+	include: {
+		SkaterLessons: {
+			include: {
+				Skater: { select: { id: true, skaterTypeCode: true } }
+			}
+		},
+		_count: { select: { SkaterLessons: true } },
+		Coach: {
+			include: { CoachRate: true, User: true }
+		}
+	}
+} as const;

@@ -1,5 +1,5 @@
 import { inspect } from 'node:util';
-import { prisma } from './db';
+import { calculateLessonQuery, prisma } from './db';
 import { wrapErr, wrapOk } from '$lib/rustResult';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '../defs';
 import { calculateLessonCost } from '$lib/calculateLessonCost';
@@ -55,19 +55,7 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 				},
 				SkaterLessons: {
 					select: {
-						Lesson: {
-							select: {
-								_count: { select: { SkaterLessons: true } },
-								id: true,
-								date: true,
-								SkaterLessons: { include: { Skater: { select: { skaterTypeCode: true } } } },
-								lessonTimeInMinutes: true,
-								Coach: {
-									select: { id: true, User: { select: { firstName: true, lastName: true } } },
-									include: { CoachRate: true }
-								}
-							}
-						}
+						Lesson: calculateLessonQuery
 					},
 					where: { InvoiceLineItems: { is: null } }
 				}
@@ -101,11 +89,14 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 					const skaters = SkaterLessons.map((entry) => {
 						return { skaterId: entry.skaterId, skaterTypeCode: entry.Skater.skaterTypeCode };
 					});
-					const {} = calculateLessonCost(lessonTimeInMinutes, CoachRate, skaters);
+					const { skatersWithCost } = calculateLessonCost(lessonTimeInMinutes, CoachRate, skaters);
+					const amountInCents = skatersWithCost.find(
+						(entry) => entry.skaterId === skater.id
+					)?.amountInCents;
 					return {
 						skaterLessonSkaterId: skaterId,
 						skaterLessonLessonId: lessonId,
-						amountInCents: 9999, //TODO figure out this calculation
+						amountInCents: amountInCents ?? 0, //TODO figure out better validation
 						date: lessonDate,
 						description: getLineItemDescription(
 							numberOfSkaters,

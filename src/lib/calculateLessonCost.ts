@@ -32,7 +32,7 @@ export function calculateLessonCost(
 			throw new Error(`rate not configured for skaterTypeCode "${skaterTypeCode}"`);
 		}
 		const hourlyRateInCents = baseRate + hourlySurplusInCents;
-		const amountInCents = Math.round(((minutes / 60) * hourlyRateInCents) / numberOfSkaters);
+		const amountInCents = Math.ceil(((minutes / 60) * hourlyRateInCents) / numberOfSkaters);
 		lessonCostInCents += amountInCents;
 		return { skaterTypeCode, skaterId, amountInCents };
 	});

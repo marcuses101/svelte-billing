@@ -1,15 +1,28 @@
-import { calculateLessonQuery, prisma } from '$lib/server/db';
+import { calculateLessonQuery, lastInvoiceQuery, prisma } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { getLineItemDescription } from '$lib/server/generateBillingBatch';
+import { formatSkaterLineItemDescription } from '$lib/server/generateBillingBatch';
 import type { InvoiceLineItem } from '@prisma/client';
 import { calculateLesson } from '$lib/calculateLessonCost';
+import { ACCOUNT_TRANSACTION_TYPE } from '$lib/defs';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const skaterInfo = await prisma.skater.findUnique({
 		where: { id: params.id },
 		include: {
+			Account: {
+				include: {
+					AccountTransaction: {
+						where: {
+							accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT,
+							PaymentRecordedInvoice: { is: null }
+						}
+					}
+				}
+			},
+			Invoices: lastInvoiceQuery,
 			SkaterLessons: {
+				where: { InvoiceLineItems: null },
 				select: {
 					Lesson: calculateLessonQuery
 				}
@@ -21,13 +34,14 @@ export const load: PageServerLoad = async ({ params }) => {
 		error(404);
 	}
 
-	const { SkaterLessons: rawLessons, ...skater } = skaterInfo;
+	const { SkaterLessons: rawLessons, Invoices, ...skater } = skaterInfo;
 	const lineItems: InvoiceLineItem[] = rawLessons.map(({ Lesson: lesson }) => {
 		const numberOfSkaters = lesson._count.SkaterLessons;
 		const { skatersWithCost } = calculateLesson(lesson);
 		const skaterCost = skatersWithCost.find((entry) => {
-			entry.skaterId === skaterInfo.id;
+			return entry.skaterId === params.id;
 		});
+		console.log(skatersWithCost, params.id, skaterCost);
 		if (!skaterCost) {
 			throw new Error('skater cost not found');
 		}
@@ -35,7 +49,11 @@ export const load: PageServerLoad = async ({ params }) => {
 
 		const { firstName, lastName } = lesson.Coach.User;
 		const coachName = `${firstName} ${lastName}`;
-		const description = getLineItemDescription(numberOfSkaters, lessonTimeInMinutes, coachName);
+		const description = formatSkaterLineItemDescription(
+			numberOfSkaters,
+			lessonTimeInMinutes,
+			coachName
+		);
 		return {
 			id: lesson.id,
 			date: lesson.date,
@@ -47,5 +65,5 @@ export const load: PageServerLoad = async ({ params }) => {
 		};
 	});
 
-	return { skater, lineItems };
+	return { skater, lineItems, lastInvoice: Invoices[0], skaterInfo };
 };

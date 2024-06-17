@@ -1,5 +1,5 @@
 import { inspect } from 'node:util';
-import { calculateLessonQuery, prisma } from './db';
+import { calculateLessonQuery, lastInvoiceQuery, prisma } from './db';
 import { wrapErr, wrapOk } from '$lib/rustResult';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '../defs';
 import { calculateLessonCost } from '$lib/calculateLessonCost';
@@ -18,15 +18,15 @@ type NewInvoice = {
 	invoiceBatchId: string | null;
 };
 
-export function getLineItemDescription(
+export function formatSkaterLineItemDescription(
 	numberOfSkaters: number,
 	lessonTimeInMinutes: number,
 	coachName: string
-) {
+): string {
 	if (numberOfSkaters === 1) {
 		return `${lessonTimeInMinutes} minute private lesson (${coachName})`;
 	}
-	return `${lessonTimeInMinutes} minute group lesson (${coachName})`;
+	return `${lessonTimeInMinutes} minute group (${numberOfSkaters} skaters) lesson (${coachName})`;
 }
 
 function log(input: Parameters<typeof inspect>[0]) {
@@ -38,11 +38,7 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 		// Get Skater Lessons
 		const skatersUnInvoicedLessons = await tx.skater.findMany({
 			include: {
-				Invoices: {
-					where: { NextInvoice: { is: null } },
-					orderBy: { invoiceDate: 'desc' },
-					take: 1
-				},
+				Invoices: lastInvoiceQuery,
 				Account: {
 					include: {
 						AccountTransaction: {
@@ -98,7 +94,7 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 						skaterLessonLessonId: lessonId,
 						amountInCents: amountInCents ?? 0, //TODO figure out better validation
 						date: lessonDate,
-						description: getLineItemDescription(
+						description: formatSkaterLineItemDescription(
 							numberOfSkaters,
 							lessonTimeInMinutes,
 							`${coachFirstName} ${coachLastName}`

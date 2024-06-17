@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { ACCOUNT_TYPE_CODE, type SkaterType } from '../defs';
 export const prisma = new PrismaClient();
 
@@ -65,4 +65,14 @@ export const calculateLessonQuery = {
 			include: { CoachRate: true, User: true }
 		}
 	}
+} as const;
+
+/**
+ * A prisma query object that returns the invoice with no associated "NextInvoice"
+ *  Return the last created invoice
+ */
+export const lastInvoiceQuery: Prisma.InvoiceFindManyArgs = {
+	where: { NextInvoice: { is: null } },
+	orderBy: { invoiceDate: 'desc' },
+	take: 1
 } as const;

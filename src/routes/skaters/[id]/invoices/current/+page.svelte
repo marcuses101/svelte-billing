@@ -2,14 +2,15 @@
 	import type { ComponentProps } from 'svelte';
 	import InvoiceDisplay from './InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
+	import { formatDate } from '$lib/formatDate';
 
 	export let data;
 	const {
 		skater: { firstName, lastName },
-		lineItems
+		lineItems,
+		lastInvoice
 	} = data;
 	const id = 'TBD';
-	const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' }).format;
 	const invoiceDate = formatDate(new Date());
 	const taxes: ComponentProps<InvoiceDisplay>['taxes'] = [
 		{ description: 'HST', percentage: '13%', taxAmount: formatCurrency(69, false) }
@@ -24,17 +25,26 @@
 		}
 	);
 
-	// TODO determine actual charges
 	const chargesTotalInCents = lineItems.reduce(
 		(acc, { amountInCents }) => (acc += amountInCents),
 		0
 	);
+	const previousAmountDueInCents = lastInvoice?.amountDueInCents ?? 0;
+	const paymentsTotal = data.skaterInfo.Account.AccountTransaction.reduce(
+		(acc, { amountInCents }) => acc + amountInCents,
+		0
+	);
+	const outstandingBalanceInCents = previousAmountDueInCents - paymentsTotal;
+	const amountDueInCents = outstandingBalanceInCents + chargesTotalInCents;
 	const chargesTotal = formatCurrency(chargesTotalInCents);
-
-	const amountDue = formatCurrency(100.25, false);
-	const outstandingBalance = formatCurrency(20, false);
-	const payments: ComponentProps<InvoiceDisplay>['payments'] = [];
-	const previousBillAmount = formatCurrency(40);
+	const amountDue = formatCurrency(amountDueInCents);
+	const outstandingBalance = formatCurrency(outstandingBalanceInCents);
+	const payments: ComponentProps<InvoiceDisplay>['payments'] =
+		data.skaterInfo.Account.AccountTransaction.map(({ amountInCents, date }) => ({
+			formattedDate: formatDate(date),
+			paymentAmount: formatCurrency(amountInCents)
+		}));
+	const previousBillAmount = formatCurrency(lastInvoice?.amountDueInCents ?? 0);
 </script>
 
 <InvoiceDisplay
@@ -45,8 +55,8 @@
 	{taxes}
 	{charges}
 	{payments}
-	{previousBillAmount}
 	{amountDue}
+	{previousBillAmount}
 	{chargesTotal}
 	{outstandingBalance}
 />

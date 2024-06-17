@@ -8,7 +8,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		include: {
 			InvoiceLineItems: {
 				orderBy: [{ date: 'asc' }]
-			}
+			},
+			SkaterPaymentAccountTransactions: true
 		}
 	});
 

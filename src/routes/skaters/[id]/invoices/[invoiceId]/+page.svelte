@@ -6,30 +6,30 @@
 
 	export let data;
 
-	const { invoice, skater, lessonsTotalInCents } = data;
-
-	const invoiceDate = formatDate(invoice.invoiceDate);
-
-	const charges: ComponentProps<InvoiceDisplay>['charges'] = invoice.InvoiceLineItems.map(
+	const charges: ComponentProps<InvoiceDisplay>['charges'] = data.invoice.InvoiceLineItems.map(
 		({ amountInCents, date, description }) => ({
 			formattedDate: formatDate(date),
 			chargeAmount: formatCurrency(amountInCents),
 			description
 		})
 	);
-	const props: ComponentProps<InvoiceDisplay> = {
-		id: invoice.id,
-		skaterFirstName: skater.firstName,
-		skaterLastName: skater.lastName,
-		invoiceDate: invoiceDate,
-		charges: charges,
-		payments: [],
-		previousBillAmount: '',
-		outstandingBalance: '',
-		taxes: [],
-		amountDue: '',
-		chargesTotal: formatCurrency(lessonsTotalInCents)
-	};
+	const payments: ComponentProps<InvoiceDisplay>['payments'] =
+		data.invoice.SkaterPaymentAccountTransactions.map(({ amountInCents, date }) => ({
+			formattedDate: formatDate(date),
+			paymentAmount: formatCurrency(amountInCents)
+		}));
 </script>
 
-<InvoiceDisplay {...props} />
+<InvoiceDisplay
+	id={data.invoice.id}
+	skaterFirstName={data.skater.firstName}
+	skaterLastName={data.skater.lastName}
+	invoiceDate={formatDate(data.invoice.invoiceDate)}
+	{charges}
+	{payments}
+	previousBillAmount={formatCurrency(data.invoice.previousAmountDueInCents)}
+	outstandingBalance={formatCurrency(data.invoice.outstandingBalanceInCents)}
+	taxes={[]}
+	amountDue={formatCurrency(data.invoice.amountDueInCents)}
+	chargesTotal={formatCurrency(data.invoice.chargesTotalInCents)}
+/>

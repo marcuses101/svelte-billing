@@ -4,7 +4,6 @@
 		skater: { id },
 		invoices
 	} = data;
-	console.log(invoices);
 	const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' }).format;
 </script>
 

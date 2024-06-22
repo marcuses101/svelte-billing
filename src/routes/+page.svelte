@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let data;
 	const user = data?.user;
+	console.log(user);
 	const userFullName = user && `${user.firstName} ${user.lastName}`;
 </script>
 

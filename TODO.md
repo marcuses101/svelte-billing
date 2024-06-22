@@ -7,10 +7,11 @@
 - [x] Refactor Lessons and Coach charges calculations
 - [x] Update Coach 
 - [x] Currency Input
+- [ ] Authentication
+- [ ] Enable Logging in Caddy
 - [ ] Lock Lessons that have already been billed
 - [ ] Add createdBy createdAt modifiedBy modifiedAt fields to relevant tables
 - [ ] Integrate Email Sending
-- [ ] Authentication
 - [ ] Fix up UI
 - [ ] Refactor a bunch
 - [ ] Standardize Invoice Data Fetching and Display

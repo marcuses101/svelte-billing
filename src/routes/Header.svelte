@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Hamburger from '$lib/icons/Hamburger.svelte';
-
 	export let isLoggedIn: boolean;
 </script>
 
@@ -12,10 +11,14 @@
 		<div class="flex-none">
 			{#if isLoggedIn}
 				<form method="POST" action="/logout">
-					<button class="btn btn-ghost" type="submit">Logout</button>
+					<input type="hidden" name="redirectTo" value="/logged-out" />
+					<button type="submit" class="btn btn-ghost">Logout</button>
 				</form>
 			{:else}
-				<a href="/login" class="btn btn-ghost">Login</a>
+				<form method="POST" action="/login">
+					<input type="hidden" name="redirectTo" value="/overview" />
+					<button type="submit" class="btn btn-ghost">Login</button>
+				</form>
 			{/if}
 		</div>
 		<label for="drawer-input" class="flex lg:hidden drawer-button btn btn-ghost">

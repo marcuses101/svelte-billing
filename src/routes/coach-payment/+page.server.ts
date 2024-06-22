@@ -1,5 +1,5 @@
 import { prisma } from '$lib/server/db';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { ACCOUNT_TRANSACTION_TYPE, ACCOUNT_TYPE_CODE, LEDGER_CODE } from '$lib/defs';
 import { validateRole } from '$lib/validateRole';
@@ -45,7 +45,13 @@ export const load: PageServerLoad = async () => {
 
 export const actions = {
 	default: async ({ request, locals }) => {
-		const isAdmin = validateRole(locals, 'ADMIN');
+		const session = await locals.auth();
+		const user = session?.user;
+		if (!user) {
+			return redirect(303, '/login');
+		}
+		const isAdmin = validateRole(user, 'ADMIN');
+
 		if (!isAdmin) {
 			return fail(403, { message: 'You are not authorized to perform this action' });
 		}

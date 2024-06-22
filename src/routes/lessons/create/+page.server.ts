@@ -42,7 +42,8 @@ function validateForm(
 export const actions = {
 	default: async ({ request, locals }) => {
 		const data = await request.formData();
-		const coachUser = locals.user;
+		const session = await locals.auth();
+		const coachUser = session?.user;
 		if (!coachUser || !coachUser.Coach) {
 			const errorMessage = 'unable to find coach';
 			error(404, errorMessage);

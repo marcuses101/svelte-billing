@@ -1,7 +1,7 @@
 import { getSkaters, prisma } from '$lib/server/db';
 import type { Actions, PageServerLoad } from './$types';
 import { wrapErr, type Result, wrapOk } from '$lib/rustResult';
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const lessonId = params.id;
@@ -50,7 +50,11 @@ function validateForm(
 export const actions = {
 	default: async ({ request, locals, params }) => {
 		const data = await request.formData();
-		const coachUser = locals.user;
+		const session = await locals.auth();
+		if (!session) {
+			return redirect(303, '/login');
+		}
+		const coachUser = session.user;
 		if (!coachUser || !coachUser.Coach) {
 			const errorMessage = 'unable to find coach';
 			error(404, errorMessage);

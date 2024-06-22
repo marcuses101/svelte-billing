@@ -1,4 +1,5 @@
 <script lang="ts">
+	import CurrencyInput from '$lib/components/CurrencyInput.svelte';
 	import { SKATER_TYPE, type SkaterType } from '$lib/defs';
 	const skaterTypeRateIds = Object.values(SKATER_TYPE).map((type) => ({
 		skaterTypeCode: type,
@@ -80,21 +81,7 @@
 		/>
 	</div>
 	{#each skaterTypeRateIds as { id, label, skaterTypeCode }}
-		<div class="form-control w-full max-w-xs">
-			<label for={id} class="label">
-				<span class="label-text">{label}</span>
-			</label>
-			<input
-				{disabled}
-				bind:value={rates[skaterTypeCode]}
-				type="number"
-				name={id}
-				{id}
-				min="0"
-				class="input input-bordered w-full max-w-xs"
-				required
-			/>
-		</div>
+		<CurrencyInput {disabled} {label} name={id} value={rates[skaterTypeCode]} />
 	{/each}
 	{#if !disabled}
 		<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">

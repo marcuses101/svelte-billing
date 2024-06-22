@@ -43,10 +43,11 @@ model Role {
 
 // Define the User table
 model User {
-    id        String  @id @default(uuid())
-    email     String  @unique
-    firstName String?
-    lastName  String?
+    id             String  @id @default(uuid())
+    email          String  @unique
+    hashedPassword String
+    firstName      String?
+    lastName       String?
 
     UserRoles UserRole[]
     Coach     Coach?
@@ -93,11 +94,11 @@ model CoachRate {
 }
 
 model Lesson {
-    id                         String    @id @default(uuid())
-    lessonTimeInMinutes        Int
-    date                       DateTime
-    createdOn                  DateTime  @default(now())
-    modifiedOn                 DateTime?
+    id                  String    @id @default(uuid())
+    lessonTimeInMinutes Int
+    date                DateTime
+    createdOn           DateTime  @default(now())
+    modifiedOn          DateTime?
 
     coachId String
     Coach   Coach  @relation(fields: [coachId], references: [id])

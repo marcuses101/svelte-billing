@@ -9,6 +9,15 @@ import {
 	SKATER_TYPE
 } from '../src/lib/defs';
 import { generateBillingBatch } from '../src/lib/server/generateBillingBatch';
+import { config } from 'dotenv';
+import { hash } from 'bcrypt';
+
+config({ path: './prisma/.env' });
+
+const defaultPassword = process.env.DEFAULT_PASSWORD;
+if (typeof defaultPassword !== 'string') {
+	throw new Error('DEFAULT_PASSWORD environment variable not configured');
+}
 
 const prisma = new PrismaClient();
 
@@ -91,11 +100,15 @@ async function seedAccounting() {
 
 async function seedCoaches() {
 	console.log('Seeding Coaches');
+	if (typeof defaultPassword !== 'string') {
+		throw new Error('invalid DEFAULT_PASSWORD');
+	}
 	const marcus = await prisma.user.create({
 		data: {
 			email: 'mnjconnolly@gmail.com',
 			firstName: 'Marcus',
 			lastName: 'Connolly',
+			hashedPassword: await hash(defaultPassword, 10),
 			UserRoles: {
 				create: [
 					{
@@ -133,6 +146,7 @@ async function seedCoaches() {
 			email: 'laurencelessard@gmail.com',
 			firstName: 'Laurence',
 			lastName: 'Lessard',
+			hashedPassword: await hash(defaultPassword, 10),
 			UserRoles: {
 				create: [
 					{

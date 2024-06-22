@@ -1,5 +1,6 @@
+import type { User } from '../auth';
 import type { Role } from './defs';
 
-export function validateRole(locals: App.Locals, role: Role) {
-	return Boolean(locals.user?.UserRoles?.some(({ roleName }) => roleName === role));
+export function validateRole(user: User, role: Role) {
+	return Boolean(user?.UserRoles?.some(({ roleName }) => roleName === role));
 }

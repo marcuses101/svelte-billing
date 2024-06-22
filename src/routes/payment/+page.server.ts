@@ -1,12 +1,11 @@
 import { getSkaters, prisma } from '$lib/server/db';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { ACCOUNT_TRANSACTION_TYPE, ACCOUNT_TYPE_CODE, LEDGER_CODE } from '$lib/defs';
 import { validateRole } from '$lib/validateRole';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async () => {
 	const skaters = await getSkaters();
-
 	const payments = await prisma.accountTransaction.findMany({
 		where: {
 			accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT
@@ -34,7 +33,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const name = skater ? `${skater.firstName} ${skater.lastName}` : 'unknown';
 		return { date, amountInCents, name };
 	});
-	console.log({ paymentEntries, roles: locals.user?.UserRoles });
 
 	return { skaters, paymentEntries };
 };
@@ -47,7 +45,12 @@ async function getAccountBySkaterId(skaterId: string) {
 
 export const actions = {
 	default: async ({ request, locals }) => {
-		const isAdmin = validateRole(locals, 'ADMIN');
+		const session = await locals.auth();
+		if (!session) {
+			return redirect(303, '/login');
+		}
+		const user = session.user;
+		const isAdmin = validateRole(user, 'ADMIN');
 		if (!isAdmin) {
 			return fail(403, { message: 'You are not authorized to perform this action' });
 		}

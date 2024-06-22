@@ -1,9 +1,14 @@
 import { prisma } from '$lib/server/db';
-import type { ServerLoad } from '@sveltejs/kit';
+import { redirect, type ServerLoad } from '@sveltejs/kit';
 import type { Actions } from './$types';
 
 export const load: ServerLoad = async ({ locals }) => {
-	const coachId = locals.user?.Coach?.id;
+	const session = await locals.auth();
+	if (!session) {
+		return redirect(303, '/login');
+	}
+	const user = session.user;
+	const coachId = user?.Coach?.id;
 	if (!coachId) {
 		return { lessons: [] };
 	}

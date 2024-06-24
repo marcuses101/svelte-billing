@@ -221,7 +221,6 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 				(acc, { amountInCents }) => acc + amountInCents,
 				0
 			);
-			// TODO maybe use complete account transactions to determine the outstanding balance
 
 			const commissionPercentage = coach.commissionPercentage;
 			const coachRevenueInCents = ((100 - commissionPercentage) / 100) * chargesTotalInCents;
@@ -291,6 +290,7 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 				}
 			});
 
+			// TODO: maybe update schema to directly connect this to a coach pay slip
 			// Commission Revenue
 			if (commissionAmountInCents > 0) {
 				await tx.ledgerTransaction.create({

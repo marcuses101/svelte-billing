@@ -52,6 +52,11 @@ async function seedAccounting() {
 				name: 'Accounts Payable',
 				ledgerTypeCode: LEDGER_TYPE.LIABILITY
 			},
+			{
+				code: LEDGER_CODE.HST_TAX_PAYABLE,
+				name: 'Invoicing HST',
+				ledgerTypeCode: LEDGER_TYPE.LIABILITY
+			},
 			{ code: LEDGER_CODE.CASH, name: 'Cash', ledgerTypeCode: LEDGER_TYPE.ASSET },
 			{
 				code: LEDGER_CODE.COMMISSION,

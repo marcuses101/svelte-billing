@@ -8,8 +8,13 @@
 - [x] Update Coach 
 - [x] Currency Input
 - [x] Authentication
+- [ ] Coach Pay Slip Preview
+- [ ] HST logging
+- [ ] Authorization 
+- [ ] Handles UI of Server Errors
+- [ ] Interface for when HST is payed to the government, maybe 
 - [ ] Lock Lessons that have already been billed
-- [ ] Integrate Email Sending
+- [ ] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
 - [ ] Fix up UI
 - [ ] Refactor a bunch
 - [ ] Add createdBy createdAt modifiedBy modifiedAt fields to relevant tables

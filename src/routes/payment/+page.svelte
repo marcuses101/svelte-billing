@@ -1,17 +1,18 @@
 <script lang="ts">
+	import CurrencyInput from '$lib/components/CurrencyInput.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
 	import { formatCurrency } from '$lib/formatCurrency.js';
-	let selectedSkaterId: null | string = null;
+	import { formatDate } from '$lib/formatDate.js';
+
 	export let data;
-	const options = data.skaters.map(({ id, firstName, lastName }) => ({
-		label: `${firstName} ${lastName}`,
-		value: id
+	const options = data.skaterBalances.map(({ fullName, skaterId, balance }) => ({
+		label: `${fullName} (Current Balance: ${formatCurrency(balance)})`,
+		value: skaterId
 	}));
-	const dateFormatter = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' });
 	const rows = data.paymentEntries.map((payment) => {
 		const amount = formatCurrency(payment.amountInCents, true);
-		return { name: payment.name, amount, date: dateFormatter.format(payment.date) };
+		return { name: payment.name, amount, date: formatDate(payment.date) };
 	});
 </script>
 
@@ -20,7 +21,6 @@
 <form class="flex flex-col md:flex-row gap-2 mb-8" method="POST">
 	<select
 		name="skater-id"
-		bind:value={selectedSkaterId}
 		id="skater-id"
 		class="select select-bordered w-full flex md:max-w-sm"
 		required
@@ -30,10 +30,7 @@
 			<option {value}>{label}</option>
 		{/each}
 	</select>
-	<label for="amount" class="input input-bordered flex items-center gap-2">
-		Amount $:
-		<input type="number" min="0" step="0.01" name="amount" id="amount" class="grow" required />
-	</label>
+	<CurrencyInput name="amount-in-cents" />
 	<button type="submit" class="btn btn-primary">Add Payment</button>
 </form>
 

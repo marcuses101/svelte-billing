@@ -1,13 +1,38 @@
 import { prisma } from '$lib/server/db';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { ACCOUNT_TRANSACTION_TYPE, ACCOUNT_TYPE_CODE, LEDGER_CODE } from '$lib/defs';
-import { validateRole } from '$lib/validateRole';
+import type { $Enums } from '@prisma/client';
+import { validateUserIsAdmin } from '$lib/validateUserIsAdmin';
 
 export const load: PageServerLoad = async () => {
-	const coaches = await prisma.coach.findMany({
-		select: { id: true, User: { select: { firstName: true, lastName: true } } }
+	const coachInfo = await prisma.coach.findMany({
+		orderBy: { User: { firstName: 'asc' } },
+		include: {
+			User: { select: { firstName: true, lastName: true } },
+			Account: {
+				include: {
+					AccountTransaction: {
+						select: { amountInCents: true, AccountTransactionType: { select: { type: true } } }
+					}
+				}
+			}
+		}
 	});
+
+	const coachBalances = coachInfo.map(
+		({ id: coachId, User: { firstName, lastName }, Account: { AccountTransaction } }) => {
+			const fullName = `${firstName} ${lastName}`;
+			const balance = AccountTransaction.reduce((acc, transaction) => {
+				const type: $Enums.TransactionType = transaction.AccountTransactionType.type;
+				if (type === 'Credit') {
+					return acc - transaction.amountInCents;
+				}
+				return acc + transaction.amountInCents;
+			}, 0);
+			return { coachId, fullName, balance };
+		}
+	);
 
 	const payments = await prisma.accountTransaction.findMany({
 		where: {
@@ -40,33 +65,32 @@ export const load: PageServerLoad = async () => {
 		return { date, amountInCents, name };
 	});
 
-	return { coaches, paymentEntries };
+	return { coachBalances, paymentEntries };
 };
 
 export const actions = {
 	default: async ({ request, locals }) => {
-		const session = await locals.auth();
-		const user = session?.user;
-		if (!user) {
-			return redirect(303, '/login');
-		}
-		const isAdmin = validateRole(user, 'ADMIN');
-
+		const isAdmin = validateUserIsAdmin(locals);
 		if (!isAdmin) {
 			return fail(403, { message: 'You are not authorized to perform this action' });
 		}
 		const formData = await request.formData();
 		const coachId = formData.get('coach-id');
-		const amount = formData.get('amount');
+		const amountInCentsString = formData.get('amount-in-cents');
 
-		if (!coachId || typeof coachId !== 'string' || !amount || typeof amount !== 'string') {
+		if (
+			!coachId ||
+			typeof coachId !== 'string' ||
+			!amountInCentsString ||
+			typeof amountInCentsString !== 'string'
+		) {
 			return fail(400, {
 				message: 'Both Coach and Amount are required'
 			});
 		}
 
-		const amountInCents = Math.round(parseFloat(amount) * 100);
-		// get skater's account number
+		const amountInCents = parseInt(amountInCentsString, 10);
+
 		const account = await prisma.account.findFirst({
 			where: { accountTypeCode: ACCOUNT_TYPE_CODE.COACH, Coach: { id: coachId } }
 		});
@@ -96,7 +120,3 @@ export const actions = {
 		return { success: true };
 	}
 } satisfies Actions;
-
-// TODO - validate that the user has permission to log a payment
-
-// TODO - Provide the current balance of each skater

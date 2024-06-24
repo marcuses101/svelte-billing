@@ -1,14 +1,14 @@
 <script lang="ts">
-	/** TODO
-    - [ ] Disable Arrow keys
-    - [ ] Move cursor to the end of the text
-	 */
 	import { formatCurrency } from '$lib/formatCurrency';
-	import { wrapOk } from '$lib/rustResult';
 	import type { ChangeEventHandler } from 'svelte/elements';
 
+	/**
+    TODO:
+    - [ ] implement required that prevents submit if 0;
+    */
+
 	export let value: number = 0;
-	export let label: string;
+	export let label: string | undefined = undefined;
 	export let name: string;
 	export let disabled: boolean = false;
 
@@ -35,9 +35,11 @@
 </script>
 
 <div class="form-control w-full max-w-xs">
-	<label for="currency" class="label">
-		<span class="label-text">{label}</span>
-	</label>
+	{#if label}
+		<label for="currency" class="label">
+			<span class="label-text">{label}</span>
+		</label>
+	{/if}
 	<input {disabled} type="hidden" {name} {value} />
 	<input
 		type="text"

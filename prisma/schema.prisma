@@ -67,8 +67,9 @@ model UserRole {
 }
 
 model Coach {
-    id                   String @id @default(uuid())
+    id                   String  @id @default(uuid())
     commissionPercentage Int
+    isHstCharged         Boolean
 
     userId String @unique
     User   User   @relation(fields: [userId], references: [id])
@@ -128,6 +129,7 @@ model Invoice {
     chargesTotalInCents       Int
     outstandingBalanceInCents Int
     previousAmountDueInCents  Int
+    hstAmountInCents          Int
 
     // createdon        datetime  @default(now())
     // createdbyuserid  string
@@ -142,6 +144,9 @@ model Invoice {
 
     PreviousInvoice Invoice? @relation("InvoiceHistory", fields: [previousInvoiceId], references: [id])
     NextInvoice     Invoice? @relation("InvoiceHistory")
+
+    hstLedgerTransactionId String            @unique
+    HstLedgerTransaction   LedgerTransaction @relation(fields: [hstLedgerTransactionId], references: [id])
 
     Skater                           Skater               @relation(fields: [skaterId], references: [id])
     BillingBatch                     BillingBatch?        @relation(fields: [invoiceBatchId], references: [id])
@@ -176,6 +181,7 @@ model CoachPaySlip {
     outstandingBalanceInCents    Int
     commissionAmountInCents      Int
     coachRevenueInCents          Int
+    hstAmountInCents             Int
 
     // TODO add additional data
 
@@ -193,6 +199,12 @@ model CoachPaySlip {
 
     CoachPaymentAccountTransactions AccountTransaction[] @relation("CoachPayment")
     PaySlipChargeAccountTransaction AccountTransaction?
+
+    commissionLedgerTransactionId String?            @unique
+    CommissionLedgerTransaction   LedgerTransaction? @relation("Commission", fields: [commissionLedgerTransactionId], references: [id])
+
+    hstLedgerTransactionId String?            @unique
+    hstLedgerTransaction   LedgerTransaction? @relation("HST", fields: [hstLedgerTransactionId], references: [id])
 }
 
 model CoachPaySlipLineItem {
@@ -321,4 +333,9 @@ model LedgerTransaction {
     accountTransactionId String? @unique
 
     AccountTrasaction AccountTransaction? @relation(fields: [accountTransactionId], references: [id])
+
+    AccociatedHstInvoice Invoice?
+
+    AssociatedCommissionPaySlip CoachPaySlip? @relation("Commission")
+    AssociatedHstPaySlip        CoachPaySlip? @relation("HST")
 }

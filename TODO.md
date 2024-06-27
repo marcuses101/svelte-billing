@@ -8,8 +8,9 @@
 - [x] Update Coach 
 - [x] Currency Input
 - [x] Authentication
-- [ ] Coach Pay Slip Preview
+- [ ] Add description to additional charges
 - [ ] HST logging
+- [ ] Coach Pay Slip Preview
 - [ ] Authorization 
 - [ ] Handles UI of Server Errors
 - [ ] Interface for when HST is payed to the government, maybe 
@@ -21,5 +22,3 @@
 - [ ] Standardize Invoice Data Fetching and Display
 - [ ] Enable Logging in Caddy
 - [ ] Improve Failed log in attempt screen, potentially handle client side instead
-
-

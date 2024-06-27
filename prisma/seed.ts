@@ -53,8 +53,13 @@ async function seedAccounting() {
 				ledgerTypeCode: LEDGER_TYPE.LIABILITY
 			},
 			{
-				code: LEDGER_CODE.HST_TAX_PAYABLE,
+				code: LEDGER_CODE.INVOICING_HST,
 				name: 'Invoicing HST',
+				ledgerTypeCode: LEDGER_TYPE.LIABILITY
+			},
+			{
+				code: LEDGER_CODE.COACH_HST,
+				name: 'Coach HST',
 				ledgerTypeCode: LEDGER_TYPE.LIABILITY
 			},
 			{ code: LEDGER_CODE.CASH, name: 'Cash', ledgerTypeCode: LEDGER_TYPE.ASSET },
@@ -124,6 +129,7 @@ async function seedCoaches() {
 			},
 			Coach: {
 				create: {
+					isHstCharged: true,
 					commissionPercentage: 0,
 					CoachRate: {
 						createMany: {
@@ -162,6 +168,7 @@ async function seedCoaches() {
 			},
 			Coach: {
 				create: {
+					isHstCharged: true,
 					commissionPercentage: 10,
 					CoachRate: {
 						createMany: {

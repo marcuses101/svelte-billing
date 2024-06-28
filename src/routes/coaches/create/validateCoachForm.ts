@@ -14,6 +14,11 @@ export type CoachFormData = {
 export type CoachFormFailure = ActionFailure<{ missingFields: string[] }>;
 
 export function validateCoachForm(data: FormData): Result<CoachFormData, CoachFormFailure> {
+	const isHstChargedString = data.get('is-hst-charged');
+	if (typeof isHstChargedString !== 'string') {
+		return wrapErr(fail(400, { missingFields: ['is-hst-charged'] }));
+	}
+	const isHstCharged = isHstChargedString === 'true';
 	const firstName = data.get('first-name');
 	if (!firstName || typeof firstName !== 'string') {
 		return wrapErr(fail(400, { missingFields: ['first-name'] }));
@@ -55,6 +60,7 @@ export function validateCoachForm(data: FormData): Result<CoachFormData, CoachFo
 		lastName,
 		email,
 		commissionPercentage,
-		coachRates
+		coachRates,
+		isHstCharged
 	});
 }

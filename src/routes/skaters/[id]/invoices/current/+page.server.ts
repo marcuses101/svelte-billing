@@ -1,10 +1,10 @@
 import { calculateLessonQuery, lastInvoiceQuery, prisma } from '$lib/server/db';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { formatSkaterLineItemDescription } from '$lib/server/generateBillingBatch';
 import type { InvoiceLineItem } from '@prisma/client';
 import { calculateLesson } from '$lib/calculateLessonCost';
 import { ACCOUNT_TRANSACTION_TYPE } from '$lib/defs';
+import { formatSkaterLineItemDescription } from '$lib/server/generateSkaterInvoices';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const skaterInfo = await prisma.skater.findUnique({

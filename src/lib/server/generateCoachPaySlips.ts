@@ -3,6 +3,7 @@ import { calculateLessonCost } from '$lib/calculateLessonCost';
 import type { Prisma } from '@prisma/client';
 import { prettyLog } from './prettyLog';
 import { HST_PERCENTAGE } from './shared';
+import { formatCurrency } from '$lib/formatCurrency';
 
 function getCoachesWithInfoForPayslip(tx: Prisma.TransactionClient) {
 	return tx.coach.findMany({
@@ -67,22 +68,25 @@ function processCoachForPaySlip(
 		}
 	);
 
+	// commission is based on the total charges from this billing period;
+	const commissionPercentage = coach.commissionPercentage;
+	const commissionAmountInCents = Math.floor((commissionPercentage / 100) * chargesTotalInCents);
+
+	const coachRevenueInCents = chargesTotalInCents - commissionAmountInCents;
+
+	// calculate HST
+	const hstAmountInCents = coach.isHstCharged
+		? Math.round((HST_PERCENTAGE / 100) * coachRevenueInCents)
+		: 0;
+
 	const previousPaySlip = coach.CoachPaySlips[0];
 	const previousPaySlipAmountInCents = previousPaySlip?.amountDueInCents ?? 0;
 
-	const coachPaymentAccountTransactions = coach.Account.AccountTransaction;
-	const paymentsTotal = coachPaymentAccountTransactions.reduce(
+	const paymentsTotal = coach.Account.AccountTransaction.reduce(
 		(acc, { amountInCents }) => acc + amountInCents,
 		0
 	);
 
-	// TODO review these calculations
-	const commissionPercentage = coach.commissionPercentage;
-	const coachRevenueInCents = ((100 - commissionPercentage) / 100) * chargesTotalInCents;
-	const commissionAmountInCents = (commissionPercentage / 100) * chargesTotalInCents;
-	const hstAmountInCents = coach.isHstCharged
-		? Math.round(coachRevenueInCents * (HST_PERCENTAGE / 100))
-		: 0;
 	if (coachRevenueInCents + commissionAmountInCents !== chargesTotalInCents) {
 		prettyLog({
 			lessonSum: chargesTotalInCents,
@@ -91,9 +95,10 @@ function processCoachForPaySlip(
 		});
 		throw new Error('Commision Calculation Error');
 	}
+
 	const outstandingBalanceInCents = previousPaySlipAmountInCents - paymentsTotal;
-	const amountDueInCents = coachRevenueInCents + outstandingBalanceInCents;
-	return {
+	const amountDueInCents = coachRevenueInCents + outstandingBalanceInCents + hstAmountInCents;
+	const returnValue = {
 		hstAmountInCents,
 		commissionAmountInCents,
 		outstandingBalanceInCents,
@@ -104,6 +109,19 @@ function processCoachForPaySlip(
 		previousPaySlipAmountInCents,
 		coachPaySlipLineItems
 	};
+	console.log({
+		chargesTotalInCents: formatCurrency(chargesTotalInCents),
+		commissionPercentage,
+		commissionAmountInCents: formatCurrency(commissionAmountInCents),
+		coachRevenueInCents: formatCurrency(coachRevenueInCents),
+		hstPercentage: HST_PERCENTAGE,
+		hstAmountInCents: formatCurrency(hstAmountInCents),
+		previousPaySlipAmountInCents: formatCurrency(previousPaySlipAmountInCents),
+		paymentsTotal: formatCurrency(paymentsTotal),
+		outstandingBalanceInCents: formatCurrency(outstandingBalanceInCents),
+		amountDueInCents: formatCurrency(amountDueInCents)
+	});
+	return returnValue;
 }
 
 export async function generateCoachPaySlips(tx: Prisma.TransactionClient, billingBatchId: string) {

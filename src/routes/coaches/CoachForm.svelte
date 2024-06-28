@@ -17,6 +17,7 @@
 		US: 60_00,
 		INTERNATIONAL: 60_00
 	};
+	export let isHstCharged: boolean = false;
 </script>
 
 <form method="POST">
@@ -79,6 +80,19 @@
 			class="input input-bordered w-full max-w-xs"
 			required
 		/>
+	</div>
+	<div class="form-control w-full max-w-xs">
+		<label class="label cursor-pointer">
+			<span class="label-text">Charges HST</span>
+			<input
+				{disabled}
+				type="checkbox"
+				value="true"
+				name="is-hst-charged"
+				bind:checked={isHstCharged}
+				class="checkbox"
+			/>
+		</label>
 	</div>
 	{#each skaterTypeRateIds as { id, label, skaterTypeCode }}
 		<CurrencyInput {disabled} {label} name={id} value={rates[skaterTypeCode]} />

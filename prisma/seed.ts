@@ -324,24 +324,24 @@ async function main() {
 	const coaches = await seedCoaches();
 	const lessons = await seedLessons(skaters, coaches);
 	const billingBatch = await seedBillingBatch();
-	console.log(
-		util.inspect(
-			{
-				ledgers,
-				accountTypes,
-				accountTransactionTypes,
-				skaterTypes,
-				coaches,
-				skaters,
-				roles,
-				lessons,
-				billingBatch
-			},
-			false,
-			null,
-			true /* enable colors */
-		)
-	);
+	// 	console.log(
+	// 		util.inspect(
+	// 			{
+	// 				ledgers,
+	// 				accountTypes,
+	// 				accountTransactionTypes,
+	// 				skaterTypes,
+	// 				coaches,
+	// 				skaters,
+	// 				roles,
+	// 				lessons,
+	// 				billingBatch
+	// 			},
+	// 			false,
+	// 			null,
+	// 			true /* enable colors */
+	// 		)
+	// 	);
 	console.log('Seeding complete');
 }
 

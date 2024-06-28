@@ -18,7 +18,8 @@
 	const {
 		User: { firstName, lastName, email },
 		id,
-		CoachRate
+		CoachRate,
+		isHstCharged
 	} = data.coach;
 
 	const rates = CoachRate.reduce(
@@ -52,4 +53,5 @@
 	email={email ?? ''}
 	{rates}
 	commissionPercentage={data.coach.commissionPercentage ?? 0}
+	{isHstCharged}
 />

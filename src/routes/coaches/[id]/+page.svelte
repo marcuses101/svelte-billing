@@ -9,6 +9,7 @@
 
 	export let data;
 	const { firstName, lastName, email } = data.coach.User;
+	const { isHstCharged } = data.coach;
 	const rates = data.coach.CoachRate.reduce(
 		(acc, { skaterTypeCode, hourlyRateInCents }) => {
 			acc[skaterTypeCode as SkaterType] = hourlyRateInCents;
@@ -46,4 +47,5 @@
 	email={email ?? ''}
 	{rates}
 	commissionPercentage={data.coach.commissionPercentage ?? 0}
+	{isHstCharged}
 />

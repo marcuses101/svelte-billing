@@ -21,6 +21,7 @@ export const actions = {
 				UserRoles: { create: [{ roleName: 'coach' }] },
 				Coach: {
 					create: {
+                        isHstCharged: 
 						commissionPercentage: commissionPercentage,
 						CoachRate: { createMany: { data: coachRates } },
 						Account: {

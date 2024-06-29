@@ -2,7 +2,7 @@ import { calculateLessonQuery, lastInvoiceQuery } from './db';
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '../defs';
 import { calculateLesson } from '$lib/calculateLessonCost';
 import type { Prisma } from '@prisma/client';
-import { HST_PERCENTAGE } from './shared';
+import { HST_PERCENTAGE } from '../shared';
 
 export type NewInvoice = {
 	InvoiceLineItems: {
@@ -104,7 +104,6 @@ function processSkaterInfoForInvoice(
 
 	const previousAmountDueInCents = lastInvoice?.amountDueInCents ?? 0;
 	const outstandingBalanceInCents = previousAmountDueInCents - paymentsTotal;
-	const taxedChargesInCents = chargesTotalInCents + hstAmountInCents;
 	const amountDueInCents = outstandingBalanceInCents + chargesTotalInCents + hstAmountInCents;
 
 	return {
@@ -115,7 +114,6 @@ function processSkaterInfoForInvoice(
 		paymentsTotal,
 		previousAmountDueInCents,
 		outstandingBalanceInCents,
-		taxedChargesInCents,
 		amountDueInCents
 	};
 }
@@ -138,19 +136,9 @@ export async function generateSkaterInvoices(
 			chargesTotalInCents,
 			hstAmountInCents,
 			amountDueInCents,
-			taxedChargesInCents,
 			outstandingBalanceInCents,
 			skaterId
 		} = processSkaterInfoForInvoice(skater);
-
-		// remove hst from the invoices ledger
-		const hstLedgerTransaction = await tx.ledgerTransaction.create({
-			data: {
-				amountInCents: hstAmountInCents,
-				debitLedgerCode: LEDGER_CODE.INVOICING,
-				creditLedgerCode: LEDGER_CODE.INVOICING_HST
-			}
-		});
 
 		const newInvoice = await tx.invoice.create({
 			data: {
@@ -163,7 +151,6 @@ export async function generateSkaterInvoices(
 				chargesTotalInCents,
 				hstAmountInCents,
 				previousInvoiceId: lastInvoice?.id,
-				hstLedgerTransactionId: hstLedgerTransaction.id,
 				InvoiceLineItems: {
 					createMany: {
 						data: lineItemsData
@@ -175,13 +162,22 @@ export async function generateSkaterInvoices(
 				InvoiceChargeAccountTransaction: {
 					create: {
 						accountId: skater.accountId,
-						amountInCents: taxedChargesInCents,
+						amountInCents: chargesTotalInCents + hstAmountInCents,
 						accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_CHARGE,
 						LedgerTransaction: {
-							create: {
-								amountInCents: taxedChargesInCents,
-								debitLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE,
-								creditLedgerCode: LEDGER_CODE.INVOICING
+							createMany: {
+								data: [
+									{
+										amountInCents: chargesTotalInCents,
+										debitLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE,
+										creditLedgerCode: LEDGER_CODE.INVOICING
+									},
+									{
+										amountInCents: hstAmountInCents,
+										debitLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE,
+										creditLedgerCode: LEDGER_CODE.INVOICING_HST
+									}
+								]
 							}
 						}
 					}

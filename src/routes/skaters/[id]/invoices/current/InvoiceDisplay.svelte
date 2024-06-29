@@ -7,14 +7,14 @@
 	export let payments: { formattedDate: string; paymentAmount: string }[];
 	export let previousBillAmount: string;
 	export let outstandingBalance: string;
-	export let taxes: { description: string; percentage: string; taxAmount: string }[];
+	export let taxes: { description: string; percentage: number; taxAmount: string }[];
 	export let amountDue: string;
 	export let chargesTotal: string;
 </script>
 
-<div class="max-w-none">
+<div class="max-w-5xl mx-auto mt-4">
 	<section class="flex justify-between mb-4 px-4">
-		<h2 class="text-xl font-bold">
+		<h2 class="text-4xl font-bold">
 			{skaterFirstName}
 			{skaterLastName}
 		</h2>
@@ -29,28 +29,30 @@
 			class="flex-1 min-w-[min(300px,100%)] justify-between card overflow-hidden bg-base-300 text-base-content"
 		>
 			<h3 class="text-xl m-4 font-semibold">Previous Bill</h3>
-			<table class="table">
-				<tbody>
-					<tr>
-						<td>Previous bill amount</td>
-						<td>{previousBillAmount}</td>
-					</tr>
-					{#each payments as payment}
+			<div class="flex flex-1 flex-col justify-between">
+				<table class="table">
+					<tbody>
 						<tr>
-							<td>Payment - {payment.formattedDate}</td>
-							<td> {payment.paymentAmount}</td>
+							<td>Previous bill amount</td>
+							<td>{previousBillAmount}</td>
 						</tr>
-					{/each}
-					<tr>
-						<td class="whitespace-pre">{' '}</td>
-						<td class="whitespace-pre">{' '}</td>
-					</tr>
-					<tr class="bg-neutral text-neutral-content text-lg">
-						<td>Outstanding Balance</td>
-						<td>{outstandingBalance}</td>
-					</tr>
-				</tbody>
-			</table>
+						{#each payments as payment}
+							<tr>
+								<td>Payment - {payment.formattedDate}</td>
+								<td> {payment.paymentAmount}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				<table class="table">
+					<tbody>
+						<tr class="bg-neutral text-neutral-content text-lg">
+							<td>Outstanding Balance</td>
+							<td>{outstandingBalance}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</article>
 		<article
 			class="flex-1 min-w-[min(300px,100%)] justify-between card overflow-hidden bg-base-300 text-base-content"
@@ -68,7 +70,7 @@
 					</tr>
 					{#each taxes as tax}
 						<tr>
-							<td>{tax.description} {tax.percentage}</td>
+							<td>{tax.description} ({tax.percentage}%)</td>
 							<td>{tax.taxAmount}</td>
 						</tr>
 					{/each}

@@ -2,6 +2,7 @@
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
 	import type { PaySlipData } from '$lib/server/db';
+	import { HST_PERCENTAGE } from '$lib/shared';
 
 	export let data: PaySlipData;
 	const { firstName, lastName } = data.Coach.User;
@@ -11,11 +12,9 @@
 	const previousPaySlipAmount = formatCurrency(data.previousPaySlipAmountInCents ?? 0);
 	const payments = data.CoachPaymentAccountTransactions.map((payment) => ({
 		paymentDate: formatDate(payment.date),
-		paymentAmount: formatCurrency(payment.amountInCents)
+		paymentAmount: formatCurrency(-payment.amountInCents)
 	}));
 	const outstandingBalance = formatCurrency(data.outstandingBalanceInCents);
-	const chargesTotal = formatCurrency(data.chargesTotalInCents);
-	const amountDue = formatCurrency(data.amountDueInCents);
 	const charges = data.CoachPaySlipLineItems.map((line) => {
 		return {
 			date: formatDate(line.date),
@@ -23,10 +22,16 @@
 			amount: formatCurrency(line.amountInCents)
 		};
 	});
-	// TODO show commission;
+	const chargesTotal = formatCurrency(data.chargesTotalInCents);
+	const commission = formatCurrency(-data.commissionAmountInCents);
+	const subtotal = formatCurrency(data.chargesTotalInCents - data.commissionAmountInCents);
+
+	const hst = formatCurrency(data.hstAmountInCents);
+
+	const amountDue = formatCurrency(data.amountDueInCents);
 </script>
 
-<div class="max-w-none">
+<div class="max-w-5xl mx-auto">
 	<section class="flex justify-between mb-4 px-4">
 		<h2 class="text-xl font-bold">
 			{name}
@@ -41,28 +46,28 @@
 			class="flex-1 min-w-[min(300px,100%)] justify-between card overflow-hidden bg-base-300 text-base-content"
 		>
 			<h3 class="text-xl m-4 font-semibold">Previous Bill</h3>
-			<table class="table">
-				<tbody>
-					<tr>
-						<td>Previous bill amount</td>
-						<td>{previousPaySlipAmount}</td>
-					</tr>
-					{#each payments as payment}
+			<div class="flex flex-1 justify-between flex-col">
+				<table class="table">
+					<tbody>
 						<tr>
-							<td>Payment - {payment.paymentDate}</td>
-							<td>{payment.paymentAmount}</td>
+							<td>Previous bill amount</td>
+							<td>{previousPaySlipAmount}</td>
 						</tr>
-					{/each}
-					<tr>
-						<td class="whitespace-pre">{' '}</td>
-						<td class="whitespace-pre">{' '}</td>
-					</tr>
+						{#each payments as payment}
+							<tr>
+								<td>Payment - {payment.paymentDate}</td>
+								<td>{payment.paymentAmount}</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				<table class="table">
 					<tr class="bg-neutral text-neutral-content text-lg">
 						<td>Outstanding Balance</td>
 						<td>{outstandingBalance}</td>
 					</tr>
-				</tbody>
-			</table>
+				</table>
+			</div>
 		</article>
 		<article
 			class="flex-1 min-w-[min(300px,100%)] justify-between card overflow-hidden bg-base-300 text-base-content"
@@ -71,15 +76,35 @@
 			<table class="table">
 				<tbody>
 					<tr>
-						<td>Outstanding Balance</td>
-						<td>{outstandingBalance}</td>
-					</tr>
-					<tr>
 						<td>Charges Total</td>
 						<td>{chargesTotal}</td>
 					</tr>
+					{#if data.commissionAmountInCents > 0}
+						<tr>
+							<td>Commission ({data.commissionPercentage}%)</td>
+							<td>{commission}</td>
+						</tr>
+					{/if}
+					<tr>
+						<td class="font-bold">Subtotal</td>
+						<td>{subtotal}</td>
+					</tr>
+					<tr>
+						<td class="whitespace-pre">{' '}</td>
+						<td class="whitespace-pre">{' '}</td>
+					</tr>
+					<tr>
+						<td>Outstanding Balance</td>
+						<td>{outstandingBalance}</td>
+					</tr>
+					{#if data.hstAmountInCents > 0}
+						<tr>
+							<td>HST ({HST_PERCENTAGE}%)</td>
+							<td>{hst}</td>
+						</tr>
+					{/if}
 					<tr class="bg-neutral text-neutral-content text-lg">
-						<td>Amount Due</td>
+						<td>Amount Owed</td>
 						<td>{amountDue}</td>
 					</tr>
 				</tbody>

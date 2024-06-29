@@ -8,6 +8,7 @@
 - [x] Update Coach 
 - [x] Currency Input
 - [x] Authentication
+- [ ] Password Creation
 - [ ] Add description to additional charges
 - [ ] HST logging
 - [ ] Coach Pay Slip Preview

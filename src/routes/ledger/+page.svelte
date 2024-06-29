@@ -1,14 +1,21 @@
 <script lang="ts">
 	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { LEDGER_TYPE } from '$lib/defs.js';
 	import { formatCurrency } from '$lib/formatCurrency';
-
 	export let data;
+
+	const ledgerTypes = Object.values(LEDGER_TYPE);
+	const ledgers = Object.entries(data.ledgerSummary).sort((a, b) => {
+		const aTypeIndex = ledgerTypes.indexOf(a[1].ledgerType);
+		const bTypeIndex = ledgerTypes.indexOf(b[1].ledgerType);
+		return aTypeIndex > bTypeIndex ? 1 : -1;
+	});
 </script>
 
 <PageHeader title="Ledgers" />
 
 <div class="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-x-8 gap-y-4">
-	{#each Object.entries(data.ledgerSummary) as [key, { ledgerType, positiveTransactionType, debitSumInCents, balanceInCents, creditSumInCents }]}
+	{#each ledgers as [key, { ledgerType, positiveTransactionType, debitSumInCents, balanceInCents, creditSumInCents }]}
 		<div
 			class="stats shadow-lg border"
 			class:border-primary={positiveTransactionType === 'Debit'}

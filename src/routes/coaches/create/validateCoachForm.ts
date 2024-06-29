@@ -9,6 +9,7 @@ export type CoachFormData = {
 	email: string;
 	commissionPercentage: number;
 	coachRates: { skaterTypeCode: SkaterType; hourlyRateInCents: number }[];
+	isHstCharged: boolean;
 };
 
 export type CoachFormFailure = ActionFailure<{ missingFields: string[] }>;

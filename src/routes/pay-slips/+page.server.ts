@@ -9,5 +9,6 @@ export const load: PageServerLoad = async () => {
 			Coach: { select: { id: true, User: { select: { firstName: true, lastName: true } } } }
 		}
 	});
+	console.log(paySlips);
 	return { paySlips };
 };

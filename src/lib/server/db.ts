@@ -21,6 +21,19 @@ export async function getPayslipById(id: string) {
 	return paySlip;
 }
 
+export async function getInvoiceById(id: string) {
+	return prisma.invoice.findUnique({
+		where: { id },
+		include: {
+			Skater: { select: { firstName: true, lastName: true } },
+			InvoiceLineItems: true,
+			SkaterPaymentAccountTransactions: true
+		}
+	});
+}
+
+export type InvoiceData = Exclude<Awaited<ReturnType<typeof getInvoiceById>>, null>;
+
 export type PaySlipData = Exclude<Awaited<ReturnType<typeof getPayslipById>>, null>;
 
 export function getSkaters() {

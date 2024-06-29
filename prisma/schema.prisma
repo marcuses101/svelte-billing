@@ -138,19 +138,17 @@ model Invoice {
     // modifiedbyuserid string?
     // modifiedbyuser   user?     @relation("modifieruser", fields: [modifiedbyuserid], references: [id])
 
-    skaterId          String
-    invoiceBatchId    String?
-    previousInvoiceId String? @unique
+    skaterId       String
+    invoiceBatchId String?
 
-    PreviousInvoice Invoice? @relation("InvoiceHistory", fields: [previousInvoiceId], references: [id])
-    NextInvoice     Invoice? @relation("InvoiceHistory")
+    previousInvoiceId String?  @unique
+    PreviousInvoice   Invoice? @relation("InvoiceHistory", fields: [previousInvoiceId], references: [id])
+    NextInvoice       Invoice? @relation("InvoiceHistory")
 
-    hstLedgerTransactionId String            @unique
-    HstLedgerTransaction   LedgerTransaction @relation(fields: [hstLedgerTransactionId], references: [id])
+    Skater           Skater            @relation(fields: [skaterId], references: [id])
+    BillingBatch     BillingBatch?     @relation(fields: [invoiceBatchId], references: [id])
+    InvoiceLineItems InvoiceLineItem[]
 
-    Skater                           Skater               @relation(fields: [skaterId], references: [id])
-    BillingBatch                     BillingBatch?        @relation(fields: [invoiceBatchId], references: [id])
-    InvoiceLineItems                 InvoiceLineItem[]
     InvoiceChargeAccountTransaction  AccountTransaction?  @relation("InvoiceCharge")
     SkaterPaymentAccountTransactions AccountTransaction[] @relation("SkaterPayment")
 }
@@ -180,6 +178,7 @@ model CoachPaySlip {
     chargesTotalInCents          Int
     outstandingBalanceInCents    Int
     commissionAmountInCents      Int
+    commissionPercentage         Int
     coachRevenueInCents          Int
     hstAmountInCents             Int
 
@@ -197,14 +196,8 @@ model CoachPaySlip {
 
     CoachPaySlipLineItems CoachPaySlipLineItem[]
 
+    PaySlipChargeAccountTransaction AccountTransaction?  @relation("CoachPaySlipCharge")
     CoachPaymentAccountTransactions AccountTransaction[] @relation("CoachPayment")
-    PaySlipChargeAccountTransaction AccountTransaction?
-
-    commissionLedgerTransactionId String?            @unique
-    CommissionLedgerTransaction   LedgerTransaction? @relation("Commission", fields: [commissionLedgerTransactionId], references: [id])
-
-    hstLedgerTransactionId String?            @unique
-    hstLedgerTransaction   LedgerTransaction? @relation("HST", fields: [hstLedgerTransactionId], references: [id])
 }
 
 model CoachPaySlipLineItem {
@@ -280,7 +273,6 @@ model Account {
     @@unique([name, accountTypeCode])
 }
 
-// maybe account transactions should have an associated ledger transaction. Could be optional? TBD
 model AccountTransaction {
     id                         String   @id @default(uuid())
     accountId                  String
@@ -288,18 +280,19 @@ model AccountTransaction {
     amountInCents              Int
     accountTransactionTypeCode String
 
-    ledgerTransactionId      String? @unique
-    chargeInvoiceId          String? @unique
-    paymentRecordedInvoiceId String? @unique
-    paymentInvoiceId         String? @unique
-    coachPaySlipId           String? @unique
-    coachPaymentPaySlipId    String? @unique
+    chargeInvoiceId String?  @unique
+    InvoiceCharged  Invoice? @relation("InvoiceCharge", fields: [chargeInvoiceId], references: [id])
 
-    InvoiceCharged         Invoice?           @relation("InvoiceCharge", fields: [chargeInvoiceId], references: [id])
-    PaymentRecordedInvoice Invoice?           @relation("SkaterPayment", fields: [paymentRecordedInvoiceId], references: [id])
-    CoachPaymentPaySlip    CoachPaySlip?      @relation("CoachPayment", fields: [coachPaymentPaySlipId], references: [id])
-    CoachPaySlip           CoachPaySlip?      @relation(fields: [coachPaySlipId], references: [id])
-    LedgerTransaction      LedgerTransaction?
+    paymentRecordedInvoiceId String?
+    PaymentRecordedInvoice   Invoice? @relation("SkaterPayment", fields: [paymentRecordedInvoiceId], references: [id])
+
+    coachPaySlipId String?       @unique
+    CoachPaySlip   CoachPaySlip? @relation("CoachPaySlipCharge", fields: [coachPaySlipId], references: [id])
+
+    coachPaymentPaySlipId String?
+    CoachPaymentPaySlip   CoachPaySlip? @relation("CoachPayment", fields: [coachPaymentPaySlipId], references: [id])
+
+    LedgerTransaction LedgerTransaction[]
 
     Account                Account                @relation(fields: [accountId], references: [id])
     AccountTransactionType AccountTransactionType @relation(fields: [accountTransactionTypeCode], references: [code])
@@ -330,12 +323,7 @@ model LedgerTransaction {
     date             DateTime @default(now())
     amountInCents    Int
 
-    accountTransactionId String? @unique
+    accountTransactionId String?
 
     AccountTrasaction AccountTransaction? @relation(fields: [accountTransactionId], references: [id])
-
-    AccociatedHstInvoice Invoice?
-
-    AssociatedCommissionPaySlip CoachPaySlip? @relation("Commission")
-    AssociatedHstPaySlip        CoachPaySlip? @relation("HST")
 }

@@ -3,6 +3,7 @@
 	import InvoiceDisplay from '../current/InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
+	import { HST_PERCENTAGE } from '$lib/shared';
 
 	export let data;
 
@@ -27,9 +28,15 @@
 	invoiceDate={formatDate(data.invoice.invoiceDate)}
 	{charges}
 	{payments}
+	taxes={[
+		{
+			description: 'HST',
+			percentage: HST_PERCENTAGE,
+			taxAmount: formatCurrency(data.invoice.hstAmountInCents)
+		}
+	]}
 	previousBillAmount={formatCurrency(data.invoice.previousAmountDueInCents)}
 	outstandingBalance={formatCurrency(data.invoice.outstandingBalanceInCents)}
-	taxes={[]}
 	amountDue={formatCurrency(data.invoice.amountDueInCents)}
 	chargesTotal={formatCurrency(data.invoice.chargesTotalInCents)}
 />

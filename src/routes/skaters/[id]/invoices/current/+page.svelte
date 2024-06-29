@@ -3,6 +3,7 @@
 	import InvoiceDisplay from './InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
+	import { HST_PERCENTAGE } from '$lib/shared';
 
 	export let data;
 	const {
@@ -12,9 +13,6 @@
 	} = data;
 	const id = 'TBD';
 	const invoiceDate = formatDate(new Date());
-	const taxes: ComponentProps<InvoiceDisplay>['taxes'] = [
-		{ description: 'HST', percentage: '13%', taxAmount: formatCurrency(69, false) }
-	];
 	const charges: ComponentProps<InvoiceDisplay>['charges'] = lineItems.map(
 		({ date, amountInCents, description }) => {
 			return {
@@ -29,6 +27,13 @@
 		(acc, { amountInCents }) => (acc += amountInCents),
 		0
 	);
+	const taxes: ComponentProps<InvoiceDisplay>['taxes'] = [
+		{
+			description: 'HST',
+			percentage: HST_PERCENTAGE,
+			taxAmount: formatCurrency(Math.round(chargesTotalInCents * (HST_PERCENTAGE / 100)))
+		}
+	];
 	const previousAmountDueInCents = lastInvoice?.amountDueInCents ?? 0;
 	const paymentsTotal = data.skaterInfo.Account.AccountTransaction.reduce(
 		(acc, { amountInCents }) => acc + amountInCents,
@@ -42,7 +47,7 @@
 	const payments: ComponentProps<InvoiceDisplay>['payments'] =
 		data.skaterInfo.Account.AccountTransaction.map(({ amountInCents, date }) => ({
 			formattedDate: formatDate(date),
-			paymentAmount: formatCurrency(amountInCents)
+			paymentAmount: formatCurrency(-amountInCents)
 		}));
 	const previousBillAmount = formatCurrency(lastInvoice?.amountDueInCents ?? 0);
 </script>

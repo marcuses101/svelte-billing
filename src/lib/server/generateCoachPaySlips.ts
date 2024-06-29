@@ -2,7 +2,7 @@ import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '../defs';
 import { calculateLessonCost } from '$lib/calculateLessonCost';
 import type { Prisma } from '@prisma/client';
 import { prettyLog } from './prettyLog';
-import { HST_PERCENTAGE } from './shared';
+import { HST_PERCENTAGE } from '../shared';
 import { formatCurrency } from '$lib/formatCurrency';
 
 function getCoachesWithInfoForPayslip(tx: Prisma.TransactionClient) {
@@ -98,6 +98,7 @@ function processCoachForPaySlip(
 
 	const outstandingBalanceInCents = previousPaySlipAmountInCents - paymentsTotal;
 	const amountDueInCents = coachRevenueInCents + outstandingBalanceInCents + hstAmountInCents;
+
 	const returnValue = {
 		hstAmountInCents,
 		commissionAmountInCents,
@@ -109,6 +110,7 @@ function processCoachForPaySlip(
 		previousPaySlipAmountInCents,
 		coachPaySlipLineItems
 	};
+
 	console.log({
 		chargesTotalInCents: formatCurrency(chargesTotalInCents),
 		commissionPercentage,
@@ -143,7 +145,34 @@ export async function generateCoachPaySlips(tx: Prisma.TransactionClient, billin
 			coachPaySlipLineItems
 		} = processCoachForPaySlip(coach);
 
-		const paySlip = await tx.coachPaySlip.create({
+		const ledgerTransactions: Prisma.LedgerTransactionCreateManyInput[] = [
+			{
+				amountInCents: coachRevenueInCents,
+				debitLedgerCode: LEDGER_CODE.INVOICING,
+				creditLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE
+			}
+		];
+		if (commissionAmountInCents > 0) {
+			ledgerTransactions.push({
+				amountInCents: commissionAmountInCents,
+				debitLedgerCode: LEDGER_CODE.INVOICING,
+				creditLedgerCode: LEDGER_CODE.COMMISSION
+			});
+		}
+		if (hstAmountInCents > 0) {
+			ledgerTransactions.push({
+				amountInCents: hstAmountInCents,
+				debitLedgerCode: LEDGER_CODE.INVOICING_HST,
+				creditLedgerCode: LEDGER_CODE.COACH_HST
+			});
+			ledgerTransactions.push({
+				amountInCents: hstAmountInCents,
+				debitLedgerCode: LEDGER_CODE.COACH_HST,
+				creditLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE
+			});
+		}
+
+		await tx.coachPaySlip.create({
 			data: {
 				billingBatchId: billingBatchId,
 				previousCoachPaySlipId,
@@ -152,9 +181,14 @@ export async function generateCoachPaySlips(tx: Prisma.TransactionClient, billin
 				hstAmountInCents,
 				coachRevenueInCents,
 				chargesTotalInCents,
+				commissionPercentage: coach.commissionPercentage,
 				commissionAmountInCents,
 				outstandingBalanceInCents,
 				previousPaySlipAmountInCents,
+				CoachPaymentAccountTransactions: {
+					connect: coach.Account.AccountTransaction.map(({ id }) => ({ id }))
+				},
+
 				CoachPaySlipLineItems: {
 					createMany: {
 						data: coachPaySlipLineItems
@@ -162,39 +196,17 @@ export async function generateCoachPaySlips(tx: Prisma.TransactionClient, billin
 				},
 				PaySlipChargeAccountTransaction: {
 					create: {
-						amountInCents: coachRevenueInCents,
+						amountInCents: coachRevenueInCents + hstAmountInCents,
 						accountId: coach.accountId,
 						accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_CHARGE,
 						LedgerTransaction: {
-							create: {
-								amountInCents: coachRevenueInCents,
-								debitLedgerCode: LEDGER_CODE.INVOICING,
-								creditLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE
+							createMany: {
+								data: ledgerTransactions
 							}
 						}
 					}
 				}
 			}
 		});
-		if (commissionAmountInCents > 0) {
-			await tx.ledgerTransaction.create({
-				data: {
-					amountInCents: commissionAmountInCents,
-					debitLedgerCode: LEDGER_CODE.INVOICING,
-					creditLedgerCode: LEDGER_CODE.COMMISSION,
-					AssociatedCommissionPaySlip: { connect: { id: paySlip.id } }
-				}
-			});
-		}
-		// should hst be calculated before or after?
-		if (hstAmountInCents > 0) {
-			await tx.ledgerTransaction.create({
-				data: {
-					amountInCents: hstAmountInCents,
-					debitLedgerCode: LEDGER_CODE.INVOICING_HST,
-					creditLedgerCode: LEDGER_CODE.COACH_HST
-				}
-			});
-		}
 	}
 }

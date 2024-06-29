@@ -1,7 +1,9 @@
+import { env } from '$env/dynamic/private';
 import { prisma } from '$lib/server/db';
 import type { Actions } from './$types';
 import { ACCOUNT_TYPE_CODE } from '$lib/defs';
 import { validateCoachForm } from './validateCoachForm';
+import { hash } from 'bcrypt';
 
 export const actions = {
 	default: async ({ request }) => {
@@ -10,18 +12,26 @@ export const actions = {
 		if (!coachFormValidationResult.ok) {
 			return coachFormValidationResult.error;
 		}
-		const { firstName, lastName, email, commissionPercentage, coachRates } =
+		const { firstName, lastName, email, commissionPercentage, coachRates, isHstCharged } =
 			coachFormValidationResult.value;
+		const defaultPassword = env.DEFAULT_PASSWORD;
+		if (!defaultPassword) {
+			// TODO update this with better password creation
+			throw new Error('default password not configured');
+		}
+
+		const hashedPassword = await hash(defaultPassword, 10);
 
 		const coach = await prisma.user.create({
 			data: {
 				firstName,
 				lastName,
 				email,
+				hashedPassword,
 				UserRoles: { create: [{ roleName: 'coach' }] },
 				Coach: {
 					create: {
-                        isHstCharged: 
+						isHstCharged,
 						commissionPercentage: commissionPercentage,
 						CoachRate: { createMany: { data: coachRates } },
 						Account: {

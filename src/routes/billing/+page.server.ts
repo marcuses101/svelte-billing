@@ -11,6 +11,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		error(403, 'You are not authorized to access this page');
 	}
 	const baseBillingBatch = await prisma.billingBatch.findMany({
+		orderBy: { createdOn: 'desc' },
 		include: { Invoices: true, CoachPaySlips: true }
 	});
 	const billingBatch = baseBillingBatch.map((batch) => {

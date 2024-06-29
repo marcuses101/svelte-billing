@@ -1,4 +1,3 @@
-import util from 'util';
 import { Account, Coach, Lesson, PrismaClient, Role, Skater } from '@prisma/client';
 import {
 	LEDGER_CODE,
@@ -209,7 +208,18 @@ type SkaterEntry = Skater & { Account: Account };
  * */
 async function seedSkaters() {
 	console.log('Seed Skaters');
-	const numbers = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+	const numbers = [
+		'Abby',
+		'Brenda',
+		'Caroline',
+		'Evan',
+		'Fiona',
+		'Gertrude',
+		'Hilda',
+		'Ilia',
+		'James',
+		'Xavier'
+	];
 
 	const skaters: SkaterEntry[] = [];
 	for (const num of numbers) {
@@ -324,24 +334,6 @@ async function main() {
 	const coaches = await seedCoaches();
 	const lessons = await seedLessons(skaters, coaches);
 	const billingBatch = await seedBillingBatch();
-	// 	console.log(
-	// 		util.inspect(
-	// 			{
-	// 				ledgers,
-	// 				accountTypes,
-	// 				accountTransactionTypes,
-	// 				skaterTypes,
-	// 				coaches,
-	// 				skaters,
-	// 				roles,
-	// 				lessons,
-	// 				billingBatch
-	// 			},
-	// 			false,
-	// 			null,
-	// 			true /* enable colors */
-	// 		)
-	// 	);
 	console.log('Seeding complete');
 }
 

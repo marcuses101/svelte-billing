@@ -11,7 +11,6 @@
 	export let lastName: string = '';
 	export let email: string = '';
 	export let commissionPercentage: number = 0;
-	export let showReset: boolean = true;
 	export let rates: Record<SkaterType, number> = {
 		RESIDENT: 60_00,
 		US: 60_00,

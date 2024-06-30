@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ComponentProps } from 'svelte';
-	import InvoiceDisplay from '../current/InvoiceDisplay.svelte';
+	import InvoiceDisplay from '$lib/components/InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
 	import { HST_PERCENTAGE } from '$lib/shared';
@@ -28,13 +28,7 @@
 	invoiceDate={formatDate(data.invoice.invoiceDate)}
 	{charges}
 	{payments}
-	taxes={[
-		{
-			description: 'HST',
-			percentage: HST_PERCENTAGE,
-			taxAmount: formatCurrency(data.invoice.hstAmountInCents)
-		}
-	]}
+	hstAmount={formatCurrency(data.invoice.hstAmountInCents)}
 	previousBillAmount={formatCurrency(data.invoice.previousAmountDueInCents)}
 	outstandingBalance={formatCurrency(data.invoice.outstandingBalanceInCents)}
 	amountDue={formatCurrency(data.invoice.amountDueInCents)}

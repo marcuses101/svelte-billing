@@ -1,11 +1,10 @@
 <script lang="ts">
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { page } from '$app/stores';
-	import InvoiceDisplay from '../../skaters/[id]/invoices/current/InvoiceDisplay.svelte';
+	import InvoiceDisplay from '$lib/components/InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
 	import type { ComponentProps } from 'svelte';
-	import { HST_PERCENTAGE } from '$lib/shared';
 	export let data;
 
 	const charges: ComponentProps<InvoiceDisplay>['charges'] = data.invoice.InvoiceLineItems.map(
@@ -20,7 +19,6 @@
 			formattedDate: formatDate(date),
 			paymentAmount: formatCurrency(-amountInCents)
 		}));
-	console.log({ data, payments, charges });
 </script>
 
 <PageHeader title={`Invoice - ${$page.params.id}`} />
@@ -34,7 +32,7 @@
 	{payments}
 	previousBillAmount={formatCurrency(data.invoice.previousAmountDueInCents)}
 	outstandingBalance={formatCurrency(data.invoice.outstandingBalanceInCents)}
-	taxes={[{taxAmount: formatCurrency(data.invoice.hstAmountInCents),percentage:HST_PERCENTAGE, description:"HST"}]}
+	hstAmount={formatCurrency(data.invoice.hstAmountInCents)}
 	amountDue={formatCurrency(data.invoice.amountDueInCents)}
 	chargesTotal={formatCurrency(data.invoice.chargesTotalInCents)}
 />

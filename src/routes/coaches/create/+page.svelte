@@ -2,8 +2,8 @@
 	import type { ActionData } from './$types';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
-	import CoachForm from '../CoachForm.svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import CoachForm from '$lib/components/CoachForm.svelte';
 	export let form: ActionData;
 	let coachFullName = form?.coach?.firstName + ' ' + form?.coach?.lastName;
 </script>

@@ -9,17 +9,18 @@
 - [x] Currency Input
 - [x] Authentication
 - [x] HST logging
-- [ ] Password Creation
-- [ ] Add description to additional charges
 - [ ] Coach Pay Slip Preview
 - [ ] Authorization 
+- [ ] Integrate Email Sending (Postmark)[https://postmarkapp.com/] 
+    - Send Email UI on generate bills
 - [ ] Handles UI of Server Errors
-- [ ] Interface for when HST is payed to the government, maybe 
 - [ ] Lock Lessons that have already been billed
-- [ ] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
 - [ ] Fix up UI
 - [ ] Refactor a bunch
 - [ ] Add createdBy createdAt modifiedBy modifiedAt fields to relevant tables
 - [ ] Standardize Invoice Data Fetching and Display
 - [ ] Enable Logging in Caddy
 - [ ] Improve Failed log in attempt screen, potentially handle client side instead
+- [ ] Password Creation
+- [ ] Additional charges UI 
+- [ ] Interface for when HST is payed to the government, maybe 

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { HST_PERCENTAGE } from '$lib/shared';
+
 	export let id: string;
 	export let skaterFirstName: string;
 	export let skaterLastName: string;
@@ -7,7 +9,7 @@
 	export let payments: { formattedDate: string; paymentAmount: string }[];
 	export let previousBillAmount: string;
 	export let outstandingBalance: string;
-	export let taxes: { description: string; percentage: number; taxAmount: string }[];
+	export let hstAmount: string;
 	export let amountDue: string;
 	export let chargesTotal: string;
 </script>
@@ -68,12 +70,10 @@
 						<td>Charges Total</td>
 						<td>{chargesTotal}</td>
 					</tr>
-					{#each taxes as tax}
-						<tr>
-							<td>{tax.description} ({tax.percentage}%)</td>
-							<td>{tax.taxAmount}</td>
-						</tr>
-					{/each}
+					<tr>
+						<td>HST ({HST_PERCENTAGE}%)</td>
+						<td>{hstAmount}</td>
+					</tr>
 					<tr class="bg-neutral text-neutral-content text-lg">
 						<td>Amount Due</td>
 						<td>{amountDue}</td>

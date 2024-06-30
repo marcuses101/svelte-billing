@@ -1,17 +1,34 @@
 <script>
+	import StyledTable from '$lib/components/StyledTable.svelte';
+	import { formatCurrency } from '$lib/formatCurrency';
+
 	export let data;
 	const {
-		skater: { id },
-		invoices
+		skater: { id: skaterId }
 	} = data;
 	const formatDate = new Intl.DateTimeFormat('en-CA', { dateStyle: 'short' }).format;
 </script>
 
-<a class="btn" href={`/skaters/${id}/invoices/current`}>Preview</a>
-<ul>
-	{#each invoices as { id: invoiceId, invoiceDate }}
-		<li class="list-disc m-4">
-			<a class="btn" href={`/skaters/${id}/invoices/${invoiceId}`}> {formatDate(invoiceDate)}</a>
-		</li>
+<StyledTable>
+	<tr slot="head">
+		<th>Date</th>
+		<th class="text-right">Invoice Amount</th>
+	</tr>
+	<tr>
+		<td>
+			<a class="link link-primary" href={`/skaters/${skaterId}/invoices/current`}>
+				Current Period Preview
+			</a>
+		</td>
+	</tr>
+	{#each data.invoices as invoice}
+		<tr>
+			<td>
+				<a class="link link-primary" href={`/skaters/${skaterId}/invoices/${invoice.id}`}>
+					{formatDate(invoice.invoiceDate)}
+				</a>
+			</td>
+			<td class="text-right">{formatCurrency(invoice.amountDueInCents)}</td>
+		</tr>
 	{/each}
-</ul>
+</StyledTable>

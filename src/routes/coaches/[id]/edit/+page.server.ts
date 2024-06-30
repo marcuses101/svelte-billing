@@ -1,7 +1,7 @@
 import { getCoachById, prisma } from '$lib/server/db';
 import { error, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { validateCoachForm } from '../../create/validateCoachForm';
+import { validateCoachForm } from '$lib/validateCoachForm';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const coach = await getCoachById(params.id);

@@ -2,8 +2,8 @@ import { env } from '$env/dynamic/private';
 import { prisma } from '$lib/server/db';
 import type { Actions } from './$types';
 import { ACCOUNT_TYPE_CODE } from '$lib/defs';
-import { validateCoachForm } from './validateCoachForm';
 import { hash } from 'bcrypt';
+import { validateCoachForm } from '$lib/validateCoachForm';
 
 export const actions = {
 	default: async ({ request }) => {

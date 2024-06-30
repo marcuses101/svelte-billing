@@ -1,5 +1,6 @@
 <script lang="ts">
 	export let title: string;
+	export let titleClass: string = '';
 	export let subTitle: string | undefined = undefined;
 </script>
 
@@ -9,9 +10,9 @@
 
 <div class="flex justify-between prose max-w-none mb-8">
 	<div>
-		<h1 class="mb-0">
+		<h1 class={`mb-0 `}>
 			<slot name="title-pre" />
-			{title}
+			<span class={titleClass}>{title}</span>
 			<slot name="title-post" />
 		</h1>
 		{#if subTitle}

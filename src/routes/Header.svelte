@@ -11,7 +11,7 @@
 		<div class="flex-none">
 			{#if isLoggedIn}
 				<form method="POST" action="/logout">
-					<input type="hidden" name="redirectTo" value="/logged-out" />
+					<input type="hidden" name="redirectTo" value="/" />
 					<button type="submit" class="btn btn-ghost">Logout</button>
 				</form>
 			{:else}

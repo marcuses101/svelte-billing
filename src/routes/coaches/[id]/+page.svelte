@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import BackButton from '$lib/components/BackButton.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
-	import PencilIcon from '$lib/icons/PencilIcon.svelte';
-	import CoachForm from '../CoachForm.svelte';
+	import CoachForm from '$lib/components/CoachForm.svelte';
 	import type { SkaterType } from '$lib/defs';
+	import EditButton from '$lib/components/EditButton.svelte';
 
 	export let data;
 	const { firstName, lastName, email } = data.coach.User;
@@ -27,19 +25,6 @@
 	</Toast>
 {/if}
 
-<PageHeader title="Coach Info">
-	<span slot="title-pre" style={`--transition-name:coach-${data.coach.id}`}>
-		<span class="[view-transition-name:var(--transition-name)]">{fullName}</span>{' - '}
-	</span>
-	<div class="flex gap-1">
-		<a class="btn btn-primary btn-outline" href={`/coaches/${$page.params.id}/edit`}>
-			<PencilIcon />
-			Edit
-		</a>
-		<BackButton href="/coaches">Back to Coaches</BackButton>
-	</div>
-</PageHeader>
-
 <CoachForm
 	disabled={true}
 	firstName={firstName ?? ''}
@@ -48,4 +33,6 @@
 	{rates}
 	commissionPercentage={data.coach.commissionPercentage ?? 0}
 	{isHstCharged}
-/>
+>
+	<EditButton href={`/coaches/${data.coach.id}/edit`} />
+</CoachForm>

@@ -97,14 +97,7 @@
 	{#each skaterTypeRateIds as { id, label, skaterTypeCode }}
 		<CurrencyInput {disabled} {label} name={id} value={rates[skaterTypeCode]} />
 	{/each}
-	{#if !disabled}
-		<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
-			{#if showReset}
-				<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
-			{:else}
-				<div />
-			{/if}
-			<button class="btn btn-primary" type="submit">Submit</button>
-		</div>
-	{/if}
+	<div class="flex flex-row justify-end mt-4 max-w-xs">
+		<slot />
+	</div>
 </form>

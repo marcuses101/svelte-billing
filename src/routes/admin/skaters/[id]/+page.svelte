@@ -17,6 +17,6 @@
 >
 	<svelte:fragment slot="buttons">
 		<div />
-		<EditButton href={`/skaters/${data.skater.id}/edit`} />
+		<EditButton href={`/admin/skaters/${data.skater.id}/edit`} />
 	</svelte:fragment>
 </SkaterForm>

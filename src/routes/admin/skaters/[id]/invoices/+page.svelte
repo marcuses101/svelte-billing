@@ -16,7 +16,7 @@
 	</tr>
 	<tr>
 		<td>
-			<a class="link link-primary" href={`/skaters/${skaterId}/invoices/current`}>
+			<a class="link link-primary" href={`/admin/skaters/${skaterId}/invoices/current`}>
 				Current Period Preview
 			</a>
 		</td>
@@ -24,7 +24,7 @@
 	{#each data.invoices as invoice}
 		<tr>
 			<td>
-				<a class="link link-primary" href={`/skaters/${skaterId}/invoices/${invoice.id}`}>
+				<a class="link link-primary" href={`/admin/skaters/${skaterId}/invoices/${invoice.id}`}>
 					{formatDate(invoice.invoiceDate)}
 				</a>
 			</td>

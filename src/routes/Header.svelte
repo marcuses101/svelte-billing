@@ -16,7 +16,7 @@
 				</form>
 			{:else}
 				<form method="POST" action="/login">
-					<input type="hidden" name="redirectTo" value="/overview" />
+					<input type="hidden" name="redirectTo" value="/" />
 					<button type="submit" class="btn btn-ghost">Login</button>
 				</form>
 			{/if}

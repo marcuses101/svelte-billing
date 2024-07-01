@@ -10,7 +10,7 @@
 
 <section class="max-w-none">
 	<PageHeader title="Add a Skater">
-		<BackButton href="/skaters">Back to Skaters</BackButton>
+		<BackButton href="/admin/skaters">Back to Skaters</BackButton>
 	</PageHeader>
 	{#if form?.success}
 		<Toast>New Skater Created - {skaterFullName}</Toast>

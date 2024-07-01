@@ -6,16 +6,16 @@
 	export let data;
 
 	const routeInfo = {
-		'/coaches/[id]': {
+		'/admin/coaches/[id]': {
 			name: 'Info'
 		},
-		'/coaches/[id]/edit': {
+		'/admin/coaches/[id]/edit': {
 			name: 'Edit Info'
 		},
-		'/coaches/[id]/lessons': { name: 'Lessons' },
-		'/coaches/[id]/pay-slips': { name: 'Pay Slips' },
-		'/coaches/[id]/pay-slips/current': { name: 'Pay Slip Preview' },
-		'/coaches/[id]/pay-slips/[paySlipId]': { name: 'Pay Slip Preview' }
+		'/admin/coaches/[id]/lessons': { name: 'Lessons' },
+		'/admin/coaches/[id]/pay-slips': { name: 'Pay Slips' },
+		'/admin/coaches/[id]/pay-slips/current': { name: 'Pay Slip Preview' },
+		'/admin/coaches/[id]/pay-slips/[paySlipId]': { name: 'Pay Slip Preview' }
 	};
 	const fullName = `${data.coach.User.firstName} ${data.coach.User.lastName}`;
 	$: route = $page.route.id as keyof typeof routeInfo;
@@ -29,7 +29,7 @@
 <div style={`--transition-name:coach-${data.coach.id}`}>
 	<PageHeader title={fullName} titleClass={`[view-transition-name:var(--transition-name)]`}>
 		<span slot="title-post"> {' - '}{currentRouteInfo?.name ?? ''}</span>
-		<BackButton href="/coaches">Back to Coaches</BackButton>
+		<BackButton href="/admin/coaches">Back to Coaches</BackButton>
 	</PageHeader>
 </div>
 
@@ -37,29 +37,29 @@
 	<div class="join mb-8">
 		<a
 			class="btn btn-outline join-item"
-			class:btn-active={route === '/coaches/[id]' || route === '/coaches/[id]/edit'}
-			href={`/coaches/${coachId}`}
+			class:btn-active={route === '/admin/coaches/[id]' || route === '/admin/coaches/[id]/edit'}
+			href={`/admin/coaches/${coachId}`}
 		>
 			Info
 		</a>
 		<a
 			class="btn btn-outline join-item"
-			class:btn-active={route === '/coaches/[id]/lessons'}
-			href={`/coaches/${coachId}/lessons`}
+			class:btn-active={route === '/admin/coaches/[id]/lessons'}
+			href={`/admin/coaches/${coachId}/lessons`}
 		>
 			Lessons
 		</a>
 		<a
 			class="btn btn-outline join-item"
-			class:btn-active={route === '/coaches/[id]/pay-slips' ||
-				route === '/coaches/[id]/pay-slips/current' ||
-				route === '/coaches/[id]/pay-slips/[paySlipId]'}
-			href={`/coaches/${coachId}/pay-slips`}
+			class:btn-active={route === '/admin/coaches/[id]/pay-slips' ||
+				route === '/admin/coaches/[id]/pay-slips/current' ||
+				route === '/admin/coaches/[id]/pay-slips/[paySlipId]'}
+			href={`/admin/coaches/${coachId}/pay-slips`}
 		>
 			Invoices
 		</a>
 	</div>
-	{#if route === '/coaches/[id]/pay-slips/current' || route === '/coaches/[id]/pay-slips/[paySlipId]'}
+	{#if route === '/admin/coaches/[id]/pay-slips/current' || route === '/admin/coaches/[id]/pay-slips/[paySlipId]'}
 		<BackButton />
 	{:else}
 		<div />

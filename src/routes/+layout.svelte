@@ -1,9 +1,10 @@
 <script lang="ts">
+	import '../app.css';
 	import { onNavigate } from '$app/navigation';
 	import type { LayoutData } from './$types';
 	import Header from './Header.svelte';
-	import '../app.css';
 	import { page } from '$app/stores';
+	import { ROLES } from '$lib/defs';
 	export let data: LayoutData;
 	const isLoggedIn = Boolean(data.user);
 	let isDrawerOpen = false;
@@ -11,23 +12,40 @@
 	function closeDrawer() {
 		isDrawerOpen = false;
 	}
+
+	const isAdmin = Boolean(data.user?.UserRoles.some((role) => role.roleName === ROLES.ADMIN));
+
+	const adminLinks = [
+		{ href: '/admin/overview', displayText: 'Overview', submenus: [] },
+		{ href: '/admin/ledgers', displayText: 'Ledgers', submenus: [] },
+		{ href: '/admin/billing', displayText: 'Billing', submenus: [] },
+		{
+			href: '/admin/skaters',
+			displayText: 'Skaters',
+			submenus: [
+				{ href: '/admin/skater-payments', displayText: 'Payments' },
+				{ href: '/admin/skater-invoices', displayText: 'Invoices' }
+			]
+		},
+		{
+			href: '/admin/coaches',
+			displayText: 'Coaches',
+			submenus: [
+				{ href: '/admin/coach-payments', displayText: 'Payments' },
+				{ href: '/admin/coach-payslips', displayText: 'Pay Slips' }
+			]
+		}
+	];
+
 	const links: {
 		href: string;
 		displayText: string;
 		visibility: 'all' | 'authenticated' | 'unauthenticated';
 	}[] = [
 		{ href: '/about', displayText: 'About', visibility: 'unauthenticated' },
-		{ href: '/overview', displayText: 'Overview', visibility: 'authenticated' },
-		{ href: '/ledger', displayText: 'Ledger', visibility: 'authenticated' },
-		{ href: '/lessons', displayText: 'Lessons', visibility: 'authenticated' },
-		{ href: '/skaters', displayText: 'Skaters', visibility: 'authenticated' },
-		{ href: '/payment', displayText: 'Skater Payments', visibility: 'authenticated' },
-		{ href: '/invoices', displayText: 'Skater Invoices', visibility: 'authenticated' },
-		{ href: '/coach-payment', displayText: 'Coach Payments', visibility: 'authenticated' },
-		{ href: '/pay-slips', displayText: 'Coach Pay Slips', visibility: 'authenticated' },
-		{ href: '/coaches', displayText: 'Coaches', visibility: 'authenticated' },
-		{ href: '/billing', displayText: 'Billing', visibility: 'authenticated' }
+		{ href: '/lessons', displayText: 'Lessons', visibility: 'authenticated' }
 	];
+
 	const visibleLinks = links.filter((link) => {
 		if (link.visibility === 'all') {
 			return true;
@@ -48,6 +66,7 @@
 			});
 		});
 	});
+
 	$: baseSegment = '/' + $page.url.pathname.split('/')[1];
 </script>
 
@@ -55,7 +74,7 @@
 	<input bind:checked={isDrawerOpen} id="drawer-input" type="checkbox" class="drawer-toggle" />
 	<div class="drawer-content flex flex-col min-h-[100dvh]">
 		<Header {isLoggedIn} />
-		<main>
+		<main class="flex-1 p-4 w-full">
 			<slot />
 		</main>
 	</div>
@@ -67,15 +86,31 @@
 					<a class:active={baseSegment === href} on:click={closeDrawer} {href}>{displayText}</a>
 				</li>
 			{/each}
+			{#if isAdmin}
+				<li class="menu-title">Admin</li>
+				{#each adminLinks as { href, displayText, submenus }}
+					<li>
+						<a class:active={$page.route.id?.startsWith(href)} on:click={closeDrawer} {href}>
+							{displayText}
+						</a>
+						{#if submenus.length > 0}
+							<ul>
+								{#each submenus as submenu}
+									<li>
+										<a
+											class:active={$page.route.id?.startsWith(submenu.href)}
+											on:click={closeDrawer}
+											href={submenu.href}
+										>
+											{submenu.displayText}
+										</a>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+					</li>
+				{/each}
+			{/if}
 		</ul>
 	</div>
 </div>
-
-<style>
-	main {
-		flex: 1;
-		padding: 1rem;
-		width: 100%;
-		box-sizing: border-box;
-	}
-</style>

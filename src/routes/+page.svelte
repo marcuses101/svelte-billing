@@ -1,8 +1,6 @@
 <script lang="ts">
 	export let data;
 	const user = data?.user;
-	console.log(user);
-	const userFullName = user && `${user.firstName} ${user.lastName}`;
 </script>
 
 <svelte:head>
@@ -12,7 +10,7 @@
 
 <section class="prose container mx-auto">
 	{#if user}
-		<h1 class="text-center">Welcome to Baddest of Billing - {userFullName}</h1>
+		<h1 class="text-center">Welcome to Baddest of Billing - {user.firstName} {user.lastName}</h1>
 	{:else}
 		<h1 class="text-center">Welcome to Baddest of Billing</h1>
 	{/if}

@@ -10,15 +10,16 @@
 - [x] Authentication
 - [x] HST logging
 - [x] Coach Pay Slip Preview
-- [ ] Authorization 
+- [x] Authorization 
+- [x] Lock Lessons that have already been billed
+- [x] Standardize Invoice Data Fetching and Display
+- [ ] Change invoice and payslip to DateTime
 - [ ] Integrate Email Sending (Postmark)[https://postmarkapp.com/] 
     - Send Email UI on generate bills
 - [ ] Handles UI of Server Errors
-- [ ] Lock Lessons that have already been billed
 - [ ] Fix up UI
 - [ ] Refactor a bunch
 - [ ] Add createdBy createdAt modifiedBy modifiedAt fields to relevant tables
-- [ ] Standardize Invoice Data Fetching and Display
 - [ ] Enable Logging in Caddy
 - [ ] Improve Failed log in attempt screen, potentially handle client side instead
 - [ ] Password Creation

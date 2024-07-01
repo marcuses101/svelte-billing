@@ -7,7 +7,7 @@
 </script>
 
 <PageHeader title="Skater List" />
-<AddButton href="/skaters/create">Add Skater</AddButton>
+<AddButton href="/admin/skaters/create">Add Skater</AddButton>
 <StyledTable containerClass="mt-8">
 	<tr slot="head">
 		<td>Name</td>
@@ -19,7 +19,7 @@
 			<td style={`--transition-name:skater-${skater.id}`}>
 				<a
 					class="link link-primary font-bold no-underline [view-transition-name:var(--transition-name)]"
-					href={`/skaters/${skater.id}`}
+					href={`/admin/skaters/${skater.id}`}
 				>
 					{`${skater.firstName} ${skater.lastName}`}
 				</a>

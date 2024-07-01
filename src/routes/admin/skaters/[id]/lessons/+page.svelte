@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SkaterLessonDisplay from '../SkaterLessonDisplay.svelte';
+	import SkaterLessonDisplay from '$lib/components/SkaterLessonDisplay.svelte';
 
 	export let data;
 	const { lessons } = data;

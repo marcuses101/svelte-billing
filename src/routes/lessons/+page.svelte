@@ -24,8 +24,8 @@
 		const dateKey = new Date(entry.date).toISOString().split('T')[0];
 		if (!dateKey) return acc;
 		const formattedDate = dateFormat(entry.date);
-		const skaters = entry.SkaterLessons.map((skaterLesson) => {
-			const fullName = `${skaterLesson.Skater.firstName} ${skaterLesson.Skater.lastName}`;
+		const skaters = entry.SkaterLessons.map((skater) => {
+			const fullName = `${skater.Skater.firstName} ${skater.Skater.lastName}`;
 			return fullName;
 		});
 		const currentEntry = {

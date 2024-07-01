@@ -21,7 +21,11 @@
 		</tr>
 		{#each data.billingBatch.Invoices as { id, amountDueInCents, Skater: { firstName, lastName } }}
 			<tr>
-				<td><a class="link link-primary" href={`/invoices/${id}`}>{firstName} {lastName}</a></td>
+				<td
+					><a class="link link-primary" href={`/admin/skater-invoices/${id}`}
+						>{firstName} {lastName}</a
+					></td
+				>
 				<td class="text-right">{formatCurrency(amountDueInCents)}</td>
 			</tr>
 		{/each}
@@ -35,7 +39,11 @@
 		</tr>
 		{#each data.billingBatch.CoachPaySlips as { id, amountDueInCents, Coach: { User: { firstName, lastName } } }}
 			<tr>
-				<td><a class="link link-primary" href={`/pay-slips/${id}`}>{firstName} {lastName}</a></td>
+				<td
+					><a class="link link-primary" href={`/admin/coach-payslips/${id}`}
+						>{firstName} {lastName}</a
+					></td
+				>
 				<td class="text-right">{formatCurrency(amountDueInCents)}</td>
 			</tr>
 		{/each}

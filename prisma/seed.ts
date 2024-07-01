@@ -189,7 +189,40 @@ async function seedCoaches() {
 		},
 		include: { Coach: { include: { CoachRate: true } } }
 	});
-	return [marcus, laurence];
+	const exampleCoach = await prisma.user.create({
+		data: {
+			email: 'example_coach@gmail.com',
+			firstName: 'Coachy',
+			lastName: 'Coacherson',
+			hashedPassword: await hash(defaultPassword, 10),
+			UserRoles: {
+				create: [{ roleName: ROLES.COACH }]
+			},
+			Coach: {
+				create: {
+					isHstCharged: true,
+					commissionPercentage: 10,
+					CoachRate: {
+						createMany: {
+							data: [
+								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 40_00 },
+								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 50_00 },
+								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 60_00 }
+							]
+						}
+					},
+					Account: {
+						create: {
+							name: 'Coachy Coacherson Coach Account',
+							accountTypeCode: ACCOUNT_TYPE_CODE.COACH
+						}
+					}
+				}
+			}
+		},
+		include: { Coach: { include: { CoachRate: true } } }
+	});
+	return [marcus, laurence, exampleCoach];
 }
 async function seedSkaterType() {
 	console.log('Seed Skater Types');
@@ -208,31 +241,31 @@ type SkaterEntry = Skater & { Account: Account };
  * */
 async function seedSkaters() {
 	console.log('Seed Skaters');
-	const numbers = [
-		'Abby',
-		'Brenda',
-		'Caroline',
-		'Evan',
-		'Fiona',
-		'Gertrude',
-		'Hilda',
-		'Ilia',
-		'James',
-		'Xavier'
+	const skaterInput = [
+		{ name: 'Abby', code: SKATER_TYPE.RESIDENT },
+		{ name: 'Brenda', code: SKATER_TYPE.RESIDENT },
+		{ name: 'Caroline', code: SKATER_TYPE.RESIDENT },
+		{ name: 'Evan', code: SKATER_TYPE.US },
+		{ name: 'Fiona', code: SKATER_TYPE.US },
+		{ name: 'Gertrude', code: SKATER_TYPE.US },
+		{ name: 'Hilda', code: SKATER_TYPE.INTERNATIONAL },
+		{ name: 'Ilia', code: SKATER_TYPE.INTERNATIONAL },
+		{ name: 'James', code: SKATER_TYPE.INTERNATIONAL },
+		{ name: 'Xavier', code: SKATER_TYPE.INTERNATIONAL }
 	];
 
 	const skaters: SkaterEntry[] = [];
-	for (const num of numbers) {
+	for (const { name, code } of skaterInput) {
 		const skater = await prisma.skater.create({
 			data: {
 				firstName: 'Skater',
-				lastName: num,
-				email: `skater_${num.toLowerCase()}@gmail.com`,
-				SkaterType: { connect: { code: SKATER_TYPE.RESIDENT } },
+				lastName: name,
+				email: `skater_${name.toLowerCase()}@gmail.com`,
+				SkaterType: { connect: { code } },
 				Account: {
 					create: {
 						accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
-						name: `Skater ${num} Client Account`
+						name: `Skater ${name} Client Account`
 					}
 				}
 			},

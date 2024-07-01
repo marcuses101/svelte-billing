@@ -27,31 +27,31 @@
 			{fullName}
 		</span>{' - '}
 	</span>
-	<BackButton href={`/skaters`}>Skaters</BackButton>
+	<BackButton href={`/admin/skaters`}>Skaters</BackButton>
 </PageHeader>
 
 <div class="flex flex-row justify-between">
 	<div class="join mb-2">
 		<a
 			class="btn btn-outline join-item"
-			class:btn-active={$page.route.id === `/skaters/[id]` ||
-				$page.route.id === '/skaters/[id]/edit'}
-			href={`/skaters/${id}`}
+			class:btn-active={$page.route.id === `/admin/skaters/[id]` ||
+				$page.route.id === '/admin/skaters/[id]/edit'}
+			href={`/admin/skaters/${id}`}
 		>
 			Info
 		</a>
 		<a
 			class="btn btn-outline join-item"
 			class:btn-active={$page.url.pathname.includes('lessons')}
-			href={`/skaters/${id}/lessons`}>Lessons</a
+			href={`/admin/skaters/${id}/lessons`}>Lessons</a
 		>
 		<a
 			class="btn btn-outline join-item"
 			class:btn-active={$page.url.pathname.includes('invoices')}
-			href={`/skaters/${id}/invoices`}>Invoices</a
+			href={`/admin/skaters/${id}/invoices`}>Invoices</a
 		>
 	</div>
-	{#if $page.route.id === '/skaters/[id]/invoices/[invoiceId]' || $page.route.id === '/skaters/[id]/invoices/current'}
+	{#if $page.route.id === '/admin/skaters/[id]/invoices/[invoiceId]' || $page.route.id === '/skaters/[id]/invoices/current'}
 		<BackButton />
 	{:else}
 		<div />

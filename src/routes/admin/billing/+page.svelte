@@ -34,7 +34,7 @@
 	</tr>
 	{#each data.billingBatch as { id, createdOn, paySlipTotal, invoicesTotal }}
 		<tr>
-			<td><a class="link link-primary" href={`/billing/${id}`}>{id}</a></td>
+			<td><a class="link link-primary" href={`/admin/billing/${id}`}>{id}</a></td>
 			<td>{formatDate(createdOn)}</td>
 			<td>{formatCurrency(invoicesTotal)}</td>
 			<td>{formatCurrency(paySlipTotal)}</td>

@@ -151,11 +151,11 @@ async function seedCoaches() {
 		include: { Coach: { include: { CoachRate: true } } }
 	});
 
-	const laurence = await prisma.user.create({
+	const drew = await prisma.user.create({
 		data: {
-			email: 'laurencelessard@gmail.com',
-			firstName: 'Laurence',
-			lastName: 'Lessard',
+			email: 'andrewm_evans@hotmail.com',
+			firstName: 'Andrew',
+			lastName: 'Evans',
 			hashedPassword: await hash(defaultPassword, 10),
 			UserRoles: {
 				create: [
@@ -172,15 +172,15 @@ async function seedCoaches() {
 					CoachRate: {
 						createMany: {
 							data: [
-								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 40_00 },
-								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 50_00 },
-								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 60_00 }
+								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 60_00 },
+								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 70_00 },
+								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 120_00 }
 							]
 						}
 					},
 					Account: {
 						create: {
-							name: 'Laurence Lessard Coach Account',
+							name: 'Andrew Evans Coach Account',
 							accountTypeCode: ACCOUNT_TYPE_CODE.COACH
 						}
 					}
@@ -189,6 +189,46 @@ async function seedCoaches() {
 		},
 		include: { Coach: { include: { CoachRate: true } } }
 	});
+
+	const paul = await prisma.user.create({
+		data: {
+			email: 'parkinsonp@hotmail.com',
+			firstName: 'Paul',
+			lastName: 'Parkinson',
+			hashedPassword: await hash(defaultPassword, 10),
+			UserRoles: {
+				create: [
+					{
+						roleName: ROLES.ADMIN
+					},
+					{ roleName: ROLES.COACH }
+				]
+			},
+			Coach: {
+				create: {
+					isHstCharged: true,
+					commissionPercentage: 10,
+					CoachRate: {
+						createMany: {
+							data: [
+								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 60_00 },
+								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 70_00 },
+								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 120_00 }
+							]
+						}
+					},
+					Account: {
+						create: {
+							name: 'Paul Parkinson Coach Account',
+							accountTypeCode: ACCOUNT_TYPE_CODE.COACH
+						}
+					}
+				}
+			}
+		},
+		include: { Coach: { include: { CoachRate: true } } }
+	});
+
 	const exampleCoach = await prisma.user.create({
 		data: {
 			email: 'example_coach@gmail.com',
@@ -222,7 +262,7 @@ async function seedCoaches() {
 		},
 		include: { Coach: { include: { CoachRate: true } } }
 	});
-	return [marcus, laurence, exampleCoach];
+	return [marcus, drew, exampleCoach, paul];
 }
 async function seedSkaterType() {
 	console.log('Seed Skater Types');

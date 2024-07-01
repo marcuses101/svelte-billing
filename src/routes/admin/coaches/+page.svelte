@@ -5,7 +5,9 @@
 </script>
 
 <PageHeader title="Coaches" />
-<a class="btn btn-outline btn-primary border-dashed w-full" href="/coaches/create">+ Add Coach</a>
+<a class="btn btn-outline btn-primary border-dashed w-full" href="admin/coaches/create"
+	>+ Add Coach</a
+>
 <section class="my-4 grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-2">
 	{#each data.coaches as { id, firstName, lastName }}
 		<a class={'btn'} href={`/admin/coaches/${id}`}

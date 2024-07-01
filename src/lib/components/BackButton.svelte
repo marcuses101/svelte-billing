@@ -1,5 +1,9 @@
 <script lang="ts">
-	export let href: string;
+	import { page } from '$app/stores';
+
+	const lastPart = $page.url.pathname.lastIndexOf('/');
+	const truncated = $page.url.pathname.slice(0, lastPart);
+	export let href: string = truncated;
 </script>
 
 <a class="btn btn-outline" {href}>

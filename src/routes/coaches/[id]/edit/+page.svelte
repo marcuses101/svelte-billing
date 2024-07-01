@@ -3,6 +3,7 @@
 	import CoachForm from '$lib/components/CoachForm.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import CancelButton from '$lib/components/CancelButton.svelte';
+	import SubmitButton from '$lib/components/SubmitButton.svelte';
 
 	export let data;
 	export let form;
@@ -39,5 +40,8 @@
 	commissionPercentage={data.coach.commissionPercentage ?? 0}
 	{isHstCharged}
 >
-	<CancelButton href={`/coaches/${data.coach.id}`} />
+	<div class="flex gap-2 flex-row">
+		<CancelButton href={`/coaches/${data.coach.id}`} />
+		<SubmitButton />
+	</div>
 </CoachForm>

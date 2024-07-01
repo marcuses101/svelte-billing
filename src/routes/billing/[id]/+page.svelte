@@ -1,4 +1,5 @@
 <script lang="ts">
+	import BackButton from '$lib/components/BackButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
@@ -7,7 +8,9 @@
 	export let data;
 </script>
 
-<PageHeader title={`Billing Batch ${formatDate(data.billingBatch.createdOn)}`} />
+<PageHeader title={`Billing Batch ${formatDate(data.billingBatch.createdOn)}`}>
+	<BackButton>Back</BackButton>
+</PageHeader>
 
 <div class="prose max-w-none">
 	<h3>Invoices</h3>

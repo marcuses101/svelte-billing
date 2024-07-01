@@ -1,4 +1,5 @@
 <script lang="ts">
+	import EditButton from '$lib/components/EditButton.svelte';
 	import { inputIsSkaterType } from '$lib/inputIsSkaterType';
 	import SkaterForm from '../SkaterForm.svelte';
 	export let data;
@@ -13,4 +14,9 @@
 	lastName={lastName ?? ''}
 	email={email ?? ''}
 	{skaterTypeCode}
-/>
+>
+	<svelte:fragment slot="buttons">
+		<div />
+		<EditButton href={`/skaters/${data.skater.id}/edit`} />
+	</svelte:fragment>
+</SkaterForm>

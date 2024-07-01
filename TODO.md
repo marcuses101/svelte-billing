@@ -9,7 +9,7 @@
 - [x] Currency Input
 - [x] Authentication
 - [x] HST logging
-- [ ] Coach Pay Slip Preview
+- [x] Coach Pay Slip Preview
 - [ ] Authorization 
 - [ ] Integrate Email Sending (Postmark)[https://postmarkapp.com/] 
     - Send Email UI on generate bills

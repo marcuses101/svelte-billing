@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SubmitButton from '$lib/components/SubmitButton.svelte';
 	import { SKATER_TYPE, type SkaterType } from '$lib/defs';
 
 	export let disabled: boolean = false;
@@ -77,7 +78,7 @@
 		<slot name="buttons">
 			{#if !disabled}
 				<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
-				<button class="btn btn-primary" type="submit">Submit</button>
+				<SubmitButton />
 			{/if}
 		</slot>
 	</div>

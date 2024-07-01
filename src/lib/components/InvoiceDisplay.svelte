@@ -16,7 +16,7 @@
 
 <div class="max-w-5xl mx-auto mt-4">
 	<section class="flex justify-between mb-4 px-4">
-		<h2 class="text-4xl font-bold">
+		<h2 class="text-xl font-bold">
 			{skaterFirstName}
 			{skaterLastName}
 		</h2>
@@ -36,12 +36,12 @@
 					<tbody>
 						<tr>
 							<td>Previous bill amount</td>
-							<td>{previousBillAmount}</td>
+							<td class="font-bold text-right">{previousBillAmount}</td>
 						</tr>
 						{#each payments as payment}
 							<tr>
 								<td>Payment - {payment.formattedDate}</td>
-								<td> {payment.paymentAmount}</td>
+								<td class="font-bold text-right"> {payment.paymentAmount}</td>
 							</tr>
 						{/each}
 					</tbody>
@@ -50,7 +50,7 @@
 					<tbody>
 						<tr class="bg-neutral text-neutral-content text-lg">
 							<td>Outstanding Balance</td>
-							<td>{outstandingBalance}</td>
+							<td class="font-bold text-right">{outstandingBalance}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -64,19 +64,19 @@
 				<tbody>
 					<tr>
 						<td>Outstanding Balance</td>
-						<td>{outstandingBalance}</td>
+						<td class="font-bold text-right">{outstandingBalance}</td>
 					</tr>
 					<tr>
 						<td>Charges Total</td>
-						<td>{chargesTotal}</td>
+						<td class="font-bold text-right">{chargesTotal}</td>
 					</tr>
 					<tr>
 						<td>HST ({HST_PERCENTAGE}%)</td>
-						<td>{hstAmount}</td>
+						<td class="font-bold text-right">{hstAmount}</td>
 					</tr>
 					<tr class="bg-neutral text-neutral-content text-lg">
 						<td>Amount Due</td>
-						<td>{amountDue}</td>
+						<td class="font-bold text-right">{amountDue}</td>
 					</tr>
 				</tbody>
 			</table>
@@ -89,7 +89,7 @@
 				<tr>
 					<th>Date</th>
 					<th>Description</th>
-					<th>Charge</th>
+					<th class="text-right">Charge</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -97,23 +97,15 @@
 					<tr>
 						<td>{charge.formattedDate}</td>
 						<td>{charge.description}</td>
-						<td>{charge.chargeAmount}</td>
+						<td class="font-bold text-right">{charge.chargeAmount}</td>
 					</tr>
 				{/each}
 				<tr class="bg-neutral text-neutral-content text-lg">
 					<td>Charges Total</td>
 					<td></td>
-					<td>{chargesTotal}</td>
+					<td class="font-bold text-right">{chargesTotal}</td>
 				</tr>
 			</tbody>
 		</table>
 	</section>
 </div>
-
-<style>
-	th:last-of-type,
-	td:last-of-type {
-		text-align: right;
-		font-weight: bold;
-	}
-</style>

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './prisma';
 import type { Prisma } from '@prisma/client';
 import { ACCOUNT_TYPE_CODE, type SkaterType } from '../defs';
 

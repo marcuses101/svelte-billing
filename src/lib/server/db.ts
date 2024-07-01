@@ -1,5 +1,7 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { ACCOUNT_TYPE_CODE, type SkaterType } from '../defs';
+
 export const prisma = new PrismaClient();
 
 export function getCoachById(id: string) {

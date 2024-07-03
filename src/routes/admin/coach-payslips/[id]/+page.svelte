@@ -7,6 +7,6 @@
 </script>
 
 <PageHeader title="Pay Slip">
-	<BackButton href="/pay-slips">Back</BackButton>
+	<BackButton href="/admin/coach-payslips">Back</BackButton>
 </PageHeader>
 <PaySlipDisplay data={data.paySlip} />

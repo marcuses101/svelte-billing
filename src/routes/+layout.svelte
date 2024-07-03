@@ -13,8 +13,23 @@
 		isDrawerOpen = false;
 	}
 
-	const isAdmin = Boolean(data.user?.UserRoles.some((role) => role.roleName === ROLES.ADMIN));
+	const isCoach = Boolean(data.user?.UserRoles.some((role) => role.roleName === ROLES.COACH));
+	const myInfoLinks = [
+		{ href: '/my-info', displayText: 'Overview', submenus: [] },
+		{
+			href: '/my-info/lessons',
+			displayText: 'Lessons',
+			submenus: [
+				{
+					href: '/my-info/lessons/create',
+					displayText: 'Add Lesson'
+				}
+			]
+		},
+		{ href: '/my-info/pay-slips', displayText: 'Pay Slips', submenus: [] }
+	];
 
+	const isAdmin = Boolean(data.user?.UserRoles.some((role) => role.roleName === ROLES.ADMIN));
 	const adminLinks = [
 		{ href: '/admin/overview', displayText: 'Overview', submenus: [] },
 		{ href: '/admin/ledgers', displayText: 'Ledgers', submenus: [] },
@@ -41,10 +56,7 @@
 		href: string;
 		displayText: string;
 		visibility: 'all' | 'authenticated' | 'unauthenticated';
-	}[] = [
-		{ href: '/about', displayText: 'About', visibility: 'unauthenticated' },
-		{ href: '/lessons', displayText: 'Lessons', visibility: 'authenticated' }
-	];
+	}[] = [{ href: '/about', displayText: 'About', visibility: 'unauthenticated' }];
 
 	const visibleLinks = links.filter((link) => {
 		if (link.visibility === 'all') {
@@ -86,6 +98,27 @@
 					<a class:active={baseSegment === href} on:click={closeDrawer} {href}>{displayText}</a>
 				</li>
 			{/each}
+			{#if isCoach}
+				<li class="menu-title">My Info</li>
+				{#each myInfoLinks as { href, displayText, submenus }}
+					<li>
+						<a on:click={closeDrawer} {href}>
+							{displayText}
+						</a>
+						{#if submenus.length > 0}
+							<ul>
+								{#each submenus as submenu}
+									<li>
+										<a on:click={closeDrawer} href={submenu.href}>
+											{submenu.displayText}
+										</a>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+					</li>
+				{/each}
+			{/if}
 			{#if isAdmin}
 				<li class="menu-title">Admin</li>
 				{#each adminLinks as { href, displayText, submenus }}

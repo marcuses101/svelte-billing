@@ -22,7 +22,7 @@
 			>
 			<td class="text-right">{formatCurrency(amountDueInCents)}</td>
 			<td>
-				<a class="link link-primary" href={`/invoices/${invoiceId}`}>Invoice</a>
+				<a class="link link-primary" href={`/admin/skater-invoices/${invoiceId}`}>Invoice</a>
 			</td>
 		</tr>
 	{/each}

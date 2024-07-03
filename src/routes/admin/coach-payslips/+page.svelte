@@ -34,13 +34,13 @@
 		<tr>
 			<td>{date}</td>
 			<td>
-				<a class="link link-primary" href={`/coaches/${coachId}`}>
+				<a class="link link-primary" href={`/admin/coaches/${coachId}`}>
 					{name}
 				</a>
 			</td>
 			<td class="text-right">{amountDue}</td>
 			<td>
-				<a class="link link-primary" href={`/pay-slips/${id}`}>Pay Slip</a>
+				<a class="link link-primary" href={`/admin/coach-payslips/${id}`}>Pay Slip</a>
 			</td>
 		</tr>
 	{/each}

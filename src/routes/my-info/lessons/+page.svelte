@@ -1,6 +1,5 @@
 <script lang="ts">
 	import AddButton from '$lib/components/AddButton.svelte';
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import LessonDisplay from './LessonDisplay.svelte';
 
 	export let data;
@@ -48,7 +47,6 @@
 </script>
 
 <section class="prose max-w-none">
-	<PageHeader title="Lessons" />
 	<AddButton href="/my-info/lessons/create">Add Lesson</AddButton>
 	{#each groupedLessons as [date, lessons]}
 		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>

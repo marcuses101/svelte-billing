@@ -1,5 +1,4 @@
 <script>
-	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
@@ -7,7 +6,6 @@
 	export let data;
 </script>
 
-<PageHeader title="My Pay Slips" />
 <StyledTable>
 	<tr slot="head">
 		<td>Date</td>

@@ -36,4 +36,3 @@
 >
 	<EditButton href={`/coaches/${data.coach.id}/edit`} />
 </CoachForm>
-

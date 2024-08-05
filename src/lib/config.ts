@@ -1,11 +1,11 @@
-import { env } from '$env/dynamic/private';
+import { SELF_URL, EMAIL_SENDER_ADDRESS, POSTMARK_TOKEN, AUTH_SECRET } from '$env/static/private';
 
 function getConfig() {
 	const config = {
-		SELF_URL: env.SELF_URL,
-		EMAIL_SENDER_ADDRESS: env.EMAIL_SENDER_ADDRESS,
-		POSTMARK_TOKEN: env.POSTMARK_TOKEN,
-		AUTH_SECRET: env.AUTH_SECRET,
+		SELF_URL,
+		EMAIL_SENDER_ADDRESS,
+		POSTMARK_TOKEN,
+		AUTH_SECRET,
 		POSTMARK_BASE_URL: 'https://api.postmarkapp.com/'
 	} as const;
 	const missingConfigs = Object.entries(config).filter((entry) => typeof entry[1] === 'undefined');

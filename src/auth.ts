@@ -1,4 +1,3 @@
-import { env } from '$env/dynamic/private';
 import { compare } from 'bcrypt';
 import {
 	SvelteKitAuth,
@@ -8,6 +7,7 @@ import {
 } from '@auth/sveltekit';
 import Credentials from '@auth/sveltekit/providers/credentials';
 import { prisma } from '$lib/server/db';
+import { config } from '$lib/config';
 
 function getUserByEmail(email: string) {
 	return prisma.user.findUnique({
@@ -77,7 +77,7 @@ export const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 				}
 			})
 		],
-		secret: env.AUTH_SECRET,
+		secret: config.AUTH_SECRET,
 		trustHost: true
 	};
 	return authOptions;

@@ -7,6 +7,8 @@
 		<thead class="bg-primary text-primary-content">
 			<slot name="head" />
 		</thead>
-		<tbody><slot /> </tbody>
+		<tbody>
+			<slot />
+		</tbody>
 	</table>
 </div>

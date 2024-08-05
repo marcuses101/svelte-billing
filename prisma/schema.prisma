@@ -13,15 +13,23 @@ model SkaterType {
     CoachRate CoachRate[]
 }
 
+enum EmailConfirmation {
+    NotSent
+    Pending
+    Confirmed
+    Regected
+}
+
 // Define the Skater table
 model Skater {
-    id          String    @id @default(uuid())
-    firstName   String
-    lastName    String
-    email       String
-    dateOfBirth DateTime?
-    createdOn   DateTime  @default(now())
-    modifiedOn  DateTime?
+    id                String            @id @default(uuid())
+    firstName         String
+    lastName          String
+    email             String
+    emailConfirmation EmailConfirmation @default(NotSent)
+    dateOfBirth       DateTime?
+    createdOn         DateTime          @default(now())
+    modifiedOn        DateTime?
 
     accountId String  @unique
     Account   Account @relation(fields: [accountId], references: [id])
@@ -29,9 +37,10 @@ model Skater {
     skaterTypeCode String
     SkaterType     SkaterType @relation(fields: [skaterTypeCode], references: [code])
 
-    SkaterLessons     SkaterLesson[]
-    Invoices          Invoice[]
-    AdditionalCharges AdditionalCharge[]
+    SkaterLessons          SkaterLesson[]
+    Invoices               Invoice[]
+    AdditionalCharges      AdditionalCharge[]
+    EmailConfirmationToken EmailConfirmationToken?
 
     @@unique([firstName, lastName])
 }
@@ -41,19 +50,16 @@ model Role {
     UserRole UserRole[]
 }
 
-// Define the User table
 model User {
-    id             String  @id @default(uuid())
-    email          String  @unique
-    hashedPassword String
-    firstName      String?
-    lastName       String?
+    id                String            @id @default(uuid())
+    email             String            @unique
+    emailConfirmation EmailConfirmation @default(NotSent)
+    hashedPassword    String
+    firstName         String?
+    lastName          String?
 
     UserRoles UserRole[]
     Coach     Coach?
-
-    // CreatedInvoices Invoice[] @relation("CreatorUser")
-    // UpdatedInvoices Invoice[] @relation("ModifierUser")
 }
 
 model UserRole {
@@ -77,9 +83,10 @@ model Coach {
     accountId String  @unique
     Account   Account @relation(fields: [accountId], references: [id])
 
-    Lessons       Lesson[]
-    CoachPaySlips CoachPaySlip[]
-    CoachRate     CoachRate[]
+    Lessons                Lesson[]
+    CoachPaySlips          CoachPaySlip[]
+    CoachRate              CoachRate[]
+    EmailConfirmationToken EmailConfirmationToken?
 }
 
 model CoachRate {
@@ -122,6 +129,16 @@ model AdditionalCharge {
     InvoiceLineItem   InvoiceLineItem? @relation(fields: [invoiceLineItemId], references: [id])
 }
 
+model EmailConfirmationToken {
+    token String @id @default(uuid())
+
+    coach   Coach?  @relation(fields: [coachId], references: [id])
+    coachId String? @unique
+
+    skater   Skater? @relation(fields: [skaterId], references: [id])
+    skaterId String? @unique
+}
+
 model Invoice {
     id                        String   @id @default(uuid())
     invoiceDate               DateTime @db.Date
@@ -131,7 +148,7 @@ model Invoice {
     previousAmountDueInCents  Int
     hstAmountInCents          Int
 
-    // createdon        datetime  @default(now())
+    createdOn DateTime @default(now())
     // createdbyuserid  string
     // createdbyuser    user      @relation("creatoruser", fields: [createdbyuserid], references: [id])
     // modifiedon       datetime?
@@ -182,7 +199,7 @@ model CoachPaySlip {
     coachRevenueInCents          Int
     hstAmountInCents             Int
 
-    // TODO add additional data
+    createdOn DateTime @default(now())
 
     coachId String
     Coach   Coach  @relation(fields: [coachId], references: [id])

@@ -13,7 +13,8 @@
 - [x] Authorization 
 - [x] Lock Lessons that have already been billed
 - [x] Standardize Invoice Data Fetching and Display
-- [ ] Change invoice and payslip to DateTime
+- [x] Change invoice and payslip to DateTime
+- [ ] Email confirmation flow
 - [ ] Integrate Email Sending (Postmark)[https://postmarkapp.com/] 
     - Send Email UI on generate bills
 - [ ] Handles UI of Server Errors

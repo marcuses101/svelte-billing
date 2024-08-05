@@ -3,7 +3,15 @@ import { handle as authenticationHandle } from './auth';
 import { sequence } from '@sveltejs/kit/hooks';
 import { ROLES } from '$lib/defs';
 
-const publicRoutes = ['/', '/login', 'logout', '/about', '/lessons/calculator'];
+const publicRoutes = [
+	'/',
+	'/login',
+	'logout',
+	'/about',
+	'/lessons/calculator',
+	'/confirm-coach-email',
+	'/confirm-skater-email'
+];
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
 	if (publicRoutes.includes(event.url.pathname)) {

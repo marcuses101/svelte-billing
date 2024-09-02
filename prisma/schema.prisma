@@ -14,22 +14,31 @@ model SkaterType {
 }
 
 enum EmailConfirmation {
-    NotSent
     Pending
     Confirmed
-    Regected
+    Invalid
+}
+
+enum EmailDeliveryStatus {
+    NotSent
+    Pending
+    Rejected
+    Delivered
 }
 
 // Define the Skater table
 model Skater {
-    id                String            @id @default(uuid())
-    firstName         String
-    lastName          String
-    email             String
-    emailConfirmation EmailConfirmation @default(NotSent)
-    dateOfBirth       DateTime?
-    createdOn         DateTime          @default(now())
-    modifiedOn        DateTime?
+    id                              String              @id @default(uuid())
+    firstName                       String
+    lastName                        String
+    email                           String
+    emailConfirmation               EmailConfirmation   @default(Pending)
+    confirmationEmailDeliveryStatus EmailDeliveryStatus @default(NotSent)
+    confirmationEmailMessageId      String?
+    dateOfBirth                     DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     accountId String  @unique
     Account   Account @relation(fields: [accountId], references: [id])
@@ -51,15 +60,22 @@ model Role {
 }
 
 model User {
-    id                String            @id @default(uuid())
-    email             String            @unique
-    emailConfirmation EmailConfirmation @default(NotSent)
-    hashedPassword    String
-    firstName         String?
-    lastName          String?
+    id                              String              @id @default(uuid())
+    email                           String              @unique
+    emailConfirmation               EmailConfirmation   @default(Pending)
+    confirmationEmailDeliveryStatus EmailDeliveryStatus @default(NotSent)
+    confirmationEmailMessageId      String?
+    hashedPassword                  String
+    firstName                       String?
+    lastName                        String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     UserRoles UserRole[]
     Coach     Coach?
+
+    EmailConfirmationToken EmailConfirmationToken?
 }
 
 model UserRole {
@@ -69,6 +85,9 @@ model UserRole {
     roleName String
     Role     Role   @relation(fields: [roleName], references: [name])
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     @@id([userId, roleName])
 }
 
@@ -77,20 +96,25 @@ model Coach {
     commissionPercentage Int
     isHstCharged         Boolean
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     userId String @unique
     User   User   @relation(fields: [userId], references: [id])
 
     accountId String  @unique
     Account   Account @relation(fields: [accountId], references: [id])
 
-    Lessons                Lesson[]
-    CoachPaySlips          CoachPaySlip[]
-    CoachRate              CoachRate[]
-    EmailConfirmationToken EmailConfirmationToken?
+    Lessons       Lesson[]
+    CoachPaySlips CoachPaySlip[]
+    CoachRate     CoachRate[]
 }
 
 model CoachRate {
     hourlyRateInCents Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     coachId        String
     skaterTypeCode String
@@ -102,11 +126,12 @@ model CoachRate {
 }
 
 model Lesson {
-    id                  String    @id @default(uuid())
+    id                  String   @id @default(uuid())
     lessonTimeInMinutes Int
     date                DateTime
-    createdOn           DateTime  @default(now())
-    modifiedOn          DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     coachId String
     Coach   Coach  @relation(fields: [coachId], references: [id])
@@ -122,6 +147,9 @@ model AdditionalCharge {
     amountInCents Int
     date          DateTime @db.Date
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     skaterId String
     Skater   Skater @relation(fields: [skaterId], references: [id])
 
@@ -132,8 +160,11 @@ model AdditionalCharge {
 model EmailConfirmationToken {
     token String @id @default(uuid())
 
-    coach   Coach?  @relation(fields: [coachId], references: [id])
-    coachId String? @unique
+    user   User?   @relation(fields: [userId], references: [id])
+    userId String? @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     skater   Skater? @relation(fields: [skaterId], references: [id])
     skaterId String? @unique
@@ -148,7 +179,8 @@ model Invoice {
     previousAmountDueInCents  Int
     hstAmountInCents          Int
 
-    createdOn DateTime @default(now())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     // createdbyuserid  string
     // createdbyuser    user      @relation("creatoruser", fields: [createdbyuserid], references: [id])
     // modifiedon       datetime?
@@ -157,6 +189,9 @@ model Invoice {
 
     skaterId       String
     invoiceBatchId String?
+
+    emailDeliveryStatus EmailDeliveryStatus @default(NotSent)
+    emailMessageId      String?
 
     previousInvoiceId String?  @unique
     PreviousInvoice   Invoice? @relation("InvoiceHistory", fields: [previousInvoiceId], references: [id])
@@ -175,6 +210,9 @@ model InvoiceLineItem {
     description   String
     amountInCents Int
     date          DateTime @db.Date
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     invoiceId            String
     skaterLessonSkaterId String?
@@ -199,7 +237,11 @@ model CoachPaySlip {
     coachRevenueInCents          Int
     hstAmountInCents             Int
 
-    createdOn DateTime @default(now())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    emailDeliveryStatus EmailDeliveryStatus @default(NotSent)
+    emailMessageId      String?
 
     coachId String
     Coach   Coach  @relation(fields: [coachId], references: [id])
@@ -223,6 +265,9 @@ model CoachPaySlipLineItem {
     amountInCents Int
     date          DateTime @db.Date
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     coachPaySlipId String
     CoachPaySlip   CoachPaySlip @relation(fields: [coachPaySlipId], references: [id])
 
@@ -234,7 +279,9 @@ model BillingBatch {
     id            String         @id @default(uuid())
     Invoices      Invoice[]
     CoachPaySlips CoachPaySlip[]
-    createdOn     DateTime       @default(now())
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model SkaterLesson {
@@ -287,6 +334,9 @@ model Account {
     Skater             Skater?
     Coach              Coach?
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     @@unique([name, accountTypeCode])
 }
 
@@ -296,6 +346,9 @@ model AccountTransaction {
     date                       DateTime @default(now())
     amountInCents              Int
     accountTransactionTypeCode String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     chargeInvoiceId String?  @unique
     InvoiceCharged  Invoice? @relation("InvoiceCharge", fields: [chargeInvoiceId], references: [id])
@@ -339,6 +392,9 @@ model LedgerTransaction {
     debitLedgerCode  String
     date             DateTime @default(now())
     amountInCents    Int
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     accountTransactionId String?
 

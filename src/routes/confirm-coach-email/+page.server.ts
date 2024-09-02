@@ -12,8 +12,8 @@ export const load: PageServerLoad = async ({ url }) => {
 		return error(400, 'invalid query parameters');
 	}
 	const coach = await prisma.coach.findUnique({
-		where: { id: coachId, EmailConfirmationToken: { isNot: null } },
-		include: { EmailConfirmationToken: true, User: true }
+		where: { id: coachId, User: { EmailConfirmationToken: { isNot: null } } },
+		include: { User: { include: { EmailConfirmationToken: true } } }
 	});
 	if (!coach) {
 		return error(
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			`Coach with id ${coachId} not found, or has no associated confirmation token`
 		);
 	}
-	if (coach.EmailConfirmationToken?.token !== token) {
+	if (coach.User.EmailConfirmationToken?.token !== token) {
 		return error(400, 'Invalid Token');
 	}
 	try {
@@ -31,6 +31,6 @@ export const load: PageServerLoad = async ({ url }) => {
 		});
 		return { email: coach.User.email };
 	} catch {
-		return error(500);
+		return error(500, 'failed to update coach email confirmation status');
 	}
 };

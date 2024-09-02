@@ -11,6 +11,7 @@
 	data={{
 		hstAmountInCents: data.paySlip.hstAmountInCents,
 		date: new Date(),
+		createdOn: new Date(),
 		chargesTotalInCents: data.paySlip.chargesTotalInCents,
 		id: paySlipId,
 		amountDueInCents: data.paySlip.amountDueInCents,

@@ -14,13 +14,14 @@
 - [x] Lock Lessons that have already been billed
 - [x] Standardize Invoice Data Fetching and Display
 - [x] Change invoice and payslip to DateTime
-- [ ] Email confirmation flow
-- [ ] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
+- [x] Email confirmation flow
+  - [ ] Webhooks for message delivery status
+- [x] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
   - Send Email UI on generate bills
 - [ ] Handles UI of Server Errors
 - [ ] Fix up UI
 - [ ] Refactor a bunch
-- [ ] Add createdBy createdAt modifiedBy modifiedAt fields to relevant tables
+- [x] Add createdAt modifiedAt fields to relevant tables
 - [ ] Enable Logging in Caddy
 - [ ] Improve Failed log in attempt screen, potentially handle client side instead
 - [ ] Password Creation

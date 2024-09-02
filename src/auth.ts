@@ -11,8 +11,7 @@ import { config } from '$lib/config';
 
 function getUserByEmail(email: string) {
 	return prisma.user.findUnique({
-		where: { email },
-		include: { Coach: true, UserRoles: true }
+		where: { email }
 	});
 }
 
@@ -24,7 +23,7 @@ declare module '@auth/sveltekit' {
 	}
 }
 
-class InvalidLoginError extends CredentialsSignin {
+export class InvalidLoginError extends CredentialsSignin {
 	code = 'Invalid email or password';
 }
 
@@ -56,19 +55,23 @@ export const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 				},
 				authorize: async (credentials) => {
 					const { email, password } = credentials;
-					if (typeof email !== 'string' || typeof password !== 'string') {
-						throw new InvalidLoginError();
+					if (typeof email !== 'string') {
+						throw new InvalidLoginError('email string not provided');
 					}
-					const user = await getUserByEmail(email);
+					if (typeof password !== 'string') {
+						throw new InvalidLoginError('password string not provided');
+					}
+					const user = prisma.user.findUnique({
+						where: { email }
+					});
 
 					if (!user) {
-						throw new InvalidLoginError();
+						throw new InvalidLoginError(`User with email "${email}" not found in the database`);
 					}
 
 					const isValidPassword = await compare(password, user.hashedPassword);
-					console.log({ isValidPassword, email, password });
 					if (!isValidPassword) {
-						throw new InvalidLoginError();
+						throw new InvalidLoginError('invalid password');
 					}
 
 					console.log('Loggin in %s %s', user.firstName, user.lastName);
@@ -80,5 +83,6 @@ export const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 		secret: config.AUTH_SECRET,
 		trustHost: true
 	};
+
 	return authOptions;
 });

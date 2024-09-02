@@ -1,5 +1,5 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
-import { handle as authenticationHandle } from './auth';
+import { handle as authenticationHandle, InvalidLoginError } from './auth';
 import { sequence } from '@sveltejs/kit/hooks';
 import { ROLES } from '$lib/defs';
 
@@ -30,5 +30,13 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 
 	return resolve(event);
 };
+
+function handleInvalidCredentials() {
+	const error = new InvalidLoginError();
+	const invalidLoginParams = new URLSearchParams();
+	invalidLoginParams.set('error', error.name);
+	invalidLoginParams.set('code', error.code);
+	return redirect(301, `/login?${invalidLoginParams.toString()}`);
+}
 
 export const handle: Handle = sequence(authenticationHandle, authorizationHandle);

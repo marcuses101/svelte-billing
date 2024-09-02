@@ -14,10 +14,10 @@
 
 <PageHeader title="Ledgers" />
 
-<div class="grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] gap-x-8 gap-y-4">
+<div class="flex flex-wrap gap-x-8 gap-y-4">
 	{#each ledgers as [key, { ledgerType, positiveTransactionType, debitSumInCents, balanceInCents, creditSumInCents }]}
 		<div
-			class="stats shadow-lg border"
+			class="stats min-w-fit shadow-lg border"
 			class:border-primary={positiveTransactionType === 'Debit'}
 			class:border-secondary={positiveTransactionType === 'Credit'}
 		>

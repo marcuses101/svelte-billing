@@ -11,7 +11,8 @@ import { config } from '$lib/config';
 
 function getUserByEmail(email: string) {
 	return prisma.user.findUnique({
-		where: { email }
+		where: { email },
+		include: { Coach: true, UserRoles: true }
 	});
 }
 
@@ -61,13 +62,14 @@ export const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 					if (typeof password !== 'string') {
 						throw new InvalidLoginError('password string not provided');
 					}
-					const user = prisma.user.findUnique({
+					const user = await prisma.user.findUnique({
 						where: { email }
 					});
 
 					if (!user) {
 						throw new InvalidLoginError(`User with email "${email}" not found in the database`);
 					}
+					console.log({ password, hashed: user });
 
 					const isValidPassword = await compare(password, user.hashedPassword);
 					if (!isValidPassword) {

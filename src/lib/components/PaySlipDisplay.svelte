@@ -1,34 +1,45 @@
 <script lang="ts">
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
-	import type { PaySlipData } from '$lib/server/db';
 	import { HST_PERCENTAGE } from '$lib/shared';
 
-	export let data: PaySlipData;
-	const { firstName, lastName } = data.Coach.User;
+	export let firstName: string;
+	export let lastName: string;
+	export let id: string;
+	export let date: Date;
+	export let previousPaySlipAmountInCents: number;
+	export let amountDueInCents: number;
+	export let chargesTotalInCents: number;
+	export let commissionAmountInCents: number;
+	export let coachPaymentTransactions: { date: Date; amountInCents: number }[];
+	export let lineItems: { date: Date; description: string; amountInCents: number }[];
+	export let outstandingBalanceInCents: number;
+	export let hstAmountInCents: number;
+	export let commissionPercentage: number;
+
 	const name = `${firstName} ${lastName}`;
-	const id = data.id;
-	const date = formatDate(data.date);
-	const previousPaySlipAmount = formatCurrency(data.previousPaySlipAmountInCents ?? 0);
-	const payments = data.CoachPaymentAccountTransactions.map((payment) => ({
+	const formattedDate = formatDate(date);
+	const previousPaySlipAmount = formatCurrency(previousPaySlipAmountInCents ?? 0);
+	const payments = coachPaymentTransactions.map((payment) => ({
 		paymentDate: formatDate(payment.date),
 		paymentAmount: formatCurrency(-payment.amountInCents)
 	}));
-	const outstandingBalance = formatCurrency(data.outstandingBalanceInCents);
-	const charges = data.CoachPaySlipLineItems.map((line) => {
+
+	const outstandingBalance = formatCurrency(outstandingBalanceInCents);
+	const charges = lineItems.map((line) => {
 		return {
 			date: formatDate(line.date),
 			description: line.description,
 			amount: formatCurrency(line.amountInCents)
 		};
 	});
-	const chargesTotal = formatCurrency(data.chargesTotalInCents);
-	const commission = formatCurrency(-data.commissionAmountInCents);
-	const subtotal = formatCurrency(data.chargesTotalInCents - data.commissionAmountInCents);
+	const chargesTotal = formatCurrency(chargesTotalInCents);
+	const commission = formatCurrency(-commissionAmountInCents);
+	const subtotal = formatCurrency(chargesTotalInCents - commissionAmountInCents);
 
-	const hst = formatCurrency(data.hstAmountInCents);
+	const hst = formatCurrency(hstAmountInCents);
 
-	const amountDue = formatCurrency(data.amountDueInCents);
+	const amountDue = formatCurrency(amountDueInCents);
 </script>
 
 <div class="max-w-5xl mx-auto">
@@ -38,7 +49,10 @@
 		</h2>
 		<div class="grid grid-cols-2 gap-2">
 			<strong class="text-right">Pay Slip Id: </strong><span class="text-right">{id}</span>
-			<strong class="text-right">Pay Slip Date: </strong><span class="text-right">{date}</span>
+			<strong class="text-right">Pay Slip Date: </strong>
+			<span class="text-right">
+				{formattedDate}
+			</span>
 		</div>
 	</section>
 	<section class="flex flex-wrap gap-4 mb-4">
@@ -79,9 +93,9 @@
 						<td>Charges Total</td>
 						<td>{chargesTotal}</td>
 					</tr>
-					{#if data.commissionAmountInCents > 0}
+					{#if commissionAmountInCents > 0}
 						<tr>
-							<td>Commission ({data.commissionPercentage}%)</td>
+							<td>Commission ({commissionPercentage}%)</td>
 							<td>{commission}</td>
 						</tr>
 					{/if}
@@ -97,7 +111,7 @@
 						<td>Outstanding Balance</td>
 						<td>{outstandingBalance}</td>
 					</tr>
-					{#if data.hstAmountInCents > 0}
+					{#if hstAmountInCents > 0}
 						<tr>
 							<td>HST ({HST_PERCENTAGE}%)</td>
 							<td>{hst}</td>

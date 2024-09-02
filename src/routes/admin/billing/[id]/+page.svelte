@@ -8,7 +8,7 @@
 	export let data;
 </script>
 
-<PageHeader title={`Billing Batch ${formatDate(data.billingBatch.createdOn)}`}>
+<PageHeader title={`Billing Batch ${formatDate(data.billingBatch.createdAt)}`}>
 	<BackButton>Back</BackButton>
 </PageHeader>
 

@@ -66,8 +66,8 @@ model User {
     confirmationEmailDeliveryStatus EmailDeliveryStatus @default(NotSent)
     confirmationEmailMessageId      String?
     hashedPassword                  String
-    firstName                       String?
-    lastName                        String?
+    firstName                       String
+    lastName                        String
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -32,10 +32,10 @@
 		<th>Coach Pay Total</th>
 		<th>Commission</th>
 	</tr>
-	{#each data.billingBatch as { id, createdOn, paySlipTotal, invoicesTotal }}
+	{#each data.billingBatch as { id, createdAt, paySlipTotal, invoicesTotal }}
 		<tr>
 			<td><a class="link link-primary" href={`/admin/billing/${id}`}>{id}</a></td>
-			<td>{formatDate(createdOn)}</td>
+			<td>{formatDate(createdAt)}</td>
 			<td>{formatCurrency(invoicesTotal)}</td>
 			<td>{formatCurrency(paySlipTotal)}</td>
 			<td>TBD</td>

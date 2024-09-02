@@ -72,7 +72,6 @@ export const actions = {
 			data: {
 				date,
 				lessonTimeInMinutes,
-				modifiedOn: new Date(),
 				SkaterLessons: {
 					deleteMany: {},
 					create: skaterIds.map((id) => ({ Skater: { connect: { id } } }))

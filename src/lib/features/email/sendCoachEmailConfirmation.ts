@@ -1,17 +1,16 @@
 import { config } from '$lib/config';
-import { sendEmail } from '$lib/emailClient';
+import { sendEmail } from './emailClient';
 import { wrapErr, wrapOk } from '$lib/rustResult';
 import { prisma } from '$lib/server/db';
 import { format } from 'util';
 
-const COACH_EMAIL_CONFIRMATION_TEMPLATE = `\
+const COACH_EMAIL_CONFIRMATION_TEMPLATE_BODY = `\
 <p>Please click the link below to confirm your email address</p>
 <p><a href="%s">Click to confirm</a></p>
 `;
 
-function getCoachEmailConfirmationHtml(href: string) {
-	return format(COACH_EMAIL_CONFIRMATION_TEMPLATE, href);
-}
+const COACH_EMAIL_CONFIRMATION_TEMPLATE_SUBJECT = `\
+TLSS Email Confirmation - %s`;
 
 export async function sendCoachEmailConfirmation(myFetch: typeof fetch, coachId: string) {
 	const coach = await prisma.coach.findUnique({ where: { id: coachId }, include: { User: true } });
@@ -25,6 +24,7 @@ export async function sendCoachEmailConfirmation(myFetch: typeof fetch, coachId:
 	}
 	const coachEmail = coach.User.email;
 	const userId = coach.User.id;
+	const coachFullName = `${coach.User.firstName} ${coach.User.lastName}`;
 
 	try {
 		await prisma.$transaction(async (tx) => {
@@ -35,14 +35,14 @@ export async function sendCoachEmailConfirmation(myFetch: typeof fetch, coachId:
 			link.searchParams.set('user-id', userId);
 			link.searchParams.set('token', emailConfirmationToken.token);
 
-			const htmlContent = getCoachEmailConfirmationHtml(link.href);
-			const emailResponse = await sendEmail(
-				myFetch,
-				coachEmail,
-				`TLSS Email Confirmation - ${coach.User.firstName} ${coach.User.lastName}`,
-				undefined,
-				htmlContent
-			);
+			const subject = format(COACH_EMAIL_CONFIRMATION_TEMPLATE_SUBJECT, coachFullName);
+			const htmlBody = format(COACH_EMAIL_CONFIRMATION_TEMPLATE_BODY, link.href);
+			const emailResponse = await sendEmail({
+				fetchFunction: myFetch,
+				recipientEmail: coachEmail,
+				subject,
+				htmlBody
+			});
 			if (!emailResponse.ok) {
 				if ('message' in emailResponse.error) {
 					throw new Error(emailResponse.error.message);
@@ -65,7 +65,7 @@ export async function sendCoachEmailConfirmation(myFetch: typeof fetch, coachId:
 			});
 		});
 		return wrapOk(null);
-	} catch {
-		return wrapErr({ message: 'Prisma Transaction failure' });
+	} catch (error) {
+		return wrapErr({ message: 'Prisma Transaction failure', error });
 	}
 }

@@ -17,7 +17,9 @@
 - [x] Email confirmation flow
   - [ ] Webhooks for message delivery status
 - [x] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
+- [ ] Email Webhooks
   - Send Email UI on generate bills
+- [ ] Send Email actions for invoices and pay-slips
 - [ ] Handles UI of Server Errors
 - [ ] Fix up UI
 - [ ] Refactor a bunch

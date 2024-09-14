@@ -1,7 +1,7 @@
 import { prisma } from '$lib/server/db';
 import { error, fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { sendCoachEmailConfirmation } from './sendCoachEmailConfirmation';
+import { sendCoachEmailConfirmation } from '$lib/features/email/sendCoachEmailConfirmation';
 
 export async function load() {
 	const data = await prisma.user.findMany({

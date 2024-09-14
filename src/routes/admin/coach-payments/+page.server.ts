@@ -2,8 +2,10 @@ import { prisma } from '$lib/server/db';
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { ACCOUNT_TRANSACTION_TYPE, ACCOUNT_TYPE_CODE, LEDGER_CODE } from '$lib/defs';
-import type { $Enums } from '@prisma/client';
+import type { $Enums, AccountTransaction } from '@prisma/client';
 import { validateUserIsAdmin } from '$lib/validateUserIsAdmin';
+import { wrapErr, wrapOk, type Result } from '$lib/rustResult';
+import { recordCoachPaymentTransaction } from '$lib/server/dbAccounting';
 
 export const load: PageServerLoad = async () => {
 	const coachInfo = await prisma.coach.findMany({
@@ -90,32 +92,11 @@ export const actions = {
 		}
 
 		const amountInCents = parseInt(amountInCentsString, 10);
-
-		const account = await prisma.account.findFirst({
-			where: { accountTypeCode: ACCOUNT_TYPE_CODE.COACH, Coach: { id: coachId } }
-		});
-		if (!account) {
-			return fail(404, {
-				message: `No account found associated to skater id "${coachId}"`
+		const transactionResult = await recordCoachPaymentTransaction(coachId, amountInCents);
+		if (!transactionResult.ok) {
+			return fail(transactionResult.error.status, {
+				message: transactionResult.error.message
 			});
-		}
-		try {
-			await prisma.accountTransaction.create({
-				data: {
-					amountInCents,
-					accountId: account.id,
-					accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_PAYMENT,
-					LedgerTransaction: {
-						create: {
-							amountInCents,
-							debitLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE,
-							creditLedgerCode: LEDGER_CODE.CASH
-						}
-					}
-				}
-			});
-		} catch (error) {
-			return fail(500, { message: 'Error creating transaction' });
 		}
 		return { success: true };
 	}

@@ -1,51 +1,38 @@
 import { prisma } from './db';
-import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '$lib/defs';
+import { ACCOUNT_TRANSACTION_TYPE, ACCOUNT_TYPE_CODE, LEDGER_CODE } from '$lib/defs';
+import { wrapErr, wrapOk, type Result } from '$lib/rustResult';
+import type { AccountTransaction } from '@prisma/client';
 
-export async function logStudentPayment(
-	studentAccountId: string,
-	amountInCents: number,
-	date: Date
-) {
-	const [accountTransaction, ledgerTransaction] = await prisma.$transaction([
-		prisma.accountTransaction.create({
+export async function recordCoachPaymentTransaction(
+	coachId: string,
+	amountInCents: number
+): Promise<Result<AccountTransaction, { status: 404 | 500; message: string; error?: unknown }>> {
+	const account = await prisma.account.findFirst({
+		where: { accountTypeCode: ACCOUNT_TYPE_CODE.COACH, Coach: { id: coachId } }
+	});
+	if (!account) {
+		return wrapErr({
+			status: 404,
+			message: `No account found associated to skater id "${coachId}"`
+		});
+	}
+	try {
+		const transaction = await prisma.accountTransaction.create({
 			data: {
 				amountInCents,
-				date,
-				accountId: studentAccountId,
-				accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT
+				accountId: account.id,
+				accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_PAYMENT,
+				LedgerTransaction: {
+					create: {
+						amountInCents,
+						debitLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE,
+						creditLedgerCode: LEDGER_CODE.CASH
+					}
+				}
 			}
-		}),
-		prisma.ledgerTransaction.create({
-			data: {
-				amountInCents,
-				date,
-				debitLedgerCode: LEDGER_CODE.CASH,
-				creditLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE
-			}
-		})
-	]);
-
-	console.log({ accountTransaction, ledgerTransaction });
-}
-
-export async function logCoachPayment(coachAccountId: string, amountInCents: number, date: Date) {
-	const [accountTransaction, ledgerTransaction] = await prisma.$transaction([
-		prisma.accountTransaction.create({
-			data: {
-				amountInCents,
-				date,
-				accountId: coachAccountId,
-				accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.COACH_PAYMENT
-			}
-		}),
-		prisma.ledgerTransaction.create({
-			data: {
-				amountInCents,
-				date,
-				debitLedgerCode: LEDGER_CODE.ACCOUNTS_PAYABLE,
-				creditLedgerCode: LEDGER_CODE.CASH
-			}
-		})
-	]);
-	console.log({ accountTransaction, ledgerTransaction });
+		});
+		return wrapOk(transaction);
+	} catch (error) {
+		return wrapErr({ status: 500, error, message: 'Error creating message' });
+	}
 }

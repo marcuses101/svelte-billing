@@ -1,5 +1,5 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
-import { handle as authenticationHandle, InvalidLoginError } from './auth';
+import { handle as authenticationHandle } from './auth';
 import { sequence } from '@sveltejs/kit/hooks';
 import { ROLES } from '$lib/defs';
 
@@ -10,7 +10,8 @@ const publicRoutes = [
 	'/about',
 	'/lessons/calculator',
 	'/confirm-coach-email',
-	'/confirm-skater-email'
+	'/confirm-skater-email',
+	'/invoice'
 ];
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {

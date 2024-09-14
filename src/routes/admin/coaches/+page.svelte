@@ -4,11 +4,8 @@
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
-	import { EmailConfirmation } from '@prisma/client';
 
 	export let data;
-	export let form;
-	console.log(form);
 </script>
 
 <PageHeader title="Coaches" />

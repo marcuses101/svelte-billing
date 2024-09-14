@@ -1,7 +1,7 @@
-import { config } from './config';
-import { wrapErr, wrapOk, type Result } from './rustResult';
+import { config } from '../../config';
+import { wrapErr, wrapOk, type Result } from '../../rustResult';
 
-type PostmarkBody = {
+export type PostmarkBody = {
 	From: string;
 	To: string;
 	Subject: string;
@@ -11,7 +11,7 @@ type PostmarkBody = {
 	TextBody?: string;
 };
 
-type PostmarkResponse = {
+export type PostmarkResponse = {
 	To: string;
 	SubmittedAt: string;
 	MessageID: string;
@@ -19,15 +19,21 @@ type PostmarkResponse = {
 	Message: string;
 };
 
-type SendEmailError = { message: string } | PostmarkResponse;
+export type SendEmailError = { message: string } | PostmarkResponse;
 
-export async function sendEmail(
-	fetchFunction: typeof fetch,
-	recipientEmail: string,
-	subject: string,
-	textBody?: string,
-	htmlBody?: string
-): Promise<Result<PostmarkResponse, SendEmailError>> {
+export async function sendEmail({
+	fetchFunction,
+	recipientEmail,
+	subject,
+	textBody,
+	htmlBody
+}: {
+	fetchFunction: typeof fetch;
+	recipientEmail: string;
+	subject: string;
+	textBody?: string;
+	htmlBody?: string;
+}): Promise<Result<PostmarkResponse, SendEmailError>> {
 	console.log({ textBody, htmlBody });
 	if (!htmlBody && !textBody) {
 		return wrapErr({ message: 'No body has been provided' });

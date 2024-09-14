@@ -20,9 +20,6 @@
 	const fullName = `${data.coach.User.firstName} ${data.coach.User.lastName}`;
 	$: route = $page.route.id as keyof typeof routeInfo;
 	$: currentRouteInfo = routeInfo[route];
-	$: {
-		console.log(currentRouteInfo);
-	}
 	let coachId = $page.params.id;
 </script>
 

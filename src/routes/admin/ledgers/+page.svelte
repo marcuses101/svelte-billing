@@ -14,7 +14,7 @@
 
 <PageHeader title="Ledgers" />
 
-<div class="flex flex-wrap gap-x-8 gap-y-4">
+<div class="grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
 	{#each ledgers as [key, { ledgerType, positiveTransactionType, debitSumInCents, balanceInCents, creditSumInCents }]}
 		<div
 			class="stats min-w-fit shadow-lg border"

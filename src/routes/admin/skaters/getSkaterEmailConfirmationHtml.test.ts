@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { getSkaterEmailConfirmationHtml } from './getSkaterEmailConfirmationHtml';
+import { getSkaterEmailConfirmationHtml } from '../../../lib/features/email/getSkaterEmailConfirmationHtmltSkaterEmailConfirmationHtml';
 
 test('should produce the expected html string', () => {
 	const expected = `\

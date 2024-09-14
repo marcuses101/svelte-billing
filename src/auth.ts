@@ -69,7 +69,6 @@ export const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 					if (!user) {
 						throw new InvalidLoginError(`User with email "${email}" not found in the database`);
 					}
-					console.log({ password, hashed: user });
 
 					const isValidPassword = await compare(password, user.hashedPassword);
 					if (!isValidPassword) {

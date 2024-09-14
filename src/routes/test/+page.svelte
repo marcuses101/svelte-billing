@@ -1,7 +1,6 @@
 <script>
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	export let form;
-	console.log(form);
 </script>
 
 <PageHeader title="Test Page" />

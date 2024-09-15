@@ -36,7 +36,7 @@ export const actions = {
 		}
 		const sendResponse = await sendSkaterInvoice(fetch, invoiceId);
 		if (!sendResponse.ok) {
-			return fail(500, sendResponse);
+			return fail(500, { message: sendResponse.error.message });
 		}
 		return sendResponse;
 	}

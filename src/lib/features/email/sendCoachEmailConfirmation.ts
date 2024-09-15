@@ -44,10 +44,7 @@ export async function sendCoachEmailConfirmation(myFetch: typeof fetch, coachId:
 				htmlBody
 			});
 			if (!emailResponse.ok) {
-				if ('message' in emailResponse.error) {
-					throw new Error(emailResponse.error.message);
-				}
-				throw new Error(emailResponse.error.Message);
+				throw new Error(emailResponse.error.message);
 			}
 			await tx.coach.update({
 				where: { id: coachId },

@@ -38,10 +38,7 @@ export async function sendSkaterEmailConfirmation(myFetch: typeof fetch, skaterI
 				htmlBody: htmlBody
 			});
 			if (!emailResponse.ok) {
-				if ('message' in emailResponse.error) {
-					throw new Error(emailResponse.error.message);
-				}
-				throw new Error(emailResponse.error.Message);
+				throw new Error(emailResponse.error.message);
 			}
 			await tx.skater.update({
 				where: { id: skaterId },
@@ -53,7 +50,7 @@ export async function sendSkaterEmailConfirmation(myFetch: typeof fetch, skaterI
 			});
 		});
 		return wrapOk(null);
-	} catch {
-		return wrapErr({ message: 'Prisma Transaction failure' });
+	} catch (error) {
+		return wrapErr({ message: 'Prisma Transaction failure', error });
 	}
 }

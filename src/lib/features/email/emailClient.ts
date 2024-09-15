@@ -19,7 +19,7 @@ export type PostmarkResponse = {
 	Message: string;
 };
 
-export type SendEmailError = { message: string } | PostmarkResponse;
+export type SendEmailError = { message: string } | (PostmarkResponse & { message: string });
 
 export async function sendEmail({
 	fetchFunction,
@@ -60,10 +60,15 @@ export async function sendEmail({
 	});
 
 	if (!res.ok) {
-		const json = (await res.json().catch(() => {
-			return { message: 'failed to parse json' };
-		})) as SendEmailError;
-		return wrapErr(json);
+		try {
+			const errorResponse = (await res.json()) as SendEmailError;
+			if ('Message' in errorResponse) {
+				errorResponse.message = errorResponse.Message;
+			}
+			return wrapErr(errorResponse);
+		} catch {
+			wrapErr({ message: 'Failed to parse json' });
+		}
 	}
 	const json = (await res.json()) as PostmarkResponse;
 	return wrapOk(json);

@@ -1,6 +1,6 @@
 import { PrismaClient } from './prisma';
 import type { Prisma } from '@prisma/client';
-import { ACCOUNT_TYPE_CODE, type SkaterType } from '../defs';
+import { ACCOUNT_TYPE_CODE, ROLES, type SkaterType } from '../defs';
 
 export const prisma = new PrismaClient();
 
@@ -56,8 +56,20 @@ export async function addSkater(
 		data: {
 			firstName,
 			lastName,
-			email,
 			SkaterType: { connect: { code: skaterTypeCode } },
+			User: {
+				connectOrCreate: {
+					where: { email },
+					create: {
+						email,
+						firstName,
+						lastName,
+						hashedPassword: '',
+						forcePasswordReset: true,
+						UserRoles: { create: { roleName: ROLES.CLIENT } }
+					}
+				}
+			},
 			Account: {
 				create: {
 					name: `${firstName} ${lastName}`,

@@ -9,8 +9,7 @@ const publicRoutes = [
 	'logout',
 	'/about',
 	'/lessons/calculator',
-	'/confirm-coach-email',
-	'/confirm-skater-email',
+	'/confirm-user-email',
 	'/invoice'
 ];
 

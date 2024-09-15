@@ -27,14 +27,13 @@ enum EmailDeliveryStatus {
 }
 
 model Skater {
-    id                              String              @id @default(uuid())
-    firstName                       String
-    lastName                        String
-    email                           String
-    emailConfirmation               EmailConfirmation   @default(Pending)
-    confirmationEmailDeliveryStatus EmailDeliveryStatus @default(NotSent)
-    confirmationEmailMessageId      String?
-    dateOfBirth                     DateTime?
+    id          String    @id @default(uuid())
+    firstName   String
+    lastName    String
+    dateOfBirth DateTime?
+
+    userId String
+    User   User   @relation(fields: [userId], references: [id])
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -45,10 +44,9 @@ model Skater {
     skaterTypeCode String
     SkaterType     SkaterType @relation(fields: [skaterTypeCode], references: [code])
 
-    SkaterLessons          SkaterLesson[]
-    Invoices               Invoice[]
-    AdditionalCharges      AdditionalCharge[]
-    EmailConfirmationToken EmailConfirmationToken?
+    SkaterLessons     SkaterLesson[]
+    Invoices          Invoice[]
+    AdditionalCharges AdditionalCharge[]
 
     @@unique([firstName, lastName])
 }
@@ -64,7 +62,8 @@ model User {
     emailConfirmation               EmailConfirmation   @default(Pending)
     confirmationEmailDeliveryStatus EmailDeliveryStatus @default(NotSent)
     confirmationEmailMessageId      String?
-    hashedPassword                  String
+    hashedPassword                  String?
+    forcePasswordReset              Boolean             @default(true)
     firstName                       String
     lastName                        String
 
@@ -73,6 +72,7 @@ model User {
 
     UserRoles UserRole[]
     Coach     Coach?
+    Skater    Skater[]
 
     EmailConfirmationToken EmailConfirmationToken?
 }
@@ -164,9 +164,6 @@ model EmailConfirmationToken {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-
-    skater   Skater? @relation(fields: [skaterId], references: [id])
-    skaterId String? @unique
 }
 
 model Invoice {

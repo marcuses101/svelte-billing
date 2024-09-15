@@ -32,6 +32,7 @@
 	const isAdmin = Boolean(data.user?.UserRoles.some((role) => role.roleName === ROLES.ADMIN));
 	const adminLinks = [
 		{ href: '/admin/overview', displayText: 'Overview', submenus: [] },
+		{ href: '/admin/users', displayText: 'Users', submenus: [] },
 		{ href: '/admin/ledgers', displayText: 'Ledgers', submenus: [] },
 		{ href: '/admin/billing', displayText: 'Billing', submenus: [] },
 		{

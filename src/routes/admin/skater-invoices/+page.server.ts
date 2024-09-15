@@ -11,12 +11,7 @@ export const load: PageServerLoad = async () => {
 		include: {
 			BillingBatch: { select: { humanReadableId: true } },
 			Skater: {
-				select: {
-					firstName: true,
-					lastName: true,
-					id: true,
-					emailConfirmation: true
-				}
+				include: { User: { select: { emailConfirmation: true, id: true } } }
 			}
 		}
 	});

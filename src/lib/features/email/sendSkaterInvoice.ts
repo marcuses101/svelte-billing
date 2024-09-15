@@ -56,7 +56,7 @@ export async function sendSkaterInvoice(
 ): Promise<Result<Invoice, SendEmailError>> {
 	const invoice = await prisma.invoice.findUnique({
 		where: { id: invoiceId },
-		include: { Skater: true }
+		include: { Skater: { include: { User: true } } }
 	});
 	if (!invoice) {
 		return wrapErr({ message: `Invoice with id "${invoiceId} not found` });
@@ -65,8 +65,7 @@ export async function sendSkaterInvoice(
 		Skater: {
 			firstName: skaterFirstName,
 			lastName: skaterLastName,
-			emailConfirmation,
-			email,
+			User: { emailConfirmation, email },
 			id: skaterId
 		},
 		invoiceDate,

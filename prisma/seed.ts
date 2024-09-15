@@ -107,8 +107,8 @@ async function seedAccounting() {
 	return { ledgerTypes, ledgers, accountTypes, accountTransactionTypes };
 }
 
-async function seedCoaches() {
-	console.log('Seeding Coaches');
+async function seedAdmins() {
+	console.log('Seeding Admins');
 	if (typeof defaultPassword !== 'string') {
 		throw new Error('invalid DEFAULT_PASSWORD');
 	}
@@ -118,45 +118,29 @@ async function seedCoaches() {
 			firstName: 'Marcus',
 			lastName: 'Connolly',
 			hashedPassword: await hash(defaultPassword, 10),
+			forcePasswordReset: false,
 			UserRoles: {
 				create: [
 					{
 						roleName: ROLES.ADMIN
-					},
-					{ roleName: ROLES.COACH }
-				]
-			},
-			Coach: {
-				create: {
-					isHstCharged: true,
-					commissionPercentage: 0,
-					CoachRate: {
-						createMany: {
-							data: [
-								{ skaterTypeCode: SKATER_TYPE.RESIDENT, hourlyRateInCents: 60_00 },
-								{ skaterTypeCode: SKATER_TYPE.US, hourlyRateInCents: 70_00 },
-								{ skaterTypeCode: SKATER_TYPE.INTERNATIONAL, hourlyRateInCents: 120_00 }
-							]
-						}
-					},
-					Account: {
-						create: {
-							name: 'Marcus Connolly Coach Account',
-							accountTypeCode: ACCOUNT_TYPE_CODE.COACH
-						}
 					}
-				}
+				]
 			}
-		},
-		include: { Coach: { include: { CoachRate: true } } }
+		}
 	});
+	console.log('Seeding Admins -- Complete');
+	return marcus;
+}
+
+async function seedCoaches() {
+	console.log('Seeding Coaches');
 
 	const drew = await prisma.user.create({
 		data: {
 			email: 'andrewm_evans@hotmail.com',
 			firstName: 'Andrew',
 			lastName: 'Evans',
-			hashedPassword: await hash(defaultPassword, 10),
+			forcePasswordReset: true,
 			UserRoles: {
 				create: [
 					{
@@ -195,7 +179,7 @@ async function seedCoaches() {
 			email: 'parkinsonp@hotmail.com',
 			firstName: 'Paul',
 			lastName: 'Parkinson',
-			hashedPassword: await hash(defaultPassword, 10),
+			forcePasswordReset: true,
 			UserRoles: {
 				create: [
 					{
@@ -234,7 +218,7 @@ async function seedCoaches() {
 			email: 'example_coach@gmail.com',
 			firstName: 'Coachy',
 			lastName: 'Coacherson',
-			hashedPassword: await hash(defaultPassword, 10),
+			forcePasswordReset: true,
 			UserRoles: {
 				create: [{ roleName: ROLES.COACH }]
 			},
@@ -262,7 +246,7 @@ async function seedCoaches() {
 		},
 		include: { Coach: { include: { CoachRate: true } } }
 	});
-	return [marcus, drew, exampleCoach, paul];
+	return [drew, exampleCoach, paul];
 }
 async function seedSkaterType() {
 	console.log('Seed Skater Types');
@@ -281,6 +265,9 @@ type SkaterEntry = Skater & { Account: Account };
  * */
 async function seedSkaters() {
 	console.log('Seed Skaters');
+	if (typeof defaultPassword !== 'string') {
+		throw new Error('invalid DEFAULT_PASSWORD');
+	}
 	const skaterInput = [
 		{ name: 'Abby', code: SKATER_TYPE.RESIDENT },
 		{ name: 'Brenda', code: SKATER_TYPE.RESIDENT },
@@ -300,8 +287,16 @@ async function seedSkaters() {
 			data: {
 				firstName: 'Skater',
 				lastName: name,
-				email: `skater_${name.toLowerCase()}@gmail.com`,
 				SkaterType: { connect: { code } },
+				User: {
+					create: {
+						firstName: 'Skater',
+						lastName: name,
+						email: `skater_${name.toLowerCase()}@gmail.com`,
+						forcePasswordReset: true,
+						UserRoles: { create: { roleName: ROLES.CLIENT } }
+					}
+				},
 				Account: {
 					create: {
 						accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
@@ -401,6 +396,7 @@ async function seedRoles() {
 async function main() {
 	console.log('Seeding beginning');
 	const roles = await seedRoles();
+	const admin = await seedAdmins();
 	const { ledgers, accountTypes, accountTransactionTypes } = await seedAccounting();
 	const skaterTypes = await seedSkaterType();
 	const skaters = await seedSkaters();

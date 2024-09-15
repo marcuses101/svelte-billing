@@ -20,6 +20,7 @@
 		date: string;
 		emailDeliveryStatus: EmailDeliveryStatus;
 		emailConfirmation: EmailConfirmation;
+		userId: string;
 	}[] = data.invoices.map((invoice) => {
 		return {
 			invoiceId: invoice.id,
@@ -30,7 +31,8 @@
 			invoiceHref: `/admin/skater-invoices/${invoice.id}`,
 			skaterHref: `/admin/skaters/${invoice.skaterId}`,
 			emailDeliveryStatus: invoice.emailDeliveryStatus,
-			emailConfirmation: invoice.Skater.emailConfirmation
+			emailConfirmation: invoice.Skater.User.emailConfirmation,
+			userId: invoice.Skater.User.id
 		};
 	});
 </script>
@@ -52,7 +54,7 @@
 		<th class="text-right">Invoice Amount</th>
 		<th>Email Status</th>
 	</tr>
-	{#each rows as { date, invoiceId, name, invoiceHref, humanReadableId, skaterHref, amountDue, emailDeliveryStatus, emailConfirmation }}
+	{#each rows as { date, invoiceId, name, invoiceHref, humanReadableId, skaterHref, amountDue, emailDeliveryStatus, emailConfirmation, userId }}
 		<tr>
 			<td>
 				<a class="link link-primary" href={invoiceHref}>{humanReadableId}</a>
@@ -84,10 +86,10 @@
 						</button>
 					</form>
 				{:else}
-					<div class="gap-2 badge badge-warning p-3">
+					<a href={`/admin/users/${userId}`} class="gap-2 badge badge-warning p-3">
 						<InfoIcon />
-						Skater Email not confirmed
-					</div>
+						Client Email not confirmed
+					</a>
 				{/if}
 			</td>
 		</tr>

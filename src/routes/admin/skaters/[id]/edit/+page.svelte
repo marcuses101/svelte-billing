@@ -6,13 +6,13 @@
 
 	export let data;
 	const {
-		skater: { firstName, lastName, email, skaterTypeCode: maybeTypeCode }
+		skater: { firstName, lastName, skaterTypeCode: maybeTypeCode }
 	} = data;
 	const isSkaterTypeCode = inputIsSkaterType(maybeTypeCode);
 	const skaterTypeCode = isSkaterTypeCode ? maybeTypeCode : undefined;
 </script>
 
-<SkaterForm {firstName} {lastName} {email} {skaterTypeCode}>
+<SkaterForm {firstName} {lastName} {skaterTypeCode}>
 	<svelte:fragment slot="buttons">
 		<CancelButton href={`/skaters/${data.skater.id}`} />
 		<SubmitButton />

@@ -5,7 +5,6 @@
 	export let disabled: boolean = false;
 	export let firstName = '';
 	export let lastName = '';
-	export let email = '';
 	export let skaterTypeCode: SkaterType = 'RESIDENT';
 	const types = Object.values(SKATER_TYPE);
 </script>
@@ -42,20 +41,6 @@
 			autocomplete="family-name"
 			id="last-name"
 			placeholder="Doe"
-			class="input input-bordered w-full max-w-xs"
-		/>
-	</div>
-	<div class="form-control w-full max-w-xs">
-		<label for="email" class="label">
-			<span class="label-text">Email</span>
-		</label>
-		<input
-			{disabled}
-			value={email}
-			type="email"
-			name="email"
-			id="email"
-			placeholder="john_doe@unknown.com"
 			class="input input-bordered w-full max-w-xs"
 		/>
 	</div>

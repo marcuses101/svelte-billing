@@ -58,7 +58,6 @@ export const load: PageServerLoad = async () => {
 		const name = skater ? `${skater.firstName} ${skater.lastName}` : 'unknown';
 		return { date, amountInCents, name };
 	});
-	console.log({ skaterBalances, paymentEntries });
 
 	return { skaterBalances, paymentEntries };
 };

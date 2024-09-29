@@ -128,8 +128,23 @@ async function seedAdmins() {
 			}
 		}
 	});
+	const laurence = await prisma.user.create({
+		data: {
+			email: 'laurence.b.lessard@gmail.com',
+			firstName: 'Laurence',
+			lastName: 'Lessard',
+			forcePasswordReset: true,
+			UserRoles: {
+				create: [
+					{
+						roleName: ROLES.ADMIN
+					}
+				]
+			}
+		}
+	});
 	console.log('Seeding Admins -- Complete');
-	return marcus;
+	return [marcus, laurence];
 }
 
 async function seedCoaches() {

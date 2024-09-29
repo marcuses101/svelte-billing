@@ -3,6 +3,7 @@ import { handle as authenticationHandle } from './auth';
 import { sequence } from '@sveltejs/kit/hooks';
 import { ROLES } from '$lib/defs';
 
+// todo, invert this
 const publicRoutes = [
 	'/',
 	'/login',
@@ -10,7 +11,10 @@ const publicRoutes = [
 	'/about',
 	'/lessons/calculator',
 	'/confirm-user-email',
-	'/invoice'
+	'/invoice',
+	'/password-reset',
+	'/password-reset-request',
+	'/favicon.ico'
 ];
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
@@ -20,7 +24,10 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const session = await event.locals.auth();
 	const user = session?.user;
 	if (!user) {
-		return redirect(303, '/login');
+		const searchParams = new URLSearchParams();
+		searchParams.set('callbackUrl', event.url.pathname);
+		const redirectPath = `/auth/signin?${searchParams.toString()}`;
+		return redirect(303, redirectPath);
 	}
 	const isAdminRoute = event.url.pathname.startsWith('/admin');
 	const isUserAdmin = user.UserRoles.some((entry) => entry.roleName === ROLES.ADMIN);

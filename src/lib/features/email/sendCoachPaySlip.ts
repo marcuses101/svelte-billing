@@ -4,7 +4,7 @@ import { formatDate } from '$lib/formatDate';
 import { wrapErr, wrapOk, type Result } from '$lib/rustResult';
 import { prisma } from '$lib/server/db';
 import { format } from 'util';
-import { sendEmail, type SendEmailError } from './emailClient';
+import { sendEmail, type SendEmailErrorType } from './emailClient';
 import type { CoachPaySlip } from '@prisma/client';
 
 const COACH_PAY_SLIP_EMAIL_TEMPLATE_SUBJECT = `TLSS Pay Slip %s - %s`;
@@ -50,7 +50,7 @@ export function getcoachpaySlipEmailContent({
 export async function sendCoachPaySlip(
 	myFetch: typeof fetch,
 	paySlipId: string
-): Promise<Result<CoachPaySlip, SendEmailError>> {
+): Promise<Result<CoachPaySlip, SendEmailErrorType>> {
 	const paySlip = await prisma.coachPaySlip.findUnique({
 		where: { id: paySlipId },
 		include: { Coach: { include: { User: true } } }

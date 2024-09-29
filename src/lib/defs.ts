@@ -47,3 +47,5 @@ export const ROLES = {
 } as const;
 
 export type Role = (typeof ROLES)[keyof typeof ROLES];
+
+export const INVALID_EMAIL_OR_PASSWORD_CODE = 'invalid email or password';

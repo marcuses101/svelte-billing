@@ -8,6 +8,8 @@ import {
 import Credentials from '@auth/sveltekit/providers/credentials';
 import { prisma } from '$lib/server/db';
 import { config } from '$lib/config';
+import { redirect } from '@sveltejs/kit';
+import { INVALID_EMAIL_OR_PASSWORD_CODE } from '$lib/defs';
 
 function getUserByEmail(email: string) {
 	return prisma.user.findUnique({
@@ -18,6 +20,8 @@ function getUserByEmail(email: string) {
 
 export type User = Exclude<Awaited<ReturnType<typeof getUserByEmail>>, null>;
 
+const PASSWORD_RESET_CODE = 'password reset required';
+
 declare module '@auth/sveltekit' {
 	interface Session {
 		user: User & DefaultSession['user'];
@@ -25,10 +29,14 @@ declare module '@auth/sveltekit' {
 }
 
 export class InvalidLoginError extends CredentialsSignin {
-	code = 'Invalid email or password';
+	code = INVALID_EMAIL_OR_PASSWORD_CODE;
 }
 
-export const { signIn, signOut, handle } = SvelteKitAuth(async () => {
+export class PasswordResetRequiredError extends CredentialsSignin {
+	code = PASSWORD_RESET_CODE;
+}
+
+const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 	const authOptions: SvelteKitAuthConfig = {
 		callbacks: {
 			async session({ session, token }) {
@@ -69,21 +77,40 @@ export const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 					if (!user) {
 						throw new InvalidLoginError(`User with email "${email}" not found in the database`);
 					}
+					if (!user.hashedPassword || user.forcePasswordReset) {
+						throw new PasswordResetRequiredError(`User with email ${email} must reset password`);
+					}
 
 					const isValidPassword = await compare(password, user.hashedPassword);
 					if (!isValidPassword) {
 						throw new InvalidLoginError('invalid password');
 					}
 
-					console.log('Loggin in %s %s', user.firstName, user.lastName);
+					console.log('Logging in %s %s', user.firstName, user.lastName);
 
 					return { email: user.email, id: user.id, name: `${user.firstName} ${user.lastName}` };
 				}
 			})
 		],
+		pages: {
+			signIn: '/login'
+		},
 		secret: config.AUTH_SECRET,
 		trustHost: true
 	};
 
 	return authOptions;
 });
+
+const customHandle: typeof handle = (event) => {
+	const url = event.event.url;
+	const isPasswordResetRequired =
+		url.pathname === '/auth/signin' && url.searchParams.get('code') === PASSWORD_RESET_CODE;
+	if (isPasswordResetRequired) {
+		console.log('Password Reset Required');
+		return redirect(303, '/password-reset-request?required=true');
+	}
+	return handle(event);
+};
+
+export { signIn, signOut, customHandle as handle };

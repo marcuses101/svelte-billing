@@ -64,6 +64,8 @@ model User {
     confirmationEmailMessageId      String?
     hashedPassword                  String?
     forcePasswordReset              Boolean             @default(true)
+    hashedPasswordResetToken        String?
+    passwordResetExpiry             DateTime?
     firstName                       String
     lastName                        String
 

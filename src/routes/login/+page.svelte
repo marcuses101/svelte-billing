@@ -1,19 +1,69 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import { INVALID_EMAIL_OR_PASSWORD_CODE } from '$lib/defs';
+	import SubmitButton from '$lib/components/SubmitButton.svelte';
+	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
+	import { fade } from 'svelte/transition';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+
 	export let data;
 	const user = data.user;
 </script>
 
 {#if Boolean(user)}
-	<div class="prose">
-		<p>Logged in as {user.firstName} {user.lastName}</p>
-		<form action="/logout" method="POST">
-			<input type="hidden" name="redirectTo" value="/" />
-			<button type="submit" class="btn btn-primary">Log Out</button>
-		</form>
-	</div>
+	<PageHeader title={`Logged in as ${user.firstName} ${user.lastName}`} />
+	<section class="card w-96 shadow-xl mx-auto border border-primary">
+		<div class="card-body">
+			<form action="/logout" method="POST">
+				<input type="hidden" name="redirectTo" value="/" />
+				<button type="submit" class="btn btn-primary w-full">Log Out</button>
+			</form>
+		</div>
+	</section>
 {:else}
-	<form action="/login" method="POST">
-		<input type="hidden" name="redirectTo" value="/" />
-		<button class="btn btn-primary"> Log In</button>
-	</form>
+	<PageHeader title="Login" />
+	<section class="card w-96 shadow-xl mx-auto border border-primary">
+		<div class="card-body">
+			<form method="POST" action="/auth/callback/credentials">
+				<div class="form-control w-full max-w-xs">
+					<div class="form-control w-full max-w-xs">
+						<label for="email" class="label">
+							<span class="label-text">Email</span>
+						</label>
+						<input
+							type="email"
+							name="email"
+							id="email"
+							placeholder="john_doe@unknown.com"
+							class="input input-bordered w-full max-w-xs"
+							required
+						/>
+					</div>
+					<label for="password" class="label">
+						<span class="label-text">Password</span>
+					</label>
+					<input
+						type="password"
+						name="password"
+						id="password"
+						class="input input-bordered w-full max-w-xs"
+						required
+					/>
+				</div>
+
+				{#if $page.url.searchParams.get('code') == INVALID_EMAIL_OR_PASSWORD_CODE}
+					<div class="alert alert-error mt-2" transition:fade>
+						<ErrorIcon />
+						<span>Invalid email or password</span>
+					</div>
+				{/if}
+				<div class="card-actions justify-end mt-8">
+					<SubmitButton fullWidth />
+					<a href="/password-reset-request" class="btn btn-success btn-sm btn-outline w-full"
+						>Request Password Reset</a
+					>
+				</div>
+			</form>
+		</div>
+	</section>
 {/if}

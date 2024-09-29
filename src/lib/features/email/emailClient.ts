@@ -19,7 +19,14 @@ export type PostmarkResponse = {
 	Message: string;
 };
 
-export type SendEmailError = { message: string } | (PostmarkResponse & { message: string });
+export type SendEmailErrorType = { message: string } | (PostmarkResponse & { message: string });
+
+export class SendEmailError extends Error {
+	constructor(input: SendEmailErrorType) {
+		super(input.message);
+		this.name = 'SendEmailError';
+	}
+}
 
 export async function sendEmail({
 	fetchFunction,
@@ -33,7 +40,7 @@ export async function sendEmail({
 	subject: string;
 	textBody?: string;
 	htmlBody?: string;
-}): Promise<Result<PostmarkResponse, SendEmailError>> {
+}): Promise<Result<PostmarkResponse, SendEmailErrorType>> {
 	console.log({ textBody, htmlBody });
 	if (!htmlBody && !textBody) {
 		return wrapErr({ message: 'No body has been provided' });
@@ -61,7 +68,7 @@ export async function sendEmail({
 
 	if (!res.ok) {
 		try {
-			const errorResponse = (await res.json()) as SendEmailError;
+			const errorResponse = (await res.json()) as SendEmailErrorType;
 			if ('Message' in errorResponse) {
 				errorResponse.message = errorResponse.Message;
 			}

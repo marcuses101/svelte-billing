@@ -26,9 +26,16 @@ export const actions = {
 			return fail(400, validationResponse);
 		}
 		const { email } = validationResponse.value;
+		const user = await prisma.user.findUnique({ where: { email } });
+		if (user === null) {
+			console.log(`user with email "${email}" not found`);
+			return wrapOk({ email });
+		}
 		const token = randomBytes(32).toString('hex');
 		const hashedPasswordResetToken = await hash(token, 10);
 		const passwordResetExpiry = addHours(new Date(), 1);
+
+		// should display ok even if user is not found
 
 		const prismaResponse = await prisma
 			.$transaction(async (tx) => {
@@ -55,6 +62,6 @@ export const actions = {
 			});
 		}
 		console.log('password reset email sent to %s', email);
-		return { ok: true, email };
+		return wrapOk({ email });
 	}
 } satisfies Actions;

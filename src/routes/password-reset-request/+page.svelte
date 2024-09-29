@@ -11,23 +11,6 @@
 
 <PageHeader title="Password Reset" />
 
-{#if form?.ok}
-	<section class="alert alert-success max-w-prose text-sm max-lg mx-auto mb-4">
-		<CheckmarkIcon />
-		<div>
-			<h3 class="font-bold">Success</h3>
-			<div class="text-xs">
-				If an account with the email<strong>{' ' + form?.email}</strong>
-				exists, a password reset link has been sent to that address. Please check your inbox and follow
-				the instructions to reset your password.<br />
-
-				If you do not receive an email, please verify that the address is correct or contact an
-				administrator
-			</div>
-		</div>
-	</section>
-{/if}
-
 <section class="card w-96 shadow-xl mx-auto border border-primary">
 	<div class="card-body">
 		{#if $page.url.searchParams.get('required') === 'true' && !form?.ok}
@@ -56,5 +39,23 @@
 				<SubmitButton fullWidth />
 			</div>
 		</form>
+		{#if form?.ok}
+			<section class="alert alert-success max-w-prose text-sm max-lg mx-auto mb-4">
+				<div class="prose">
+					<h3>
+						<CheckmarkIcon inline /> Success
+					</h3>
+					<p>
+						An email has been sent to <strong>{form?.value.email}</strong>
+						Please check your inbox and follow the instructions to reset your password
+					</p>
+
+					<p>
+						If you do not receive an email, please verify that the address is correct or contact an
+						administrator
+					</p>
+				</div>
+			</section>
+		{/if}
 	</div>
 </section>

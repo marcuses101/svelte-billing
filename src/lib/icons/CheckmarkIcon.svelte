@@ -1,6 +1,11 @@
+<script>
+	export let inline = false;
+</script>
+
 <svg
 	xmlns="http://www.w3.org/2000/svg"
 	class="h-6 w-6 shrink-0 stroke-current"
+	class:inline
 	fill="none"
 	viewBox="0 0 24 24"
 >

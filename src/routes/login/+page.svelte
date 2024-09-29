@@ -59,11 +59,11 @@
 				{/if}
 				<div class="card-actions justify-end mt-8">
 					<SubmitButton fullWidth />
-					<a href="/password-reset-request" class="btn btn-success btn-sm btn-outline w-full"
-						>Request Password Reset</a
-					>
 				</div>
 			</form>
+			<p class="mx-auto">
+				<a href="/password-reset-request" class="link link-info">Request Password Reset</a>
+			</p>
 		</div>
 	</section>
 {/if}

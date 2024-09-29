@@ -94,7 +94,8 @@ export const actions = {
 					hashedPassword,
 					hashedPasswordResetToken: null,
 					passwordResetExpiry: null,
-					forcePasswordReset: false
+					forcePasswordReset: false,
+					emailConfirmation: 'Confirmed' // since the user received and replied to a password reset request, we can assume that their email is valid
 				}
 			})
 			.catch(() => null);

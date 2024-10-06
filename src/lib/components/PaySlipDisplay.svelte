@@ -4,6 +4,7 @@
 	import { HST_PERCENTAGE } from '$lib/shared';
 
 	export let firstName: string;
+	export let humanReadableId: string;
 	export let lastName: string;
 	export let id: string;
 	export let date: Date;
@@ -48,7 +49,9 @@
 			{name}
 		</h2>
 		<div class="grid grid-cols-2 gap-2">
-			<strong class="text-right">Pay Slip Id: </strong><span class="text-right">{id}</span>
+			<strong class="text-right">Pay Slip Id: </strong><span class="text-right"
+				>{humanReadableId}</span
+			>
 			<strong class="text-right">Pay Slip Date: </strong>
 			<span class="text-right">
 				{formattedDate}

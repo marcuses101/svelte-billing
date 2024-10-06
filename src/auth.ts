@@ -8,8 +8,7 @@ import {
 import Credentials from '@auth/sveltekit/providers/credentials';
 import { prisma } from '$lib/server/db';
 import { config } from '$lib/config';
-import { redirect } from '@sveltejs/kit';
-import { INVALID_EMAIL_OR_PASSWORD_CODE } from '$lib/defs';
+import { INVALID_EMAIL_OR_PASSWORD_CODE, LOGIN_PATHNAME, PASSWORD_RESET_CODE } from '$lib/defs';
 
 function getUserByEmail(email: string) {
 	return prisma.user.findUnique({
@@ -19,8 +18,6 @@ function getUserByEmail(email: string) {
 }
 
 export type User = Exclude<Awaited<ReturnType<typeof getUserByEmail>>, null>;
-
-const PASSWORD_RESET_CODE = 'password reset required';
 
 declare module '@auth/sveltekit' {
 	interface Session {
@@ -93,7 +90,7 @@ const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 			})
 		],
 		pages: {
-			signIn: '/login'
+			signIn: LOGIN_PATHNAME
 		},
 		secret: config.AUTH_SECRET,
 		trustHost: true
@@ -102,15 +99,4 @@ const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 	return authOptions;
 });
 
-const customHandle: typeof handle = (event) => {
-	const url = event.event.url;
-	const isPasswordResetRequired =
-		url.pathname === '/auth/signin' && url.searchParams.get('code') === PASSWORD_RESET_CODE;
-	if (isPasswordResetRequired) {
-		console.log('Password Reset Required');
-		return redirect(303, '/password-reset-request?required=true');
-	}
-	return handle(event);
-};
-
-export { signIn, signOut, customHandle as handle };
+export { signIn, signOut, handle };

@@ -15,40 +15,40 @@
 
 	const isCoach = Boolean(data.user?.UserRoles.some((role) => role.roleName === ROLES.COACH));
 	const myInfoLinks = [
-		{ href: '/my-info', displayText: 'Overview', submenus: [] },
+		{ href: '/protected/my-info', displayText: 'Overview', submenus: [] },
 		{
-			href: '/my-info/lessons',
+			href: '/protected/my-info/lessons',
 			displayText: 'Lessons',
 			submenus: [
 				{
-					href: '/my-info/lessons/create',
+					href: '/protected/my-info/lessons/create',
 					displayText: 'Add Lesson'
 				}
 			]
 		},
-		{ href: '/my-info/pay-slips', displayText: 'Pay Slips', submenus: [] }
+		{ href: '/protected/my-info/pay-slips', displayText: 'Pay Slips', submenus: [] }
 	];
 
 	const isAdmin = Boolean(data.user?.UserRoles.some((role) => role.roleName === ROLES.ADMIN));
 	const adminLinks = [
-		{ href: '/admin/overview', displayText: 'Overview', submenus: [] },
-		{ href: '/admin/users', displayText: 'Users', submenus: [] },
-		{ href: '/admin/ledgers', displayText: 'Ledgers', submenus: [] },
-		{ href: '/admin/billing', displayText: 'Billing', submenus: [] },
+		{ href: '/protected/admin/overview', displayText: 'Overview', submenus: [] },
+		{ href: '/protected/admin/users', displayText: 'Users', submenus: [] },
+		{ href: '/protected/admin/ledgers', displayText: 'Ledgers', submenus: [] },
+		{ href: '/protected/admin/billing', displayText: 'Billing', submenus: [] },
 		{
-			href: '/admin/skaters',
+			href: '/protected/admin/skaters',
 			displayText: 'Skaters',
 			submenus: [
-				{ href: '/admin/skater-payments', displayText: 'Payments' },
-				{ href: '/admin/skater-invoices', displayText: 'Invoices' }
+				{ href: '/protected/admin/skater-payments', displayText: 'Payments' },
+				{ href: '/protected/admin/skater-invoices', displayText: 'Invoices' }
 			]
 		},
 		{
-			href: '/admin/coaches',
+			href: '/protected/admin/coaches',
 			displayText: 'Coaches',
 			submenus: [
-				{ href: '/admin/coach-payments', displayText: 'Payments' },
-				{ href: '/admin/coach-payslips', displayText: 'Pay Slips' }
+				{ href: '/protected/admin/coach-payments', displayText: 'Payments' },
+				{ href: '/protected/admin/coach-payslips', displayText: 'Pay Slips' }
 			]
 		}
 	];

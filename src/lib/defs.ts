@@ -49,3 +49,5 @@ export const ROLES = {
 export type Role = (typeof ROLES)[keyof typeof ROLES];
 
 export const INVALID_EMAIL_OR_PASSWORD_CODE = 'invalid email or password';
+export const LOGIN_PATHNAME = '/login' as const;
+export const PASSWORD_RESET_CODE = 'password reset required' as const;

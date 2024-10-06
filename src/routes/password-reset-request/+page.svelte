@@ -1,10 +1,8 @@
 <script>
 	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SubmitButton from '$lib/components/SubmitButton.svelte';
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
-	import InfoIcon from '$lib/icons/InfoIcon.svelte';
 
 	export let form;
 </script>
@@ -13,14 +11,6 @@
 
 <section class="card w-96 shadow-xl mx-auto border border-primary">
 	<div class="card-body">
-		{#if $page.url.searchParams.get('required') === 'true' && !form?.ok}
-			<section class="alert alert-info">
-				<InfoIcon />
-				<p>
-					Your account has been flagged for a forced password reset. Please enter your email below
-				</p>
-			</section>
-		{/if}
 		<form method="POST" use:enhance>
 			<div class="form-control w-full max-w-xs">
 				<label for="email" class="label">

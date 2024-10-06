@@ -1,24 +1,10 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { handle as authenticationHandle } from './auth';
 import { sequence } from '@sveltejs/kit/hooks';
-import { ROLES } from '$lib/defs';
-
-// todo, invert this
-const publicRoutes = [
-	'/',
-	'/login',
-	'logout',
-	'/about',
-	'/lessons/calculator',
-	'/confirm-user-email',
-	'/invoice',
-	'/password-reset',
-	'/password-reset-request',
-	'/favicon.ico'
-];
+import { LOGIN_PATHNAME, ROLES } from '$lib/defs';
 
 const authorizationHandle: Handle = async ({ event, resolve }) => {
-	if (publicRoutes.includes(event.url.pathname)) {
+	if (!event.url.pathname.includes('protected')) {
 		return resolve(event);
 	}
 	const session = await event.locals.auth();
@@ -26,7 +12,7 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 	if (!user) {
 		const searchParams = new URLSearchParams();
 		searchParams.set('callbackUrl', event.url.pathname);
-		const redirectPath = `/auth/signin?${searchParams.toString()}`;
+		const redirectPath = `${LOGIN_PATHNAME}?${searchParams.toString()}`;
 		return redirect(303, redirectPath);
 	}
 	const isAdminRoute = event.url.pathname.startsWith('/admin');

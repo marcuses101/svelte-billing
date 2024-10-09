@@ -17,6 +17,7 @@
 		skaters: string[];
 		lessonTimeInMinutes: number;
 		formattedDate: string;
+		createdAt: Date;
 	};
 
 	const lessonsMap = data.lessons.reduce((acc, entry) => {
@@ -31,7 +32,8 @@
 			id: entry.id,
 			skaters,
 			lessonTimeInMinutes: entry.lessonTimeInMinutes,
-			formattedDate
+			formattedDate,
+			createdAt: entry.createdAt
 		};
 		if (!acc.has(dateKey)) {
 			acc.set(dateKey, [currentEntry]);
@@ -41,15 +43,21 @@
 		array.push(currentEntry);
 		return acc;
 	}, new Map<string, FormattedLesson[]>());
-	const groupedLessons = Array.from(lessonsMap.entries()).sort(
-		(a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime()
-	);
+
+	const groupedLessons = [...lessonsMap.entries()]
+		.sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+		.map(([dateString, lessons]) => {
+			return {
+				dayFormatted: dateFormat(new Date(dateString)),
+				lessons: lessons.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+			};
+		});
 </script>
 
 <section class="prose max-w-none">
 	<AddButton href="/protected/my-info/lessons/create">Add Lesson</AddButton>
-	{#each groupedLessons as [date, lessons]}
-		<h3 class="text-lg">{dateFormat(new Date(date))}</h3>
+	{#each groupedLessons as { dayFormatted, lessons }}
+		<h3 class="text-lg">{dayFormatted}</h3>
 		<div class="grid gap-4">
 			{#each lessons as { skaters, lessonTimeInMinutes, id }}
 				<LessonDisplay {skaters} {lessonTimeInMinutes} {id} />

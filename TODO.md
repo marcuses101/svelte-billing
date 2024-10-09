@@ -14,19 +14,25 @@
 - [x] Lock Lessons that have already been billed
 - [x] Standardize Invoice Data Fetching and Display
 - [x] Change invoice and payslip to DateTime
+- [x] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
+- [x] Add createdAt modifiedAt fields to relevant tables
+- [x] Improve Failed log in attempt screen, potentially handle client side instead
+- [x] Password Creation
+- [x] Password reset
 - [x] Email confirmation flow
   - [ ] Webhooks for message delivery status
-- [x] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
 - [ ] Email Webhooks
   - Send Email UI on generate bills
-- [x] Password reset
 - [ ] Send Email actions for invoices and pay-slips
 - [ ] Handles UI of Server Errors
 - [ ] Fix up UI
 - [ ] Refactor a bunch
-- [x] Add createdAt modifiedAt fields to relevant tables
 - [ ] Enable Logging in Caddy
-- [ ] Improve Failed log in attempt screen, potentially handle client side instead
-- [ ] Password Creation
 - [ ] Additional charges UI
 - [ ] Interface for when HST is payed to the government, maybe
+
+## Coach Overview
+
+## Admin Overview
+
+## Skater Overview

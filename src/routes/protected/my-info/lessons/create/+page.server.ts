@@ -28,6 +28,9 @@ function validateForm(
 		validationObject.skater = 'at least one skater must be specified';
 	}
 	const minutes = parseInt(formMinutes! as string);
+	if (minutes === 0) {
+		validationObject.minutes = 'minutes cannot be 0';
+	}
 
 	if (Object.keys(validationObject).length > 0) {
 		return wrapErr(validationObject);

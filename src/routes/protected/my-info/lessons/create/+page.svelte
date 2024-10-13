@@ -14,7 +14,7 @@
 
 <section class="prose container max-w-none">
 	<PageHeader title="New Lesson">
-		<BackButton href="/protected/my-info/lessons">Back to Lessons</BackButton>
+		<BackButton href="/protected/my-info/lessons">Back</BackButton>
 	</PageHeader>
 	{#if form?.success && form?.lessonTimeInMinutes}
 		<Toast>

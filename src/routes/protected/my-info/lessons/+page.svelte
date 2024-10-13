@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AddButton from '$lib/components/AddButton.svelte';
+	import PencilIcon from '$lib/icons/PencilIcon.svelte';
 	import LessonDisplay from './LessonDisplay.svelte';
 
 	export let data;
@@ -52,15 +53,34 @@
 				lessons: lessons.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 			};
 		});
+	const formatMinutes = new Intl.NumberFormat('en-CA', { style: 'unit', unit: 'minute' }).format;
 </script>
 
 <section class="prose max-w-none">
 	<AddButton href="/protected/my-info/lessons/create">Add Lesson</AddButton>
 	{#each groupedLessons as { dayFormatted, lessons }}
 		<h3 class="text-lg">{dayFormatted}</h3>
-		<div class="grid gap-4">
+		<div class="grid gap-2">
 			{#each lessons as { skaters, lessonTimeInMinutes, id }}
-				<LessonDisplay {skaters} {lessonTimeInMinutes} {id} />
+				<div class="collapse collapse-arrow border-primary border">
+					<input type="radio" name="my-accordion-2" />
+					<div class="collapse-title text-xl font-medium">
+						{formatMinutes(lessonTimeInMinutes)} - {`${skaters.length} skater(s)`}
+					</div>
+					<div class="collapse-content">
+						<div class="flex flex-row">
+							<div class="flex flex-1 flex-row flex-wrap gap-1">
+								{#each skaters as skater}
+									<div class="badge badge-sm badge-outline">{skater}</div>
+								{/each}
+							</div>
+							<a
+								class="btn btn-sm btn-secondary btn-circle"
+								href={`/protected/my-info/lessons/${id}/edit`}><PencilIcon /></a
+							>
+						</div>
+					</div>
+				</div>
 			{/each}
 		</div>
 	{/each}

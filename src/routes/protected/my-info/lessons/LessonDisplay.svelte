@@ -1,5 +1,6 @@
 <script lang="ts">
 	import EditButton from '$lib/components/EditButton.svelte';
+	import CancelIcon from '$lib/icons/CancelIcon.svelte';
 
 	export let lessonTimeInMinutes: number;
 	export let skaters: string[];
@@ -24,7 +25,9 @@
 		<EditButton href={`/lessons/${id}/edit`} size="small" />
 		<form method="POST" action="?/delete">
 			<input type="hidden" name="id" value={id} />
-			<button class="btn btn-sm btn-error" type="submit">x</button>
+			<button class="btn btn-xs btn-circle btn-outline btn-error" type="submit"
+				><CancelIcon /></button
+			>
 		</form>
 	</article>
 </article>

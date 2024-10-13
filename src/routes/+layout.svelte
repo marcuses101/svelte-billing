@@ -85,7 +85,7 @@
 
 <div class="drawer drawer-closed lg:drawer-open">
 	<input bind:checked={isDrawerOpen} id="drawer-input" type="checkbox" class="drawer-toggle" />
-	<div class="drawer-content flex flex-col min-h-[100dvh]">
+	<div class="drawer-content min-h-[100dvh]">
 		<Header {isLoggedIn} />
 		<main class="flex-1 p-4 w-full">
 			<slot />

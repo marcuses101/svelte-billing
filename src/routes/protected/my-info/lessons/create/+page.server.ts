@@ -45,28 +45,40 @@ function validateForm(
 export const actions = {
 	default: async ({ request, locals }) => {
 		const data = await request.formData();
+		const logger = locals.logger.child({
+			formData: Object.fromEntries(data.entries()),
+			action: 'lesson-create'
+		});
 		const session = await locals.auth();
 		const coachUser = session?.user;
 		if (!coachUser || !coachUser.Coach) {
 			const errorMessage = 'unable to find coach';
-			error(404, errorMessage);
+			logger.error(errorMessage);
+			return error(404, errorMessage);
 		}
 		const formValidationResult = validateForm(data);
 		if (!formValidationResult.ok) {
+			logger.warn({ validationError: formValidationResult.error }, 'form validation error');
 			return fail(400, { success: false, errors: formValidationResult.error });
 		}
 		const { lessonTimeInMinutes, date: rawDate, skaterIds } = formValidationResult.value;
 
 		const date = new Date(rawDate).toISOString();
-		const createdLesson = await prisma.lesson.create({
-			data: {
-				date,
-				lessonTimeInMinutes,
-				SkaterLessons: { create: skaterIds.map((id) => ({ Skater: { connect: { id } } })) },
-				Coach: { connect: { id: coachUser.Coach.id } }
-			},
-			include: { SkaterLessons: { include: { Skater: true } } }
-		});
-		return { success: true, lessonTimeInMinutes: createdLesson.lessonTimeInMinutes };
+		try {
+			const createdLesson = await prisma.lesson.create({
+				data: {
+					date,
+					lessonTimeInMinutes,
+					SkaterLessons: { create: skaterIds.map((id) => ({ Skater: { connect: { id } } })) },
+					Coach: { connect: { id: coachUser.Coach.id } }
+				},
+				include: { SkaterLessons: { include: { Skater: true } } }
+			});
+			logger.info('lesson created');
+			return { success: true, lessonTimeInMinutes: createdLesson.lessonTimeInMinutes };
+		} catch (e) {
+			logger.error(e as Error);
+			return error(500, 'Database Error');
+		}
 	}
 } satisfies Actions;

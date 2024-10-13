@@ -30,8 +30,11 @@
 - [ ] Enable Logging in Caddy
 - [ ] Additional charges UI
 - [ ] Interface for when HST is payed to the government, maybe
+- [ ] Global toast system
 
 ## Coach Overview
+- Amount Owed
+- Quick Actions (Actions
 
 ## Admin Overview
 

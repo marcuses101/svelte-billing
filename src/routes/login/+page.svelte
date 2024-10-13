@@ -23,7 +23,7 @@
 	</section>
 {:else}
 	<PageHeader title="Login" />
-	<section class="card w-96 shadow-xl mx-auto border border-primary">
+	<section class="card max-w-96 shadow-xl mx-auto border border-primary">
 		<div class="card-body">
 			<form method="POST" action="/auth/callback/credentials">
 				<input type="hidden" name="callbackUrl" value={$page.url.searchParams.get('callbackUrl')} />

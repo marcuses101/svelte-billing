@@ -1,8 +1,8 @@
 <script lang="ts">
-	import LessonForm from '../../create/LessonForm.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
+	import LessonForm from '$lib/components/LessonForm.svelte';
 	export let data;
 	export let form;
 
@@ -20,13 +20,10 @@
 	const minutes = data.lesson.lessonTimeInMinutes;
 </script>
 
-<PageHeader title="Lessons">
-	<span slot="title-post">
-		{' - '} <span>Edit </span>
-	</span>
-	<BackButton href="/lessons">Back to Lessons</BackButton>
+<PageHeader title="Edit Lesson">
+	<BackButton href="/protected/my-info/lessons">Back</BackButton>
 </PageHeader>
 {#if form?.success}
 	<Toast>Lesson Updated</Toast>
 {/if}
-<LessonForm {skaterOptions} {selectedOptions} {date} {minutes} />
+<LessonForm {skaterOptions} {selectedOptions} {date} {minutes} mode="Edit" />

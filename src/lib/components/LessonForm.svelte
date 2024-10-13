@@ -5,11 +5,13 @@
 	type SelectOption = { label: string; value: string };
 
 	const defaultDate = format(new Date(), 'yyyy-MM-dd');
+	const defaultMinutes = 15;
 
+	export let mode: 'Add' | 'Edit' = 'Add';
 	export let skaterOptions: SelectOption[] = [];
 	export let selectedOptions: SelectOption[] = [];
 	export let date: string = defaultDate;
-	export let minutes: number = 0;
+	export let minutes: number = defaultMinutes;
 	let multiselectComponent: MultiSelect;
 
 	let formatMinutes = new Intl.NumberFormat('en-CA', { style: 'unit', unit: 'minute' }).format;
@@ -25,10 +27,14 @@
 	method="POST"
 	on:reset|preventDefault={() => {
 		multiselectComponent.reset();
-		minutes = 0;
+		minutes = defaultMinutes;
 		date = defaultDate;
 	}}
-	use:enhance
+	use:enhance={() => {
+		return ({ update }) => {
+			update({ reset: mode === 'Add' });
+		};
+	}}
 >
 	<div class="form-control w-full max-w-xs">
 		<label class="label" for="date">
@@ -38,6 +44,7 @@
 			id="date"
 			type="date"
 			name="date"
+			required
 			bind:value={date}
 			placeholder="Type here"
 			class="input input-bordered w-full max-w-xs"
@@ -82,6 +89,8 @@
 	</div>
 	<MultiSelect
 		bind:this={multiselectComponent}
+		optionsLabel="Skaters"
+		selectedOptionsLabel="Selected Skaters"
 		name="skaters"
 		options={skaterOptions}
 		{selectedOptions}

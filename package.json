@@ -32,6 +32,7 @@
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",
+		"pino-pretty": "^11.2.2",
 		"postcss": "^8.4.35",
 		"prettier": "^3.2.5",
 		"prettier-plugin-svelte": "^3.2.1",
@@ -54,6 +55,7 @@
 		"better-sqlite3": "^9.4.3",
 		"date-fns": "^3.3.1",
 		"dotenv": "^16.4.5",
+		"pino": "^9.4.0",
 		"puppeteer": "^22.2.0"
 	},
 	"prisma": {

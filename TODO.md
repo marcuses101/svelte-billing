@@ -31,10 +31,10 @@
 - [ ] Additional charges UI
 - [ ] Interface for when HST is payed to the government, maybe
 - [ ] Global toast system
+- [ ] Implement Adjustments
 
 ## Coach Overview
 - Amount Owed
-- Quick Actions (Actions
 
 ## Admin Overview
 

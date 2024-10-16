@@ -10,18 +10,15 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 	const childLogger = user
 		? event.locals.logger.child({
 				authenticated: true,
-				pathname: event.url.pathname,
-				method: event.request.method,
 				userEmail: user.email,
 				userId: user.id,
 				userRoles: user.UserRoles.map((userRoleEntry) => userRoleEntry.roleName)
 			})
 		: event.locals.logger.child({
-				authenticated: false,
-				pathname: event.url.pathname,
-				method: event.request.method
+				authenticated: false
 			});
 	event.locals.logger = childLogger;
+	childLogger.info('request started');
 
 	if (!event.url.pathname.includes('protected')) {
 		return resolve(event);
@@ -41,4 +38,16 @@ const authorizationHandle: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(loggerHandle, authenticationHandle, authorizationHandle);
+const responseLogHandle: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	const statusCode = response.status;
+	event.locals.logger.info({ statusCode }, 'request complete');
+	return response;
+};
+
+export const handle: Handle = sequence(
+	loggerHandle,
+	authenticationHandle,
+	authorizationHandle,
+	responseLogHandle
+);

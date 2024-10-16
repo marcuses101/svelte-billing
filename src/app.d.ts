@@ -10,6 +10,7 @@ declare global {
 		interface Locals {
 			user: (User & { Coach?: Coach | null; UserRoles?: UserRole[] | null }) | null;
 			logger: Logger;
+			requestId: string; // uuid
 		}
 		// interface PageData {}
 		// interface Platform {}

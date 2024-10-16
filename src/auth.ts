@@ -34,11 +34,11 @@ export class PasswordResetRequiredError extends CredentialsSignin {
 	code = PASSWORD_RESET_CODE;
 }
 
-const { signIn, signOut, handle } = SvelteKitAuth(async () => {
+const { signIn, signOut, handle } = SvelteKitAuth(async ({ locals }) => {
 	const authOptions: SvelteKitAuthConfig = {
 		events: {
 			signOut: (info) => {
-				const logoutLogger = logger.child({ action: 'logout' });
+				const logoutLogger = locals.logger.child({ action: 'logout' });
 				if ('token' in info && info.token !== null) {
 					const user = info.token.email ?? 'Unknown';
 					logoutLogger.info(`${user} logged out`);
@@ -71,7 +71,7 @@ const { signIn, signOut, handle } = SvelteKitAuth(async () => {
 					password: { label: 'Password', type: 'password', minLength: 7 }
 				},
 				authorize: async (credentials) => {
-					const loginLogger = logger.child({ action: 'login' });
+					const loginLogger = locals.logger.child({ action: 'login' });
 					const { email, password } = credentials;
 					if (typeof email !== 'string') {
 						const loginError = new InvalidLoginError('email string not provided');

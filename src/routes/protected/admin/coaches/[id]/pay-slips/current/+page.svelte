@@ -24,6 +24,7 @@
 	{lastName}
 	date={new Date()}
 	id={PLACEHOLDER_ID}
+	humanReadableId={PLACEHOLDER_ID}
 	amountDueInCents={data.paySlip.amountDueInCents}
 	previousPaySlipAmountInCents={data.paySlip.previousPaySlipAmountInCents}
 	hstAmountInCents={data.paySlip.hstAmountInCents}

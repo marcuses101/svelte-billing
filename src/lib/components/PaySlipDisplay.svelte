@@ -43,15 +43,15 @@
 	const amountDue = formatCurrency(amountDueInCents);
 </script>
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl mx-auto" data-id={id}>
 	<section class="flex justify-between mb-4 px-4">
 		<h2 class="text-xl font-bold">
 			{name}
 		</h2>
 		<div class="grid grid-cols-2 gap-2">
-			<strong class="text-right">Pay Slip Id: </strong><span class="text-right"
-				>{humanReadableId}</span
-			>
+			<strong class="text-right">Pay Slip Id: </strong><span class="text-right">
+				{humanReadableId}
+			</span>
 			<strong class="text-right">Pay Slip Date: </strong>
 			<span class="text-right">
 				{formattedDate}

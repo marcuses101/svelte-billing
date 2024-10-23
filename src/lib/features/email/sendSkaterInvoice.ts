@@ -5,7 +5,7 @@ import { wrapErr, wrapOk, type Result } from '$lib/rustResult';
 import { prisma } from '$lib/server/db';
 import { format } from 'util';
 import { sendEmail, type SendEmailErrorType } from './emailClient';
-import type { Invoice } from '@prisma/client';
+import type { SkaterInvoice } from '@prisma/client';
 
 const SKATER_INVOICE_EMAIL_TEMPLATE_SUBJECT = `TLSS Invoice %s - %s`;
 const SKATER_INVOICE_EMAIL_TEMPLATE_BODY = `\
@@ -53,8 +53,8 @@ export function getSkaterInvoiceEmailContent({
 export async function sendSkaterInvoice(
 	myFetch: typeof fetch,
 	invoiceId: string
-): Promise<Result<Invoice, SendEmailErrorType>> {
-	const invoice = await prisma.invoice.findUnique({
+): Promise<Result<SkaterInvoice, SendEmailErrorType>> {
+	const invoice = await prisma.skaterInvoice.findUnique({
 		where: { id: invoiceId },
 		include: { Skater: { include: { User: true } } }
 	});
@@ -94,7 +94,7 @@ export async function sendSkaterInvoice(
 		return emailRes;
 	}
 	try {
-		const updatedInvoice = await prisma.invoice.update({
+		const updatedInvoice = await prisma.skaterInvoice.update({
 			where: { id: invoiceId },
 			data: { emailMessageId: emailRes.value.MessageID, emailDeliveryStatus: 'Pending' }
 		});

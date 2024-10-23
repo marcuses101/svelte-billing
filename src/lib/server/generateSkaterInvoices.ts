@@ -39,7 +39,7 @@ export async function generateSkaterInvoices(
 			skaterId
 		} = processSkaterInfoForInvoice(skater);
 
-		const newInvoice = await tx.invoice.create({
+		const newInvoice = await tx.skaterInvoice.create({
 			data: {
 				invoiceBatchId: billingBatchId,
 				skaterId,

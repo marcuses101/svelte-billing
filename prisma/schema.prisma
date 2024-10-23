@@ -45,8 +45,8 @@ model Skater {
     SkaterType     SkaterType @relation(fields: [skaterTypeCode], references: [code])
 
     SkaterLessons     SkaterLesson[]
-    Invoices          Invoice[]
-    AdditionalCharges AdditionalCharge[]
+    Invoices          SkaterInvoice[]
+    AdditionalCharges SkaterInvoiceMiscellaneousItem[]
 
     @@unique([firstName, lastName])
 }
@@ -106,9 +106,11 @@ model Coach {
     accountId String  @unique
     Account   Account @relation(fields: [accountId], references: [id])
 
-    Lessons       Lesson[]
-    CoachPaySlips CoachPaySlip[]
-    CoachRate     CoachRate[]
+    Lessons                        Lesson[]
+    CoachPaySlips                  CoachPaySlip[]
+    CoachRate                      CoachRate[]
+    CoachPaySlipMiscellaneousItem  CoachPaySlipMiscellaneousItem[]
+    SkaterInvoiceMiscellaneousItem SkaterInvoiceMiscellaneousItem[]
 }
 
 model CoachRate {
@@ -141,23 +143,6 @@ model Lesson {
     CoachPaySlipLineItem CoachPaySlipLineItem?
 }
 
-// used for additional charges such as competition fees
-model AdditionalCharge {
-    id            String   @id @default(uuid())
-    description   String
-    amountInCents Int
-    date          DateTime @db.Date
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    skaterId String
-    Skater   Skater @relation(fields: [skaterId], references: [id])
-
-    invoiceLineItemId String?          @unique
-    InvoiceLineItem   InvoiceLineItem? @relation(fields: [invoiceLineItemId], references: [id])
-}
-
 model EmailConfirmationToken {
     token String @id @default(uuid())
 
@@ -168,7 +153,7 @@ model EmailConfirmationToken {
     updatedAt DateTime @updatedAt
 }
 
-model Invoice {
+model SkaterInvoice {
     id                        String   @id @default(uuid())
     humanReadableId           Int      @default(autoincrement())
     invoiceDate               DateTime @db.Date
@@ -187,23 +172,24 @@ model Invoice {
     emailDeliveryStatus EmailDeliveryStatus @default(NotSent)
     emailMessageId      String?
 
-    previousInvoiceId String?  @unique
-    PreviousInvoice   Invoice? @relation("InvoiceHistory", fields: [previousInvoiceId], references: [id])
-    NextInvoice       Invoice? @relation("InvoiceHistory")
+    previousInvoiceId String?        @unique
+    PreviousInvoice   SkaterInvoice? @relation("InvoiceHistory", fields: [previousInvoiceId], references: [id])
+    NextInvoice       SkaterInvoice? @relation("InvoiceHistory")
 
-    Skater           Skater            @relation(fields: [skaterId], references: [id])
-    BillingBatch     BillingBatch?     @relation(fields: [invoiceBatchId], references: [id])
-    InvoiceLineItems InvoiceLineItem[]
+    Skater           Skater                  @relation(fields: [skaterId], references: [id])
+    BillingBatch     BillingBatch?           @relation(fields: [invoiceBatchId], references: [id])
+    InvoiceLineItems SkaterInvoiceLineItem[]
 
     InvoiceChargeAccountTransaction  AccountTransaction?  @relation("InvoiceCharge")
     SkaterPaymentAccountTransactions AccountTransaction[] @relation("SkaterPayment")
 }
 
-model InvoiceLineItem {
-    id            String   @id @default(uuid())
-    description   String
-    amountInCents Int
-    date          DateTime @db.Date
+model SkaterInvoiceLineItem {
+    id              String          @id @default(uuid())
+    description     String
+    amountInCents   Int
+    transactionType TransactionType
+    date            DateTime        @db.Date
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -212,11 +198,32 @@ model InvoiceLineItem {
     skaterLessonSkaterId String?
     skaterLessonLessonId String?
 
-    AdditionalChage AdditionalCharge?
-    SkaterLesson    SkaterLesson?     @relation(fields: [skaterLessonSkaterId, skaterLessonLessonId], references: [skaterId, lessonId])
-    Invoice         Invoice           @relation(fields: [invoiceId], references: [id])
+    SkaterInvoiceMiscellaneousItem SkaterInvoiceMiscellaneousItem?
+    SkaterLesson                   SkaterLesson?                   @relation(fields: [skaterLessonSkaterId, skaterLessonLessonId], references: [skaterId, lessonId])
+    Invoice                        SkaterInvoice                   @relation(fields: [invoiceId], references: [id])
 
     @@unique([skaterLessonSkaterId, skaterLessonLessonId])
+}
+
+// For competition fees or billing corrections
+model SkaterInvoiceMiscellaneousItem {
+    id              String          @id @default(uuid())
+    description     String
+    amountInCents   Int
+    transactionType TransactionType // credit represents money the skater owes. debit represents payment or corrections
+    date            DateTime        @db.Date
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    skaterId String
+    Skater   Skater @relation(fields: [skaterId], references: [id])
+
+    coachId String?
+    Coach   Coach?  @relation(fields: [coachId], references: [id])
+
+    skaterInvoiceLineItemId String?                @unique
+    SkaterInvoiceLineItem   SkaterInvoiceLineItem? @relation(fields: [skaterInvoiceLineItemId], references: [id])
 }
 
 model CoachPaySlip {
@@ -254,11 +261,30 @@ model CoachPaySlip {
     CoachPaymentAccountTransactions AccountTransaction[] @relation("CoachPayment")
 }
 
+// For competition fees or billing corrections
+model CoachPaySlipMiscellaneousItem {
+    id              String          @id @default(uuid())
+    description     String
+    amountInCents   Int
+    transactionType TransactionType // debit represents money owed to the coach, credit represents money payed to the coach
+    date            DateTime        @db.Date
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    coachId String
+    Coach   Coach  @relation(fields: [coachId], references: [id])
+
+    coachPaySlipLineItemId String?               @unique
+    CoachPaySlipLineItem   CoachPaySlipLineItem? @relation(fields: [coachPaySlipLineItemId], references: [id])
+}
+
 model CoachPaySlipLineItem {
-    id            String   @id @default(uuid())
-    description   String
-    amountInCents Int
-    date          DateTime @db.Date
+    id              String          @id @default(uuid())
+    description     String
+    amountInCents   Int
+    transactionType TransactionType
+    date            DateTime        @db.Date
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -266,14 +292,15 @@ model CoachPaySlipLineItem {
     coachPaySlipId String
     CoachPaySlip   CoachPaySlip @relation(fields: [coachPaySlipId], references: [id])
 
-    lessonId String @unique
-    Lesson   Lesson @relation(fields: [lessonId], references: [id])
+    lessonId                      String?                        @unique
+    Lesson                        Lesson?                        @relation(fields: [lessonId], references: [id])
+    CoachPaySlipMiscellaneousItem CoachPaySlipMiscellaneousItem?
 }
 
 model BillingBatch {
-    id              String         @id @default(uuid())
-    humanReadableId Int            @default(autoincrement())
-    Invoices        Invoice[]
+    id              String          @id @default(uuid())
+    humanReadableId Int             @default(autoincrement())
+    Invoices        SkaterInvoice[]
     CoachPaySlips   CoachPaySlip[]
 
     createdAt DateTime @default(now())
@@ -281,11 +308,11 @@ model BillingBatch {
 }
 
 model SkaterLesson {
-    Skater           Skater           @relation(fields: [skaterId], references: [id])
+    Skater           Skater                 @relation(fields: [skaterId], references: [id])
     skaterId         String
-    Lesson           Lesson           @relation(fields: [lessonId], references: [id])
+    Lesson           Lesson                 @relation(fields: [lessonId], references: [id])
     lessonId         String
-    InvoiceLineItems InvoiceLineItem?
+    InvoiceLineItems SkaterInvoiceLineItem?
 
     @@id([skaterId, lessonId])
 }
@@ -346,11 +373,11 @@ model AccountTransaction {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    chargeInvoiceId String?  @unique
-    InvoiceCharged  Invoice? @relation("InvoiceCharge", fields: [chargeInvoiceId], references: [id])
+    chargeInvoiceId String?        @unique
+    InvoiceCharged  SkaterInvoice? @relation("InvoiceCharge", fields: [chargeInvoiceId], references: [id])
 
     paymentRecordedInvoiceId String?
-    PaymentRecordedInvoice   Invoice? @relation("SkaterPayment", fields: [paymentRecordedInvoiceId], references: [id])
+    PaymentRecordedInvoice   SkaterInvoice? @relation("SkaterPayment", fields: [paymentRecordedInvoiceId], references: [id])
 
     coachPaySlipId String?       @unique
     CoachPaySlip   CoachPaySlip? @relation("CoachPaySlipCharge", fields: [coachPaySlipId], references: [id])

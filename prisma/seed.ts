@@ -13,7 +13,7 @@ import { hash } from 'bcrypt';
 
 config({ path: './prisma/.env' });
 
-const defaultPassword = process.env.DEFAULT_PASSWORD;
+const defaultPassword = process.env.DEFAULT_PASSWORD as string;
 if (typeof defaultPassword !== 'string') {
 	throw new Error('DEFAULT_PASSWORD environment variable not configured');
 }
@@ -109,9 +109,6 @@ async function seedAccounting() {
 
 async function seedAdmins() {
 	console.log('Seeding Admins');
-	if (typeof defaultPassword !== 'string') {
-		throw new Error('invalid DEFAULT_PASSWORD');
-	}
 	const marcus = await prisma.user.create({
 		data: {
 			email: 'mnjconnolly@gmail.com',
@@ -233,7 +230,8 @@ async function seedCoaches() {
 			email: 'example_coach@gmail.com',
 			firstName: 'Coachy',
 			lastName: 'Coacherson',
-			forcePasswordReset: true,
+			hashedPassword: await hash(defaultPassword!, 10),
+			forcePasswordReset: false,
 			UserRoles: {
 				create: [{ roleName: ROLES.COACH }]
 			},
@@ -280,9 +278,6 @@ type SkaterEntry = Skater & { Account: Account };
  * */
 async function seedSkaters() {
 	console.log('Seed Skaters');
-	if (typeof defaultPassword !== 'string') {
-		throw new Error('invalid DEFAULT_PASSWORD');
-	}
 	const skaterInput = [
 		{ name: 'Abby', code: SKATER_TYPE.RESIDENT },
 		{ name: 'Brenda', code: SKATER_TYPE.RESIDENT },

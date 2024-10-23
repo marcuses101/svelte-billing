@@ -1,5 +1,6 @@
 import { calculateLessonCost } from '$lib/calculateLessonCost';
 import { HST_PERCENTAGE } from '$lib/shared';
+import { TransactionType } from '@prisma/client';
 import type { getCoachesWithInfoForPayslip } from './getCoachesWithInfoForPayslip';
 import { prettyLog } from './server/prettyLog';
 
@@ -25,7 +26,8 @@ export function processCoachForPaySlip(
 				date,
 				lessonId,
 				amountInCents: lessonCostInCents,
-				description: `${lessonTimeInMinutes} minute lesson. ${SkaterLessons.length} skater(s)`
+				description: `${lessonTimeInMinutes} minute lesson. ${SkaterLessons.length} skater(s)`,
+				transactionType: TransactionType.Debit
 			});
 			return acc;
 		},
@@ -35,6 +37,7 @@ export function processCoachForPaySlip(
 				date: Date;
 				lessonId: string;
 				amountInCents: number;
+				transactionType: TransactionType;
 				description: string;
 			}[]
 		}

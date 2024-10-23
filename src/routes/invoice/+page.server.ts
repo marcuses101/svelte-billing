@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ url }) => {
 	if (!skaterId || !invoiceId) {
 		return error(404);
 	}
-	const invoice = await prisma.invoice.findUnique({
+	const invoice = await prisma.skaterInvoice.findUnique({
 		where: { id: invoiceId, skaterId },
 		include: { Skater: true, InvoiceLineItems: true, SkaterPaymentAccountTransactions: true }
 	});

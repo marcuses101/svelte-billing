@@ -22,7 +22,7 @@
 		</div>
 	</article>
 	<article class="flex self-center gap-2">
-		<EditButton href={`/lessons/${id}/edit`} size="small" />
+		<EditButton href={`/lessons/${id}/edit`} size="sm" />
 		<form method="POST" action="?/delete">
 			<input type="hidden" name="id" value={id} />
 			<button class="btn btn-xs btn-circle btn-outline btn-error" type="submit"

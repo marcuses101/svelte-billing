@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params }) => {
-	const invoice = await prisma.invoice.findUnique({
+	const invoice = await prisma.skaterInvoice.findUnique({
 		where: { id: params.invoiceId, skaterId: params.id },
 		include: {
 			InvoiceLineItems: {

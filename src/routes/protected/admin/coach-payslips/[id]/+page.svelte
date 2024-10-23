@@ -15,7 +15,8 @@
 		commissionPercentage,
 		commissionAmountInCents,
 		CoachPaySlipLineItems,
-		CoachPaymentAccountTransactions
+		CoachPaymentAccountTransactions,
+		humanReadableId
 	} = paySlip;
 	const { firstName, lastName } = paySlip.Coach.User;
 	const lineItems: ComponentProps<PaySlipDisplay>['lineItems'] = CoachPaySlipLineItems.map(
@@ -33,6 +34,7 @@
 </script>
 
 <PaySlipDisplay
+	humanReadableId={humanReadableId.toString()}
 	{firstName}
 	{lastName}
 	{date}

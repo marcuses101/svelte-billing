@@ -24,7 +24,7 @@ export async function getPayslipById(id: string) {
 }
 
 export async function getInvoiceById(id: string) {
-	return prisma.invoice.findUnique({
+	return prisma.skaterInvoice.findUnique({
 		where: { id },
 		include: {
 			Skater: { select: { firstName: true, lastName: true } },
@@ -40,6 +40,14 @@ export type PaySlipData = Exclude<Awaited<ReturnType<typeof getPayslipById>>, nu
 
 export function getSkaters() {
 	return prisma.skater.findMany({ orderBy: [{ firstName: 'asc' }, { lastName: 'asc' }] });
+}
+
+export async function getSkaterOptions() {
+	const skaters = await getSkaters();
+	return skaters.map((skater) => ({
+		label: `${skater.firstName} ${skater.lastName}`,
+		value: skater.id
+	}));
 }
 
 export function getSkaterById(id: string) {
@@ -98,7 +106,7 @@ export const calculateLessonQuery = {
  * A prisma query object that returns the invoice with no associated "NextInvoice"
  *  Return the last created invoice
  */
-export const lastInvoiceQuery: Prisma.InvoiceFindManyArgs = {
+export const lastInvoiceQuery: Prisma.SkaterInvoiceFindManyArgs = {
 	where: { NextInvoice: { is: null } },
 	orderBy: { invoiceDate: 'desc' },
 	take: 1

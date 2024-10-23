@@ -6,7 +6,7 @@ import { wrapErr } from '$lib/rustResult';
 import { validateUserIsAdmin } from '$lib/validateUserIsAdmin';
 
 export const load: PageServerLoad = async () => {
-	const invoices = await prisma.invoice.findMany({
+	const invoices = await prisma.skaterInvoice.findMany({
 		orderBy: { invoiceDate: 'desc' },
 		include: {
 			BillingBatch: { select: { humanReadableId: true } },

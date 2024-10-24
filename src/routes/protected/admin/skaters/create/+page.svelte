@@ -4,7 +4,11 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import SkaterForm from '../SkaterForm.svelte';
 	import type { ActionData } from './$types';
-	export let form: ActionData;
+	interface Props {
+		form: ActionData;
+	}
+
+	let { form }: Props = $props();
 	let skaterFullName = form?.skater?.firstName + ' ' + form?.skater?.lastName;
 </script>
 

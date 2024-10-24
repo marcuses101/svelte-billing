@@ -7,8 +7,7 @@
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
 
-	export let data;
-	export let form;
+	let { data, form } = $props();
 </script>
 
 {#if form?.ok}
@@ -21,12 +20,14 @@
 <section class="mb-10">
 	<h2 class="text-xl mb-4">Admins</h2>
 	<StyledTable>
-		<tr slot="head">
-			<td>Name</td>
-			<td>Email</td>
-			<td>Roles</td>
-			<td>Email Confirmation</td>
-		</tr>
+		{#snippet head()}
+				<tr >
+				<td>Name</td>
+				<td>Email</td>
+				<td>Roles</td>
+				<td>Email Confirmation</td>
+			</tr>
+			{/snippet}
 		{#each data.admins as { id, firstName, lastName, confirmationEmailDeliveryStatus, emailConfirmation, email, UserRoles }}
 			<tr>
 				<td style={`--transition-name:user-${id}`}>
@@ -76,12 +77,14 @@
 <section class="mb-10">
 	<h2 class="text-xl mb-4">Coaches</h2>
 	<StyledTable>
-		<tr slot="head">
-			<td>Name</td>
-			<td>Email</td>
-			<td>Roles</td>
-			<td>Email Confirmation</td>
-		</tr>
+		{#snippet head()}
+				<tr >
+				<td>Name</td>
+				<td>Email</td>
+				<td>Roles</td>
+				<td>Email Confirmation</td>
+			</tr>
+			{/snippet}
 		{#each data.coaches as { id, firstName, lastName, confirmationEmailDeliveryStatus, emailConfirmation, email, UserRoles }}
 			<tr>
 				<td style={`--transition-name:user-${id}`}>
@@ -131,12 +134,14 @@
 <section class="mb-10">
 	<h2 class="text-xl mb-4">Clients</h2>
 	<StyledTable>
-		<tr slot="head">
-			<td>Name</td>
-			<td>Email</td>
-			<td>Roles</td>
-			<td>Email Confirmation</td>
-		</tr>
+		{#snippet head()}
+				<tr >
+				<td>Name</td>
+				<td>Email</td>
+				<td>Roles</td>
+				<td>Email Confirmation</td>
+			</tr>
+			{/snippet}
 		{#each data.clients as { id, firstName, lastName, confirmationEmailDeliveryStatus, emailConfirmation, email, UserRoles }}
 			<tr>
 				<td style={`--transition-name:user-${id}`}>

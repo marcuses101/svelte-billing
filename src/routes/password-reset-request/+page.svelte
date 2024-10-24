@@ -4,7 +4,7 @@
 	import SubmitButton from '$lib/components/SubmitButton.svelte';
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
 
-	export let form;
+	let { form } = $props();
 </script>
 
 <PageHeader title="Password Reset" />

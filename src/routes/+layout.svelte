@@ -5,9 +5,14 @@
 	import Header from './Header.svelte';
 	import { page } from '$app/stores';
 	import { ROLES } from '$lib/defs';
-	export let data: LayoutData;
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 	const isLoggedIn = Boolean(data.user);
-	let isDrawerOpen = false;
+	let isDrawerOpen = $state(false);
 
 	function closeDrawer() {
 		isDrawerOpen = false;
@@ -25,6 +30,11 @@
 					displayText: 'Add Lesson'
 				}
 			]
+		},
+		{
+			href: '/protected/my-info/additional-charges',
+			displayText: 'Additional Charges',
+			submenus: []
 		},
 		{ href: '/protected/my-info/pay-slips', displayText: 'Pay Slips', submenus: [] }
 	];
@@ -80,7 +90,7 @@
 		});
 	});
 
-	$: baseSegment = '/' + $page.url.pathname.split('/')[1];
+	let baseSegment = $derived('/' + $page.url.pathname.split('/')[1]);
 </script>
 
 <div class="drawer drawer-closed lg:drawer-open">
@@ -88,29 +98,29 @@
 	<div class="drawer-content min-h-[100dvh]">
 		<Header {isLoggedIn} />
 		<main class="flex-1 p-4 w-full">
-			<slot />
+			{@render children?.()}
 		</main>
 	</div>
 	<div class="drawer-side">
-		<label for="drawer-input" aria-label="close sidebar" class="drawer-overlay" />
+		<label for="drawer-input" aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul class="menu p-4 w-56 min-h-full bg-base-200 text-base-content">
 			{#each visibleLinks as { href, displayText }}
 				<li>
-					<a class:active={baseSegment === href} on:click={closeDrawer} {href}>{displayText}</a>
+					<a class:active={baseSegment === href} onclick={closeDrawer} {href}>{displayText}</a>
 				</li>
 			{/each}
 			{#if isCoach}
 				<li class="menu-title">My Info</li>
 				{#each myInfoLinks as { href, displayText, submenus }}
 					<li>
-						<a on:click={closeDrawer} {href}>
+						<a onclick={closeDrawer} {href}>
 							{displayText}
 						</a>
 						{#if submenus.length > 0}
 							<ul>
 								{#each submenus as submenu}
 									<li>
-										<a on:click={closeDrawer} href={submenu.href}>
+										<a onclick={closeDrawer} href={submenu.href}>
 											{submenu.displayText}
 										</a>
 									</li>
@@ -124,7 +134,7 @@
 				<li class="menu-title">Admin</li>
 				{#each adminLinks as { href, displayText, submenus }}
 					<li>
-						<a class:active={$page.route.id?.startsWith(href)} on:click={closeDrawer} {href}>
+						<a class:active={$page.route.id?.startsWith(href)} onclick={closeDrawer} {href}>
 							{displayText}
 						</a>
 						{#if submenus.length > 0}
@@ -133,7 +143,7 @@
 									<li>
 										<a
 											class:active={$page.route.id?.startsWith(submenu.href)}
-											on:click={closeDrawer}
+											onclick={closeDrawer}
 											href={submenu.href}
 										>
 											{submenu.displayText}

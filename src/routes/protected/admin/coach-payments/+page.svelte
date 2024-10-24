@@ -4,7 +4,7 @@
 	import StyledTable from '$lib/components/StyledTable.svelte';
 	import { formatCurrency } from '$lib/formatCurrency.js';
 
-	export let data;
+	let { data } = $props();
 
 	const options = data.coachBalances.map(({ fullName, balance, coachId }) => ({
 		label: `${fullName} (Amount Owed: ${formatCurrency(balance)})`,
@@ -36,11 +36,13 @@
 </form>
 
 <StyledTable>
-	<tr slot="head">
-		<th>Date</th>
-		<th>Name</th>
-		<th class="text-right">Amount Payed</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Date</th>
+			<th>Name</th>
+			<th class="text-right">Amount Payed</th>
+		</tr>
+	{/snippet}
 	{#each rows as { date, name, amount }}
 		<tr>
 			<td>{date}</td>

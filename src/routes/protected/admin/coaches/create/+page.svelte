@@ -4,7 +4,11 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 	import CoachForm from '$lib/components/CoachForm.svelte';
-	export let form: ActionData;
+	interface Props {
+		form: ActionData;
+	}
+
+	let { form }: Props = $props();
 	let coachFullName = form?.coach?.firstName + ' ' + form?.coach?.lastName;
 </script>
 

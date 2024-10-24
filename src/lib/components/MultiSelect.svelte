@@ -5,12 +5,22 @@
 	import { quintOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
 
-	export let name: string;
-	export let optionsLabel = 'Options';
-	export let selectedOptionsLabel = 'Selected Options';
-	export let options: { label: string; value: string }[];
-	export let selectedOptions: { label: string; value: string }[] = [];
-	let search = '';
+	interface Props {
+		name: string;
+		optionsLabel?: string;
+		selectedOptionsLabel?: string;
+		options: { label: string; value: string }[];
+		selectedOptions?: { label: string; value: string }[];
+	}
+
+	let {
+		name,
+		optionsLabel = 'Options',
+		selectedOptionsLabel = 'Selected Options',
+		options,
+		selectedOptions = $bindable([])
+	}: Props = $props();
+	let search = $state('');
 
 	export function reset() {
 		search = '';
@@ -21,12 +31,12 @@
 		duration: (d) => Math.sqrt(d * 200),
 		easing: quintOut
 	});
-	$: unselectionOptions = options
+	let unselectionOptions = $derived(options
 		.filter((op) => op.label.toLowerCase().includes(search.toLowerCase()))
 		.filter(
 			(option) => !selectedOptions.some((selectedOption) => option.value === selectedOption.value)
-		);
-	$: selectedValues = selectedOptions.map((option) => option.value);
+		));
+	let selectedValues = $derived(selectedOptions.map((option) => option.value));
 
 	function removeValue(value: string) {
 		selectedOptions = selectedOptions.filter((option) => option.value !== value);
@@ -49,7 +59,7 @@
 					type="text"
 					placeholder="Filter"
 					bind:value={search}
-					on:blur={() => {
+					onblur={() => {
 						search = '';
 					}}
 				/>
@@ -68,7 +78,7 @@
 					>
 						<button
 							type="button"
-							on:click={() => {
+							onclick={() => {
 								addOption({ label, value });
 							}}>{label}</button
 						>
@@ -92,7 +102,7 @@
 					<button
 						type="button"
 						class="flex justify-between"
-						on:click={() => {
+						onclick={() => {
 							removeValue(value);
 						}}>{label}<CancelIcon /></button
 					>

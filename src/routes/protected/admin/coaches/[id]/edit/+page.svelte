@@ -5,8 +5,7 @@
 	import CancelButton from '$lib/components/CancelButton.svelte';
 	import SubmitButton from '$lib/components/SubmitButton.svelte';
 
-	export let data;
-	export let form;
+	let { data, form } = $props();
 
 	const isSubmitError = Array.isArray(form?.missingFields) && form.missingFields.length > 0;
 	if (isSubmitError) {

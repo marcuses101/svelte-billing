@@ -3,8 +3,7 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
 	import LessonForm from '$lib/components/LessonForm.svelte';
-	export let data;
-	export let form;
+	let { data, form } = $props();
 
 	const skaterOptions = data.skaters.map(({ id, firstName, lastName }) => ({
 		value: id,

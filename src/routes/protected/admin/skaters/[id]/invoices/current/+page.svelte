@@ -4,23 +4,22 @@
 	import type { ComponentProps } from 'svelte';
 	import InvoiceDisplay from '$lib/components/InvoiceDisplay.svelte';
 
-	export let data;
+	let { data } = $props();
 	const {
 		skater: { firstName, lastName },
 		processedInvoice
 	} = data;
 	const id = 'TBD';
 
-	const charges: ComponentProps<InvoiceDisplay>['charges'] = processedInvoice.lineItemsData.map(
-		(entry) => {
+	const charges: ComponentProps<typeof InvoiceDisplay>['charges'] =
+		processedInvoice.lineItemsData.map((entry) => {
 			return {
 				formattedDate: formatDate(entry.date),
 				description: entry.description,
 				chargeAmount: formatCurrency(entry.amountInCents)
 			};
-		}
-	);
-	const payments: ComponentProps<InvoiceDisplay>['payments'] = processedInvoice.payments.map(
+		});
+	const payments: ComponentProps<typeof InvoiceDisplay>['payments'] = processedInvoice.payments.map(
 		(entry) => {
 			return {
 				formattedDate: formatDate(entry.date),

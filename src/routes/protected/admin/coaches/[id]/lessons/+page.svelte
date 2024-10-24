@@ -2,7 +2,7 @@
 	import StyledTable from '$lib/components/StyledTable.svelte';
 	import { formatDate } from '$lib/formatDate';
 
-	export let data;
+	let { data } = $props();
 	const formatter = new Intl.NumberFormat('en-CA', {
 		unit: 'minute',
 		style: 'unit',
@@ -11,11 +11,13 @@
 </script>
 
 <StyledTable>
-	<tr slot="head">
-		<th>Date</th>
-		<th class="text-right">Lesson time</th>
-		<th class="text-right">Skater Count</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Date</th>
+			<th class="text-right">Lesson time</th>
+			<th class="text-right">Skater Count</th>
+		</tr>
+	{/snippet}
 
 	{#each data.lessons as lesson}
 		<tr>

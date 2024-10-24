@@ -4,7 +4,7 @@
 	import CancelButton from '$lib/components/CancelButton.svelte';
 	import SubmitButton from '$lib/components/SubmitButton.svelte';
 
-	export let data;
+	let { data } = $props();
 	const {
 		skater: { firstName, lastName, skaterTypeCode: maybeTypeCode }
 	} = data;
@@ -13,8 +13,10 @@
 </script>
 
 <SkaterForm {firstName} {lastName} {skaterTypeCode}>
-	<svelte:fragment slot="buttons">
-		<CancelButton href={`/skaters/${data.skater.id}`} />
-		<SubmitButton />
-	</svelte:fragment>
+	{#snippet buttons()}
+	
+			<CancelButton href={`/skaters/${data.skater.id}`} />
+			<SubmitButton />
+		
+	{/snippet}
 </SkaterForm>

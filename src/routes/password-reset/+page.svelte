@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { enhance } from '$app/forms';
 
 	import { exhaustiveCheck } from '$lib/exhaustiveCheck';
@@ -7,12 +9,11 @@
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import { fade } from 'svelte/transition';
-	export let data;
-	export let form;
-	let errorMessage: string | null = null;
-	$: errorType = form?.error?.type;
+	let { data, form } = $props();
+	let errorMessage: string | null = $state(null);
+	let errorType = $derived(form?.error?.type);
 
-	$: {
+	run(() => {
 		switch (errorType) {
 			case 'INVALID_TOKEN':
 				errorMessage = 'Password reset token is invalid';
@@ -38,7 +39,7 @@
 			default:
 				exhaustiveCheck(errorType);
 		}
-	}
+	});
 </script>
 
 <PageHeader title="Password Reset" />

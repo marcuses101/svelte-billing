@@ -3,7 +3,7 @@
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
 
-	export let data;
+	let { data } = $props();
 	const rows = data.coach.CoachPaySlips.map((entry) => {
 		const date = formatDate(entry.date);
 		const amount = formatCurrency(entry.amountDueInCents);
@@ -12,10 +12,12 @@
 </script>
 
 <StyledTable>
-	<tr slot="head">
-		<th>Date</th>
-		<th class="text-right">Amount</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Date</th>
+			<th class="text-right">Amount</th>
+		</tr>
+	{/snippet}
 	<tr>
 		<td
 			><a class="link link-primary no-underline font-bold" href={`pay-slips/current`}

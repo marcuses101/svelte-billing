@@ -2,7 +2,7 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { LEDGER_TYPE } from '$lib/defs.js';
 	import { formatCurrency } from '$lib/formatCurrency';
-	export let data;
+	let { data } = $props();
 
 	const ledgerTypes = Object.values(LEDGER_TYPE);
 	const ledgers = Object.entries(data.ledgerSummary).sort((a, b) => {

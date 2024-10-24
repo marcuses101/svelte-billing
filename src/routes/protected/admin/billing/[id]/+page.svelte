@@ -5,7 +5,7 @@
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <PageHeader title={`Billing Batch ${formatDate(data.billingBatch.createdAt)}`}>
@@ -15,10 +15,12 @@
 <div class="prose max-w-none">
 	<h3>Invoices</h3>
 	<StyledTable>
-		<tr slot="head">
-			<th>Name</th>
-			<th class="text-right">Amount Due</th>
-		</tr>
+		{#snippet head()}
+				<tr >
+				<th>Name</th>
+				<th class="text-right">Amount Due</th>
+			</tr>
+			{/snippet}
 		{#each data.billingBatch.Invoices as { id, amountDueInCents, Skater: { firstName, lastName } }}
 			<tr>
 				<td
@@ -33,10 +35,12 @@
 
 	<h3>Coach Pay Slips</h3>
 	<StyledTable>
-		<tr slot="head">
-			<th>Name</th>
-			<th class="text-right">Amount Owed</th>
-		</tr>
+		{#snippet head()}
+				<tr >
+				<th>Name</th>
+				<th class="text-right">Amount Owed</th>
+			</tr>
+			{/snippet}
 		{#each data.billingBatch.CoachPaySlips as { id, amountDueInCents, Coach: { User: { firstName, lastName } } }}
 			<tr>
 				<td

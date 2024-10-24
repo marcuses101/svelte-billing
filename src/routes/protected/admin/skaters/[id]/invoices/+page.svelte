@@ -2,7 +2,7 @@
 	import StyledTable from '$lib/components/StyledTable.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 
-	export let data;
+	let { data } = $props();
 	const {
 		skater: { id: skaterId }
 	} = data;
@@ -10,10 +10,12 @@
 </script>
 
 <StyledTable>
-	<tr slot="head">
-		<th>Date</th>
-		<th class="text-right">Invoice Amount</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Date</th>
+			<th class="text-right">Invoice Amount</th>
+		</tr>
+	{/snippet}
 	<tr>
 		<td>
 			<a class="link link-primary" href={`/protected/admin/skaters/${skaterId}/invoices/current`}>

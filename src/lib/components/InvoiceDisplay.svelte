@@ -1,17 +1,33 @@
 <script lang="ts">
 	import { HST_PERCENTAGE } from '$lib/shared';
 
-	export let id: string;
-	export let skaterFirstName: string;
-	export let skaterLastName: string;
-	export let invoiceDate: string;
-	export let charges: { formattedDate: string; description: string; chargeAmount: string }[];
-	export let payments: { formattedDate: string; paymentAmount: string }[];
-	export let previousBillAmount: string;
-	export let outstandingBalance: string;
-	export let hstAmount: string;
-	export let amountDue: string;
-	export let chargesTotal: string;
+	interface Props {
+		id: string;
+		skaterFirstName: string;
+		skaterLastName: string;
+		invoiceDate: string;
+		charges: { formattedDate: string; description: string; chargeAmount: string }[];
+		payments: { formattedDate: string; paymentAmount: string }[];
+		previousBillAmount: string;
+		outstandingBalance: string;
+		hstAmount: string;
+		amountDue: string;
+		chargesTotal: string;
+	}
+
+	let {
+		id,
+		skaterFirstName,
+		skaterLastName,
+		invoiceDate,
+		charges,
+		payments,
+		previousBillAmount,
+		outstandingBalance,
+		hstAmount,
+		amountDue,
+		chargesTotal
+	}: Props = $props();
 </script>
 
 <div class="max-w-5xl mx-auto mt-4">

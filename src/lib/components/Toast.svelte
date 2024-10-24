@@ -2,9 +2,19 @@
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 
-	export let toastVisible = true;
-	export let timeVisibleInMilliseconds = 3000;
-	export let alertType: 'success' | 'error' | 'info' | 'warning' = 'success';
+	interface Props {
+		toastVisible?: boolean;
+		timeVisibleInMilliseconds?: number;
+		alertType?: 'success' | 'error' | 'info' | 'warning';
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		toastVisible = $bindable(true),
+		timeVisibleInMilliseconds = 3000,
+		alertType = 'success',
+		children
+	}: Props = $props();
 
 	onMount(() => {
 		setTimeout(() => {
@@ -23,7 +33,7 @@
 			class="alert grid-1"
 		>
 			<span class="text-center">
-				<slot />
+				{@render children?.()}
 			</span>
 		</div>
 	</div>

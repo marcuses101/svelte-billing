@@ -5,8 +5,7 @@
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
 
-	export let form;
-	export let data;
+	let { form, data } = $props();
 </script>
 
 <PageHeader title="Billing" />
@@ -25,13 +24,15 @@
 </form>
 
 <StyledTable>
-	<tr slot="head">
-		<th>Batch Id</th>
-		<th>Date</th>
-		<th>Invoices Total</th>
-		<th>Coach Pay Total</th>
-		<th>Commission</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Batch Id</th>
+			<th>Date</th>
+			<th>Invoices Total</th>
+			<th>Coach Pay Total</th>
+			<th>Commission</th>
+		</tr>
+	{/snippet}
 	{#each data.billingBatch as { id, createdAt, paySlipTotal, invoicesTotal }}
 		<tr>
 			<td><a class="link link-primary" href={`/protected/admin/billing/${id}`}>{id}</a></td>

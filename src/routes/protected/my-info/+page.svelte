@@ -2,7 +2,7 @@
 	import CoachForm from '$lib/components/CoachForm.svelte';
 	import type { SkaterType } from '$lib/defs.js';
 
-	export let data;
+	let { data } = $props();
 	const { firstName, lastName, email } = data.coach.User;
 	const { isHstCharged } = data.coach;
 	const rates = data.coach.CoachRate.reduce(

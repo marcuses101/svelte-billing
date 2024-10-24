@@ -8,7 +8,7 @@
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
 	import { wrapOk } from '$lib/rustResult.js';
 
-	export let data;
+	let { data } = $props();
 	const rows = data.paySlips.map((slip) => {
 		const coachId = slip.Coach.id;
 		const date = formatDate(slip.date);
@@ -31,13 +31,15 @@
 <PageHeader title="Pay Slips" />
 
 <StyledTable>
-	<tr slot="head">
-		<th>Pay Slip Id</th>
-		<th>Date</th>
-		<th>Coach Name</th>
-		<th class="text-right">Pay Slip Total</th>
-		<th>Email Delivery Status</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Pay Slip Id</th>
+			<th>Date</th>
+			<th>Coach Name</th>
+			<th class="text-right">Pay Slip Total</th>
+			<th>Email Delivery Status</th>
+		</tr>
+	{/snippet}
 	{#each rows as { id, name, amountDue, coachId, date, emailDeliveryStatus, humanReadableId, emailConfirmation }}
 		<tr>
 			<td>

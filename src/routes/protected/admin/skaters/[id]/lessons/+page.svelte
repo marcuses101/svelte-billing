@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SkaterLessonDisplay from '$lib/components/SkaterLessonDisplay.svelte';
 
-	export let data;
+	let { data } = $props();
 	const { lessons } = data;
 
 	const dateFormat = new Intl.DateTimeFormat('en-CA', {

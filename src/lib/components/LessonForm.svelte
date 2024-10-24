@@ -7,12 +7,22 @@
 	const defaultDate = format(new Date(), 'yyyy-MM-dd');
 	const defaultMinutes = 15;
 
-	export let mode: 'Add' | 'Edit' = 'Add';
-	export let skaterOptions: SelectOption[] = [];
-	export let selectedOptions: SelectOption[] = [];
-	export let date: string = defaultDate;
-	export let minutes: number = defaultMinutes;
-	let multiselectComponent: MultiSelect;
+	interface Props {
+		mode?: 'Add' | 'Edit';
+		skaterOptions?: SelectOption[];
+		selectedOptions?: SelectOption[];
+		date?: string;
+		minutes?: number;
+	}
+
+	let {
+		mode = 'Add',
+		skaterOptions = [],
+		selectedOptions = [],
+		date = $bindable(defaultDate),
+		minutes = $bindable(defaultMinutes)
+	}: Props = $props();
+	let multiselectComponent: ReturnType<typeof MultiSelect> | undefined = $state();
 
 	let formatMinutes = new Intl.NumberFormat('en-CA', { style: 'unit', unit: 'minute' }).format;
 	function addMinutes(time: number) {
@@ -25,8 +35,9 @@
 
 <form
 	method="POST"
-	on:reset|preventDefault={() => {
-		multiselectComponent.reset();
+	onreset={(e) => {
+		e.preventDefault();
+		multiselectComponent?.reset();
 		minutes = defaultMinutes;
 		date = defaultDate;
 	}}
@@ -59,14 +70,14 @@
 			<button
 				type="button"
 				class="btn"
-				on:click={() => {
+				onclick={() => {
 					subtractMinutes(15);
 				}}>-15</button
 			>
 			<button
 				type="button"
 				class="btn"
-				on:click={() => {
+				onclick={() => {
 					subtractMinutes(5);
 				}}>-5</button
 			>
@@ -74,14 +85,14 @@
 			<button
 				type="button"
 				class="btn"
-				on:click={() => {
+				onclick={() => {
 					addMinutes(5);
 				}}>+5</button
 			>
 			<button
 				type="button"
 				class="btn"
-				on:click={() => {
+				onclick={() => {
 					addMinutes(15);
 				}}>+15</button
 			>

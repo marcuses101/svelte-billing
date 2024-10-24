@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { calculateLessonCost } from '$lib/calculateLessonCost';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { SKATER_TYPE, type SkaterType } from '$lib/defs';
@@ -6,16 +8,16 @@
 
 	const COACH_ID = 'CoachId';
 	let nextId = 1;
-	let minutes: number = 60;
-	let coachRates = Object.values(SKATER_TYPE).map((type) => ({
+	let minutes: number = $state(60);
+	let coachRates = $state(Object.values(SKATER_TYPE).map((type) => ({
 		coachId: COACH_ID,
 		hourlyRateInCents: 60_00,
 		skaterTypeCode: type
-	}));
+	})));
 
-	let skaters: { skaterId: string; skaterTypeCode: SkaterType }[] = [];
+	let skaters: { skaterId: string; skaterTypeCode: SkaterType }[] = $state([]);
 	const types = Object.values(SKATER_TYPE);
-	let selectedType = types[0];
+	let selectedType = $state(types[0]);
 
 	function createSkater(type: SkaterType) {
 		skaters = [...skaters, { skaterId: `Skater_${nextId}_${type}`, skaterTypeCode: type }];
@@ -24,13 +26,15 @@
 	function removeSkater(skaterId: string) {
 		skaters = skaters.filter((skater) => skater.skaterId !== skaterId);
 	}
-	let lessonCostInfo: ReturnType<typeof calculateLessonCost> | null = null;
+	let lessonCostInfo: ReturnType<typeof calculateLessonCost> | null = $state(null);
 
-	$: try {
-		lessonCostInfo = calculateLessonCost(minutes, coachRates, skaters);
-	} catch {
-		lessonCostInfo = null;
-	}
+	run(() => {
+		try {
+			lessonCostInfo = calculateLessonCost(minutes, coachRates, skaters);
+		} catch {
+			lessonCostInfo = null;
+		}
+	});
 </script>
 
 <PageHeader title="Lesson Calculator" />
@@ -89,7 +93,7 @@
 						</select>
 						<button
 							class="btn btn-circle btn-sm"
-							on:click={() => {
+							onclick={() => {
 								if (!selectedType) {
 									return;
 								}
@@ -107,7 +111,7 @@
 							{skater.skaterId}
 							<button
 								class="btn btn-circle btn-sm"
-								on:click={() => {
+								onclick={() => {
 									removeSkater(skater.skaterId);
 								}}
 							>

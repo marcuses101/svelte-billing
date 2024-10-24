@@ -7,7 +7,7 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
 
-	export let data;
+	let { data } = $props();
 	const user = data.user;
 </script>
 

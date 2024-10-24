@@ -2,21 +2,25 @@
 	import { formatCurrency } from '$lib/formatCurrency';
 	import type { ChangeEventHandler } from 'svelte/elements';
 
-	/**
+	interface Props {
+		/**
     TODO:
     - [ ] implement required that prevents submit if 0;
     */
+		value?: number;
+		label?: string | undefined;
+		name: string;
+		disabled?: boolean;
+	}
 
-	export let value: number = 0;
-	export let label: string | undefined = undefined;
-	export let name: string;
-	export let disabled: boolean = false;
+	let { value = $bindable(0), label = undefined, name, disabled = false }: Props = $props();
 
 	let visibleName = `_${name}-visible`;
 
 	const numberRegex = /[0-9]/;
 
 	const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+		e.preventDefault();
 		const newValue = e.currentTarget.value;
 		const stripped = newValue
 			.split('')
@@ -31,7 +35,7 @@
 			value = 0;
 		}
 	};
-	$: currencyVisibleValue = formatCurrency(value);
+	let currencyVisibleValue = $derived(formatCurrency(value));
 </script>
 
 <div class="form-control w-full max-w-xs">
@@ -44,7 +48,7 @@
 	<input
 		type="text"
 		{disabled}
-		on:keydown={(e) => {
+		onkeydown={(e) => {
 			const isNumber = numberRegex.test(e.key);
 			if (isNumber) {
 				return;
@@ -60,19 +64,24 @@
 
 			e.preventDefault();
 		}}
-		on:focus={(e) => {
+		onfocus={(e) => {
 			e.currentTarget.setSelectionRange(999, 999);
 		}}
-		on:click={(e) => {
+		onmousedown={(e) => {
+			e.preventDefault();
+			e.currentTarget.focus();
 			e.currentTarget.setSelectionRange(999, 999);
 		}}
-		on:input|preventDefault={handleChange}
-		on:change|preventDefault={handleChange}
+		onclick={(e) => {
+			e.currentTarget.setSelectionRange(999, 999);
+		}}
+		oninput={handleChange}
+		onchange={handleChange}
 		value={currencyVisibleValue}
 		name={visibleName}
 		id="currency"
 		min="0"
-		class="input input-bordered w-full max-w-xs"
+		class="input input-bordered w-full max-w-xs text-right"
 		required
 	/>
 </div>

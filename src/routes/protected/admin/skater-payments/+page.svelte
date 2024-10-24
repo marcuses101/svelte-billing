@@ -5,7 +5,7 @@
 	import { formatCurrency } from '$lib/formatCurrency.js';
 	import { formatDate } from '$lib/formatDate.js';
 
-	export let data;
+	let { data } = $props();
 	const options = data.skaterBalances.map(({ fullName, skaterId, balance }) => ({
 		label: `${fullName} (Current Balance: ${formatCurrency(balance)})`,
 		value: skaterId
@@ -35,11 +35,13 @@
 </form>
 
 <StyledTable>
-	<tr slot="head">
-		<th>Date</th>
-		<th>Name</th>
-		<th class="text-right">Amount</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Date</th>
+			<th>Name</th>
+			<th class="text-right">Amount</th>
+		</tr>
+	{/snippet}
 	{#each rows as { date, name, amount }}
 		<tr>
 			<td>{date}</td>

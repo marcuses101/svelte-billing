@@ -2,9 +2,13 @@
 	import EditButton from '$lib/components/EditButton.svelte';
 	import CancelIcon from '$lib/icons/CancelIcon.svelte';
 
-	export let lessonTimeInMinutes: number;
-	export let skaters: string[];
-	export let id: string;
+	interface Props {
+		lessonTimeInMinutes: number;
+		skaters: string[];
+		id: string;
+	}
+
+	let { lessonTimeInMinutes, skaters, id }: Props = $props();
 </script>
 
 <article class="flex gap-4 rounded-xl shadow px-2 py-0 border border-neutral-400">
@@ -18,7 +22,7 @@
 			{#each skaters as skater}
 				<div class="badge badge-ghost min-w-fit">{skater}</div>
 			{/each}
-			<div />
+			<div></div>
 		</div>
 	</article>
 	<article class="flex self-center gap-2">

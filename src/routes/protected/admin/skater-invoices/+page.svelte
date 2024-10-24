@@ -8,8 +8,7 @@
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
 	import { EmailConfirmation, type EmailDeliveryStatus } from '@prisma/client';
-	export let data;
-	export let form;
+	let { data, form } = $props();
 	const rows: {
 		invoiceId: string;
 		name: string;
@@ -47,13 +46,15 @@
 {/if}
 
 <StyledTable>
-	<tr slot="head">
-		<th>Invoice Id</th>
-		<th>Invoice Date</th>
-		<th>Skater Name</th>
-		<th class="text-right">Invoice Amount</th>
-		<th>Email Status</th>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<th>Invoice Id</th>
+			<th>Invoice Date</th>
+			<th>Skater Name</th>
+			<th class="text-right">Invoice Amount</th>
+			<th>Email Status</th>
+		</tr>
+	{/snippet}
 	{#each rows as { date, invoiceId, name, invoiceHref, humanReadableId, skaterHref, amountDue, emailDeliveryStatus, emailConfirmation, userId }}
 		<tr>
 			<td>

@@ -3,7 +3,7 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 
-	export let data;
+	let { data, children } = $props();
 
 	const { firstName, lastName, id } = data.skater;
 	const fullName = `${firstName} ${lastName}`;
@@ -15,10 +15,11 @@
 		if (pathname.includes('lessons')) return 'Lessons';
 		return '';
 	}
-	$: title = getTitle($page.url.pathname);
+	let title = $derived(getTitle($page.url.pathname));
 </script>
 
 <PageHeader {title}>
+	<!-- @migration-task: migrate this slot by hand, `title-pre` is an invalid identifier -->
 	<span slot="title-pre">
 		<span
 			style={`--transition-name:skater-${id}`}
@@ -54,7 +55,7 @@
 	{#if $page.route.id === '/protected/admin/skaters/[id]/invoices/[invoiceId]' || $page.route.id === '/skaters/[id]/invoices/current'}
 		<BackButton />
 	{:else}
-		<div />
+		<div></div>
 	{/if}
 </div>
-<slot />
+{@render children?.()}

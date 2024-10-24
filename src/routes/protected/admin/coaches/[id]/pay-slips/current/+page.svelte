@@ -3,7 +3,7 @@
 	import { HST_PERCENTAGE } from '$lib/shared.js';
 	import type { ComponentProps } from 'svelte';
 
-	export let data;
+	let { data } = $props();
 	const PLACEHOLDER_ID = 'TBD';
 	const { firstName, lastName } = data.coach.User;
 	const lineItems: ComponentProps<PaySlipDisplay>['lineItems'] =

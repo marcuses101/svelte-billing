@@ -2,7 +2,7 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <PageHeader title="Coaches" />
@@ -11,9 +11,11 @@
 </a>
 
 <StyledTable>
-	<tr slot="head">
-		<td>Name</td>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<td>Name</td>
+		</tr>
+	{/snippet}
 	{#each data.coaches as { id, firstName, lastName }}
 		<tr>
 			<td style={`--transition-name:coach-${id}`}>

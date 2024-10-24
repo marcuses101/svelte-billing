@@ -1,5 +1,11 @@
 <script>
-	export let inline = false;
+	/**
+	 * @typedef {Object} Props
+	 * @property {boolean} [inline]
+	 */
+
+	/** @type {Props} */
+	let { inline = false } = $props();
 </script>
 
 <svg

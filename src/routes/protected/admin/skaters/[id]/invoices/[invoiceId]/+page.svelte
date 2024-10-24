@@ -3,18 +3,16 @@
 	import InvoiceDisplay from '$lib/components/InvoiceDisplay.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
-	import { HST_PERCENTAGE } from '$lib/shared';
 
-	export let data;
+	let { data } = $props();
 
-	const charges: ComponentProps<InvoiceDisplay>['charges'] = data.invoice.InvoiceLineItems.map(
-		({ amountInCents, date, description }) => ({
+	const charges: ComponentProps<typeof InvoiceDisplay>['charges'] =
+		data.invoice.InvoiceLineItems.map(({ amountInCents, date, description }) => ({
 			formattedDate: formatDate(date),
 			chargeAmount: formatCurrency(amountInCents),
 			description
-		})
-	);
-	const payments: ComponentProps<InvoiceDisplay>['payments'] =
+		}));
+	const payments: ComponentProps<typeof InvoiceDisplay>['payments'] =
 		data.invoice.SkaterPaymentAccountTransactions.map(({ amountInCents, date }) => ({
 			formattedDate: formatDate(date),
 			paymentAmount: formatCurrency(amountInCents)

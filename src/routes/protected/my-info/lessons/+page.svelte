@@ -3,7 +3,7 @@
 	import PencilIcon from '$lib/icons/PencilIcon.svelte';
 	import LessonDisplay from './LessonDisplay.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	const dateFormat = new Intl.DateTimeFormat('en-CA', {
 		weekday: 'long',

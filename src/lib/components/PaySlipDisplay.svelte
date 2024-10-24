@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: `<tr>` is invalid inside `<table>` -->
 <script lang="ts">
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
@@ -79,10 +80,12 @@
 					</tbody>
 				</table>
 				<table class="table">
-					<tr class="bg-neutral text-neutral-content text-lg">
-						<td>Outstanding Balance</td>
-						<td>{outstandingBalance}</td>
-					</tr>
+					<tbody>
+						<tr class="bg-neutral text-neutral-content text-lg">
+							<td>Outstanding Balance</td>
+							<td>{outstandingBalance}</td>
+						</tr>
+					</tbody>
 				</table>
 			</div>
 		</article>

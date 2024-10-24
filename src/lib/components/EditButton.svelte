@@ -1,25 +1,33 @@
 <script lang="ts">
+	import type { MouseEventHandler } from 'svelte/elements';
+
 	import PencilIcon from '$lib/icons/PencilIcon.svelte';
-	export let href: string | undefined = undefined;
-	export let size: 'xs' | 'sm' | 'md' | 'lg' = 'md';
+	interface Props {
+		href?: string | undefined;
+		size?: 'xs' | 'sm' | 'md' | 'lg';
+		children?: import('svelte').Snippet;
+		onclick?: MouseEventHandler<HTMLElement>;
+	}
+
+	let { href = undefined, size = 'md', children, onclick }: Props = $props();
 </script>
 
 {#if href}
 	<a
-		on:click
 		class="btn btn-primary btn-outline"
 		class:btn-xs={size === 'xs'}
 		class:btn-sm={size === 'sm'}
 		class:btn-md={size === 'md'}
 		class:btn-lg={size === 'lg'}
+		{onclick}
 		{href}
 	>
 		<PencilIcon />
-		<slot>Edit</slot>
+		{#if children}{@render children()}{:else}Edit{/if}
 	</a>
 {:else}
 	<button
-		on:click
+		{onclick}
 		class="btn btn-primary btn-outline"
 		class:btn-xs={size === 'xs'}
 		class:btn-sm={size === 'sm'}
@@ -27,6 +35,6 @@
 		class:btn-lg={size === 'lg'}
 	>
 		<PencilIcon />
-		<slot>Edit</slot>
+		{#if children}{@render children()}{:else}Edit{/if}
 	</button>
 {/if}

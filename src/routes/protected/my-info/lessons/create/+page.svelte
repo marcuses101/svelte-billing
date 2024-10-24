@@ -3,8 +3,7 @@
 	import LessonForm from '$lib/components/LessonForm.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import Toast from '$lib/components/Toast.svelte';
-	export let data;
-	export let form;
+	let { data, form } = $props();
 
 	const skaterSelectOptions = data.skaters.map(({ id, firstName, lastName }) => ({
 		value: id,

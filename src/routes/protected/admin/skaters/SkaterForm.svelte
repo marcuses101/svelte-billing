@@ -2,10 +2,21 @@
 	import SubmitButton from '$lib/components/SubmitButton.svelte';
 	import { SKATER_TYPE, type SkaterType } from '$lib/defs';
 
-	export let disabled: boolean = false;
-	export let firstName = '';
-	export let lastName = '';
-	export let skaterTypeCode: SkaterType = 'RESIDENT';
+	interface Props {
+		disabled?: boolean;
+		firstName?: string;
+		lastName?: string;
+		skaterTypeCode?: SkaterType;
+		buttons?: import('svelte').Snippet;
+	}
+
+	let {
+		disabled = false,
+		firstName = '',
+		lastName = '',
+		skaterTypeCode = $bindable('RESIDENT'),
+		buttons
+	}: Props = $props();
 	const types = Object.values(SKATER_TYPE);
 </script>
 
@@ -60,11 +71,11 @@
 		</select>
 	</label>
 	<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
-		<slot name="buttons">
+		{#if buttons}{@render buttons()}{:else}
 			{#if !disabled}
 				<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
 				<SubmitButton />
 			{/if}
-		</slot>
+		{/if}
 	</div>
 </form>

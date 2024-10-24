@@ -1,7 +1,15 @@
 <script lang="ts">
 	import CancelIcon from '$lib/icons/CancelIcon.svelte';
-	export let href: string | undefined = undefined;
-	export let size: 'xs' | 'sm' | 'md' | 'lg' = 'md';
+	import type { MouseEventHandler } from 'svelte/elements';
+
+	interface Props {
+		href?: string | undefined;
+		size?: 'xs' | 'sm' | 'md' | 'lg';
+		onclick?: MouseEventHandler<HTMLElement>;
+		children?: import('svelte').Snippet;
+	}
+
+	let { href = undefined, size = 'md', onclick, children }: Props = $props();
 </script>
 
 {#if href}
@@ -10,12 +18,12 @@
 		class:btn-sm={size === 'sm'}
 		class:btn-md={size === 'md'}
 		class:btn-lg={size === 'lg'}
-		on:click
+		{onclick}
 		class="btn btn-outline btn-error"
 		{href}
 	>
 		<CancelIcon />
-		<slot>Cancel</slot>
+		{#if children}{@render children()}{:else}Cancel{/if}
 	</a>
 {:else}
 	<button
@@ -23,10 +31,10 @@
 		class:btn-sm={size === 'sm'}
 		class:btn-md={size === 'md'}
 		class:btn-lg={size === 'lg'}
-		on:click
+		{onclick}
 		class="btn btn-outline btn-error"
 	>
 		<CancelIcon />
-		<slot>Cancel</slot>
+		{#if children}{@render children()}{:else}Cancel{/if}
 	</button>
 {/if}

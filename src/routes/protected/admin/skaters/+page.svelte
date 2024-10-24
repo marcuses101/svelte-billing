@@ -3,16 +3,18 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <PageHeader title="Skater List" />
 <AddButton href="/protected/admin/skaters/create">Add Skater</AddButton>
 <StyledTable containerClass="mt-8">
-	<tr slot="head">
-		<td>Name</td>
-		<td>Type</td>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<td>Name</td>
+			<td>Type</td>
+		</tr>
+	{/snippet}
 	{#each data.skaters as { id, firstName, lastName, skaterTypeCode }}
 		<tr>
 			<td style={`--transition-name:skater-${id}`}>

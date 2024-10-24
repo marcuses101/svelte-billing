@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import CancelButton from '$lib/components/CancelButton.svelte';
+	import { page } from '$app/stores';
 	import CurrencyInput from '$lib/components/CurrencyInput.svelte';
 	import EditButton from '$lib/components/EditButton.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
@@ -9,9 +9,7 @@
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate.js';
 
-	export let data;
-
-	let editId: string | null = null;
+	let { data } = $props();
 </script>
 
 <PageHeader title="Additional Charges" />
@@ -60,35 +58,23 @@
 </form>
 
 <StyledTable class="mt-8">
-	<tr slot="head">
-		<th>Date</th>
-		<th>Skater</th>
-		<th>Description</th>
-		<th>Amount</th>
-		<th />
-	</tr>
-	{#each data.skaterInvoiceMiscellaneousItems as { id, date, amountInCents, description, Skater: { firstName, lastName } }}
+	{#snippet head()}
 		<tr>
+			<th>Date</th>
+			<th>Skater</th>
+			<th>Description</th>
+			<th>Amount</th>
+			<th></th>
+		</tr>
+	{/snippet}
+	{#each data.skaterInvoiceMiscellaneousItems as { id, date, amountInCents, description, Skater: { firstName, lastName } }}
+		<tr class:updated-row={$page.url.searchParams.get('updatedId') === id}>
 			<td>{formatDate(date)}</td>
 			<td>{firstName} {lastName}</td>
 			<td>{description}</td>
 			<td>{formatCurrency(amountInCents)}</td>
 			<td>
-				{#if id === editId}
-					<CancelButton
-						size="sm"
-						on:click={() => {
-							editId = null;
-						}}
-					/>
-				{:else}
-					<EditButton
-						size="sm"
-						on:click={() => {
-							editId = id;
-						}}
-					/>
-				{/if}
+				<EditButton size="sm" href={`/protected/my-info/additional-charges/${id}`} />
 			</td>
 		</tr>
 	{:else}
@@ -97,3 +83,18 @@
 		</tr>
 	{/each}
 </StyledTable>
+
+<style>
+	@keyframes highlight {
+		0% {
+			background-color: theme('colors.secondary');
+		}
+		100% {
+			background-color: transparent;
+		}
+	}
+
+	.updated-row {
+		animation: highlight 2s ease-out;
+	}
+</style>

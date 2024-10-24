@@ -1,8 +1,17 @@
 <script lang="ts">
-	export let coachName: string;
-	export let type: 'private' | 'group';
-	export let lessonTimeInMinutes: number;
-	export let lessonCharge: string;
+        interface Props {
+                coachName: string;
+                type: 'private' | 'group';
+                lessonTimeInMinutes: number;
+                lessonCharge: string;
+        }
+
+        let {
+                coachName,
+                type,
+                lessonTimeInMinutes,
+                lessonCharge
+        }: Props = $props();
 </script>
 
 <article

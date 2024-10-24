@@ -3,14 +3,16 @@
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate';
 
-	export let data;
+	let { data } = $props();
 </script>
 
 <StyledTable>
-	<tr slot="head">
-		<td>Date</td>
-		<td class="text-right">Pay Slip Total</td>
-	</tr>
+	{#snippet head()}
+		<tr >
+			<td>Date</td>
+			<td class="text-right">Pay Slip Total</td>
+		</tr>
+	{/snippet}
 	{#each data.paySlips as paySlip}
 		<tr>
 			<td>

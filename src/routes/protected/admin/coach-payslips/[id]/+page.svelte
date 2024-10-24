@@ -2,7 +2,7 @@
 	import PaySlipDisplay from '$lib/components/PaySlipDisplay.svelte';
 	import type { ComponentProps } from 'svelte';
 
-	export let data;
+	let { data } = $props();
 	const paySlip = data.paySlip;
 	const {
 		id,

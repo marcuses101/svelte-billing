@@ -1,5 +1,9 @@
 <script lang="ts">
-	export let data: any;
+    interface Props {
+        data: any;
+    }
+
+    let { data }: Props = $props();
 </script>
 
 <div class="rounded-xl p-4 shadow-xl bg-neutral text-neutral-content">

@@ -5,7 +5,7 @@
 	import type { SkaterType } from '$lib/defs';
 	import EditButton from '$lib/components/EditButton.svelte';
 
-	export let data;
+	let { data } = $props();
 	const { firstName, lastName, email } = data.coach.User;
 	const { isHstCharged } = data.coach;
 	const rates = data.coach.CoachRate.reduce(

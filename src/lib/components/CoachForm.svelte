@@ -6,17 +6,31 @@
 		id: `hourly-rate-${type}`,
 		label: `Hourly Rate ${type}`
 	}));
-	export let disabled: boolean = false;
-	export let firstName: string = '';
-	export let lastName: string = '';
-	export let email: string = '';
-	export let commissionPercentage: number = 0;
-	export let rates: Record<SkaterType, number> = {
+	interface Props {
+		disabled?: boolean;
+		firstName?: string;
+		lastName?: string;
+		email?: string;
+		commissionPercentage?: number;
+		rates?: Record<SkaterType, number>;
+		isHstCharged?: boolean;
+		children?: import('svelte').Snippet;
+	}
+
+	let {
+		disabled = false,
+		firstName = '',
+		lastName = '',
+		email = '',
+		commissionPercentage = 0,
+		rates = {
 		RESIDENT: 60_00,
 		US: 60_00,
 		INTERNATIONAL: 60_00
-	};
-	export let isHstCharged: boolean = false;
+	},
+		isHstCharged = $bindable(false),
+		children
+	}: Props = $props();
 </script>
 
 <form method="POST">
@@ -97,6 +111,6 @@
 		<CurrencyInput {disabled} {label} name={id} value={rates[skaterTypeCode]} />
 	{/each}
 	<div class="flex flex-row justify-end mt-4 max-w-xs">
-		<slot />
+		{@render children?.()}
 	</div>
 </form>

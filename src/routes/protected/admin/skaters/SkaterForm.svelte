@@ -20,7 +20,7 @@
 	const types = Object.values(SKATER_TYPE);
 </script>
 
-<form method="POST">
+<form method="POST" id="skater-form">
 	<div class="form-control w-full max-w-xs">
 		<label for="first-name" class="label">
 			<span class="label-text">First Name</span>
@@ -71,11 +71,9 @@
 		</select>
 	</label>
 	<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
-		{#if buttons}{@render buttons()}{:else}
-			{#if !disabled}
-				<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
-				<SubmitButton />
-			{/if}
+		{#if buttons}{@render buttons()}{:else if !disabled}
+			<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
+			<SubmitButton />
 		{/if}
 	</div>
 </form>

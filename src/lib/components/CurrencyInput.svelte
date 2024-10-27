@@ -11,9 +11,16 @@
 		label?: string | undefined;
 		name: string;
 		disabled?: boolean;
+		size?: 'xs' | 'sm' | 'md' | 'lg';
 	}
 
-	let { value = $bindable(0), label = undefined, name, disabled = false }: Props = $props();
+	let {
+		value = $bindable(0),
+		label = undefined,
+		name,
+		disabled = false,
+		size = 'md'
+	}: Props = $props();
 
 	let visibleName = `_${name}-visible`;
 
@@ -82,6 +89,10 @@
 		id="currency"
 		min="0"
 		class="input input-bordered w-full max-w-xs text-right"
+		class:input-xs={size === 'xs'}
+		class:input-sm={size === 'sm'}
+		class:input-md={size === 'md'}
+		class:input-lg={size === 'lg'}
 		required
 	/>
 </div>

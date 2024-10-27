@@ -2,6 +2,7 @@
 	import { format } from 'date-fns';
 	import MultiSelect from './MultiSelect.svelte';
 	import { enhance } from '$app/forms';
+	import { successToast } from './toaster.svelte';
 	type SelectOption = { label: string; value: string };
 
 	const defaultDate = format(new Date(), 'yyyy-MM-dd');
@@ -41,9 +42,17 @@
 		minutes = defaultMinutes;
 		date = defaultDate;
 	}}
+	action={mode === 'Edit' ? '?/edit' : undefined}
 	use:enhance={() => {
-		return ({ update }) => {
-			update({ reset: mode === 'Add' });
+		return async ({ result, update }) => {
+			if (result.type === 'success') {
+				const message = mode === 'Add' ? 'Lesson Created' : 'Lesson Updated';
+				successToast(message);
+			}
+			if (result.type === 'redirect') {
+				successToast('Lesson Removed');
+			}
+			await update({ reset: mode === 'Add' });
 		};
 	}}
 >
@@ -61,6 +70,7 @@
 			class="input input-bordered w-full max-w-xs"
 		/>
 	</div>
+
 	<div class="form-control w-full max-w-xs mb-4">
 		<label class="label" for="time-in-minutes">
 			<span class="label-text">Lesson time</span>
@@ -107,7 +117,11 @@
 		{selectedOptions}
 	/>
 	<div class="grid grid-cols-2 gap-2 max-w-xs mt-4">
-		<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
+		{#if mode === 'Edit'}
+			<button class="btn btn-error" type="submit" formaction="?/delete">Delete</button>
+		{:else}
+			<button class="btn btn-outline btn-secondary" type="reset">Reset</button>
+		{/if}
 		<button class="btn btn-primary" type="submit">Submit</button>
 	</div>
 </form>

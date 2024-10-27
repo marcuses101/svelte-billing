@@ -1,37 +1,32 @@
 # Todo
 
-- [x] Redirect all traffic to login page if not logged in
-- [x] Create Coach Payment page
-- [x] Create Coach Pay Slip interfaces
-- [x] Design system for different skater types (resident, us, international)
-- [x] Refactor Lessons and Coach charges calculations
-- [x] Update Coach
-- [x] Currency Input
-- [x] Authentication
-- [x] HST logging
-- [x] Coach Pay Slip Preview
-- [x] Authorization
-- [x] Lock Lessons that have already been billed
-- [x] Standardize Invoice Data Fetching and Display
-- [x] Change invoice and payslip to DateTime
-- [x] Integrate Email Sending (Postmark)[https://postmarkapp.com/]
-- [x] Add createdAt modifiedAt fields to relevant tables
-- [x] Improve Failed log in attempt screen, potentially handle client side instead
-- [x] Password Creation
-- [x] Password reset
+- [x] Enable Logging in Caddy
+- [x] Global toast system
 - [x] Email confirmation flow
-  - [ ] Webhooks for message delivery status
+- [x] Delete additional charge for coach/skater
+- [x] Edit additional charge for coach/skater
+- [x] Add additional charges to final coach amount
+- [x] Add additional charges to final student amount
+- [ ] Document how the accounting system works, and how it relates to the bills/payslips specifically
+- [ ] Current Pay Slip for coach
+- [ ] Delete lesson
+- [x] Additional charges UI for coaches
+- [ ] Billing/Pay Slip modification for Admins
+- [ ] Webhooks for message delivery status
 - [ ] Email Webhooks
-  - Send Email UI on generate bills
+- Send Email UI on generate bills
+- [ ] Add additional charges to bills
 - [ ] Send Email actions for invoices and pay-slips
 - [ ] Handles UI of Server Errors
 - [ ] Fix up UI
 - [ ] Refactor a bunch
-- [ ] Enable Logging in Caddy
-- [ ] Additional charges UI
 - [ ] Interface for when HST is payed to the government, maybe
-- [ ] Global toast system
-- [ ] Implement Adjustments
+
+
+# Nice to have
+- [ ] Lesson calculation builder
+- [ ] Email Template editing
+
 
 ## Coach Overview
 - Amount Owed

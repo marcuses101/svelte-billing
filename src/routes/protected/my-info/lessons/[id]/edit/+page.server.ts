@@ -48,8 +48,46 @@ function validateForm(
 }
 
 export const actions = {
-	default: async ({ request, locals, params }) => {
+	edit: async ({ request, locals, params }) => {
+		const logger = locals.logger.child({ action: 'lesson edit', lessonId: params.id });
 		const data = await request.formData();
+		const session = await locals.auth();
+		const coachUser = session?.user;
+		if (!coachUser || !coachUser.Coach) {
+			const errorMessage = 'unable to find coach';
+			logger.warn('non coach user attempting to access coach only page');
+			error(404, errorMessage);
+		}
+		const formValidationResult = validateForm(data);
+		if (!formValidationResult.ok) {
+			logger.warn({ formValidationResult }, 'validation failed');
+			return fail(400, { success: false, errors: formValidationResult.error });
+		}
+
+		const { lessonTimeInMinutes, date: rawData, skaterIds } = formValidationResult.value;
+		const date = new Date(rawData).toISOString();
+
+		try {
+			const updatedLesson = await prisma.lesson.update({
+				where: { id: params.id },
+				data: {
+					date,
+					lessonTimeInMinutes,
+					SkaterLessons: {
+						deleteMany: {},
+						create: skaterIds.map((id) => ({ Skater: { connect: { id } } }))
+					},
+					Coach: { connect: { id: coachUser.Coach.id } }
+				},
+				include: { SkaterLessons: { include: { Skater: true } } }
+			});
+			logger.info(`Lesson ${updatedLesson} updated`);
+			return { success: true, lessonTimeInMinutes: updatedLesson.lessonTimeInMinutes };
+		} catch (e) {
+			logger.error(e, 'prisma error');
+		}
+	},
+	delete: async ({ locals, params }) => {
 		const session = await locals.auth();
 		if (!session) {
 			return redirect(303, '/login');
@@ -59,27 +97,12 @@ export const actions = {
 			const errorMessage = 'unable to find coach';
 			error(404, errorMessage);
 		}
-		const formValidationResult = validateForm(data);
-		if (!formValidationResult.ok) {
-			return fail(400, { success: false, errors: formValidationResult.error });
+		try {
+			await prisma.lesson.delete({ where: { id: params.id, coachId: coachUser.Coach.id } });
+		} catch (e) {
+			locals.logger.error(e, 'prisma error, failed to delete lesson: ' + params.id);
+			return error(500, 'Prisma Error, please try again or contact an administrator');
 		}
-
-		const { lessonTimeInMinutes, date: rawData, skaterIds } = formValidationResult.value;
-		const date = new Date(rawData).toISOString();
-
-		const createdLesson = await prisma.lesson.update({
-			where: { id: params.id },
-			data: {
-				date,
-				lessonTimeInMinutes,
-				SkaterLessons: {
-					deleteMany: {},
-					create: skaterIds.map((id) => ({ Skater: { connect: { id } } }))
-				},
-				Coach: { connect: { id: coachUser.Coach.id } }
-			},
-			include: { SkaterLessons: { include: { Skater: true } } }
-		});
-		return { success: true, lessonTimeInMinutes: createdLesson.lessonTimeInMinutes };
+		return redirect(303, '/protected/my-info/lessons');
 	}
 } satisfies Actions;

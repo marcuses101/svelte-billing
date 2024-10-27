@@ -25,8 +25,9 @@
 
 <div style={`--transition-name:coach-${data.coach.id}`}>
 	<PageHeader title={fullName} titleClass={`[view-transition-name:var(--transition-name)]`}>
-		<!-- @migration-task: migrate this slot by hand, `title-post` is an invalid identifier -->
-	<span slot="title-post"> {' - '}{currentRouteInfo?.name ?? ''}</span>
+		{#snippet titlePost()}
+			<span> {' - '}{currentRouteInfo?.name ?? ''}</span>
+		{/snippet}
 		<BackButton href="/protected/admin/coaches">Back to Coaches</BackButton>
 	</PageHeader>
 </div>

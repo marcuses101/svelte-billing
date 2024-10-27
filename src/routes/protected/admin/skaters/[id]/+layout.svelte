@@ -20,14 +20,16 @@
 
 <PageHeader {title}>
 	<!-- @migration-task: migrate this slot by hand, `title-pre` is an invalid identifier -->
-	<span slot="title-pre">
-		<span
-			style={`--transition-name:skater-${id}`}
-			class="[view-transition-name:var(--transition-name)]"
-		>
-			{fullName}
-		</span>{' - '}
-	</span>
+	{#snippet titlePre()}
+		<span>
+			<span
+				style={`--transition-name:skater-${id}`}
+				class="[view-transition-name:var(--transition-name)]"
+			>
+				{fullName}
+			</span>{' - '}
+		</span>
+	{/snippet}
 	<BackButton href={`/protected/admin/skaters`}>Skaters</BackButton>
 </PageHeader>
 

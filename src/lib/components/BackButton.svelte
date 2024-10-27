@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import type { Snippet } from 'svelte';
 
 	const lastPart = $page.url.pathname.lastIndexOf('/');
 	const truncated = $page.url.pathname.slice(0, lastPart);
 	interface Props {
 		href?: string;
-		children?: import('svelte').Snippet;
+		children?: Snippet;
 	}
 
 	let { href = truncated, children }: Props = $props();

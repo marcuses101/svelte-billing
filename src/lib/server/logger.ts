@@ -1,7 +1,22 @@
 import type { Handle } from '@sveltejs/kit';
-import pino from 'pino';
+import pino, { type Level } from 'pino';
+import { env } from '$env/dynamic/private';
 
-export const logger = pino({});
+const loggerLevels: string[] = [
+	'fatal',
+	'error',
+	'warn',
+	'info',
+	'debug',
+	'trace'
+] satisfies Level[];
+
+const PINO_LOGGING_LEVEL = env.PINO_LOGGING_LEVEL;
+
+const level = loggerLevels.includes(PINO_LOGGING_LEVEL ?? '') ? PINO_LOGGING_LEVEL : 'info';
+console.log('PINO LOGGING LEVEL', level);
+
+export const logger = pino({ level });
 
 export const loggerHandle: Handle = async ({ event, resolve }) => {
 	const requestId = crypto.randomUUID();

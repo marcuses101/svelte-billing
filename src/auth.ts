@@ -6,17 +6,9 @@ import {
 	CredentialsSignin
 } from '@auth/sveltekit';
 import Credentials from '@auth/sveltekit/providers/credentials';
-import { prisma } from '$lib/server/db';
+import { getUserByEmail, prisma } from '$lib/server/db';
 import { config } from '$lib/config';
 import { INVALID_EMAIL_OR_PASSWORD_CODE, LOGIN_PATHNAME, PASSWORD_RESET_CODE } from '$lib/defs';
-import { logger } from '$lib/server/logger';
-
-function getUserByEmail(email: string) {
-	return prisma.user.findUnique({
-		where: { email },
-		include: { Coach: true, UserRoles: true }
-	});
-}
 
 export type User = Exclude<Awaited<ReturnType<typeof getUserByEmail>>, null>;
 

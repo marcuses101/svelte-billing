@@ -2,8 +2,13 @@ import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '../defs';
 import type { Prisma } from '@prisma/client';
 import { getCoachesWithInfoForPayslip } from '../getCoachesWithInfoForPayslip';
 import { processCoachForPaySlip } from '../processCoachForPaySlip';
+import type { Logger } from 'pino';
 
-export async function generateCoachPaySlips(tx: Prisma.TransactionClient, billingBatchId: string) {
+export async function generateCoachPaySlips(
+	tx: Prisma.TransactionClient,
+	billingBatchId: string,
+	logger: Logger
+) {
 	const coaches = await getCoachesWithInfoForPayslip(tx);
 
 	for (const coach of coaches) {
@@ -20,7 +25,7 @@ export async function generateCoachPaySlips(tx: Prisma.TransactionClient, billin
 			outstandingBalanceInCents,
 			previousPaySlipAmountInCents,
 			coachPaySlipLineItems
-		} = processCoachForPaySlip(coach);
+		} = processCoachForPaySlip(coach, logger);
 
 		const ledgerTransactions: Prisma.LedgerTransactionCreateManyInput[] = [
 			{
@@ -65,7 +70,6 @@ export async function generateCoachPaySlips(tx: Prisma.TransactionClient, billin
 				CoachPaymentAccountTransactions: {
 					connect: coach.Account.AccountTransaction.map(({ id }) => ({ id }))
 				},
-
 				CoachPaySlipLineItems: {
 					createMany: {
 						data: coachPaySlipLineItems

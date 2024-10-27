@@ -6,7 +6,7 @@
 	 */
 
 	/** @type {Props & { [key: string]: any }} */
-	let { ...props } = $props();
+	let props = $props();
 </script>
 
 <div class={`overflow-x-auto card shadow-xl rounded-xl border border-primary ${props.class}`}>

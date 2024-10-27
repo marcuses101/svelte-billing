@@ -5,12 +5,18 @@
 	import Header from './Header.svelte';
 	import { page } from '$app/stores';
 	import { ROLES } from '$lib/defs';
+	import Toaster from '$lib/components/Toaster.svelte';
+	import { toasterState } from '$lib/components/toaster.svelte';
 	interface Props {
 		data: LayoutData;
 		children?: import('svelte').Snippet;
 	}
 
 	let { data, children }: Props = $props();
+
+	if (data.toast) {
+		toasterState.addToast({ alertType: data.toast.alertType, message: data.toast.message });
+	}
 	const isLoggedIn = Boolean(data.user);
 	let isDrawerOpen = $state(false);
 
@@ -158,3 +164,4 @@
 		</ul>
 	</div>
 </div>
+<Toaster />

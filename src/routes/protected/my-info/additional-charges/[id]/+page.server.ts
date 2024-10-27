@@ -12,20 +12,29 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	if (!coachId) {
 		return error(401, 'Page only available to coaches');
 	}
-	const skaterInvoiceMiscellaneousItem = await prisma.skaterInvoiceMiscellaneousItem.findUnique({
-		where: { id, coachId },
-		include: { Skater: { select: { id: true, firstName: true, lastName: true } } }
+	const coachPaySlipMiscellaneousItem = await prisma.coachPaySlipMiscellaneousItem.findUnique({
+		where: { id, coachId, skaterInvoiceMiscellaneousItem: { isNot: null } },
+		include: {
+			skaterInvoiceMiscellaneousItem: {
+				include: {
+					Skater: { select: { id: true, firstName: true, lastName: true } }
+				}
+			}
+		}
 	});
-	if (!skaterInvoiceMiscellaneousItem) {
+	if (!coachPaySlipMiscellaneousItem) {
 		return error(404);
 	}
 	const skaterOptions = await getSkaterOptions();
-	return { skaterInvoiceMiscellaneousItem, skaterOptions };
+	return { coachPaySlipMiscellaneousItem, skaterOptions };
 };
 
 export const actions = {
 	delete: async ({ locals, params }) => {
-		const logger = locals.logger.child({ action: 'delete', miscItemId: params.id });
+		const logger = locals.logger.child({
+			action: 'Delete Additional Charge',
+			miscItemId: params.id
+		});
 		const session = await locals.auth();
 		const user = session?.user;
 		const coachId = user?.Coach?.id;
@@ -34,17 +43,17 @@ export const actions = {
 			return error(401, 'Page only available to coaches');
 		}
 		try {
-			await prisma.skaterInvoiceMiscellaneousItem.delete({ where: { id: params.id, coachId } });
+			await prisma.coachPaySlipMiscellaneousItem.delete({ where: { id: params.id, coachId } });
 		} catch (e) {
 			console.log(e);
 			logger.error(e, 'Prisma Error');
 			return error(500, 'Failed to delete item');
 		}
 		logger.info('skaterInvoiceMiscellaneousItem deleted');
-		return redirect(303, '/protected/my-info/additional-charges?deleteId=' + params.id);
+		return redirect(303, '/protected/my-info/additional-charges');
 	},
 
-	update: async ({ request, locals, params }) => {
+	update: async ({ request, locals, params, cookies }) => {
 		const session = await locals.auth();
 		const user = session?.user;
 		const coachId = user?.Coach?.id;
@@ -53,7 +62,8 @@ export const actions = {
 		}
 		const formData = await request.formData();
 		const logger = locals.logger.child({
-			formData: Object.fromEntries(Object.entries(formData))
+			formData: Object.fromEntries(Object.entries(formData)),
+			action: 'Edit Additional Charge'
 		});
 		const validationResult = validateFormData(formData, {
 			skaterId: { name: 'skater-id' },
@@ -66,22 +76,47 @@ export const actions = {
 			logger.info({ validationResult }, 'validation failed');
 			return fail(400, validationResult);
 		}
-		const miscItem = await prisma.skaterInvoiceMiscellaneousItem
+
+		const skater = await prisma.skater.findUnique({
+			where: { id: validationResult.value.skaterId }
+		});
+		if (!skater) {
+			logger.error(`could not find skater with id "${validationResult.value.skaterId}"`);
+			return error(404, `could not find skater with id "${validationResult.value.skaterId}"`);
+		}
+		const date = validationResult.value.date.toISOString();
+
+		const miscItem = await prisma.coachPaySlipMiscellaneousItem
 			.update({
 				where: { id: params.id, coachId },
 				data: {
 					coachId,
-					skaterId: validationResult.value.skaterId,
 					description: validationResult.value.description,
 					amountInCents: validationResult.value.amountInCents,
-					date: validationResult.value.date.toISOString(),
-					transactionType:
-						validationResult.value.transactionType === 'credit'
-							? TransactionType.Credit
-							: TransactionType.Debit
+					date,
+					transactionType: TransactionType.Debit,
+					skaterInvoiceMiscellaneousItem: {
+						upsert: {
+							where: { coachPaySlipMiscellaneousItemId: params.id },
+							update: {
+								skaterId: validationResult.value.skaterId,
+								description: validationResult.value.description,
+								amountInCents: validationResult.value.amountInCents,
+								date,
+								transactionType: TransactionType.Credit
+							},
+							create: {
+								skaterId: validationResult.value.skaterId,
+								description: validationResult.value.description,
+								amountInCents: validationResult.value.amountInCents,
+								date,
+								transactionType: TransactionType.Credit
+							}
+						}
+					}
 				}
 			})
-			.catch((e) => {
+			.catch((e: Error) => {
 				return e;
 			});
 
@@ -90,6 +125,11 @@ export const actions = {
 			return error(500, 'prisma error');
 		}
 		logger.info({ miscItem }, 'SkaterInvoiceMicelaneousItem created');
-		return redirect(303, '/protected/my-info/additional-charges?updatedId=' + params.id);
+
+		cookies.set('updated-id', params.id, {
+			path: '/',
+			maxAge: 10
+		});
+		return redirect(303, '/protected/my-info/additional-charges');
 	}
 } satisfies Actions;

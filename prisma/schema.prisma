@@ -106,11 +106,10 @@ model Coach {
     accountId String  @unique
     Account   Account @relation(fields: [accountId], references: [id])
 
-    Lessons                        Lesson[]
-    CoachPaySlips                  CoachPaySlip[]
-    CoachRate                      CoachRate[]
-    CoachPaySlipMiscellaneousItem  CoachPaySlipMiscellaneousItem[]
-    SkaterInvoiceMiscellaneousItem SkaterInvoiceMiscellaneousItem[]
+    Lessons                       Lesson[]
+    CoachPaySlips                 CoachPaySlip[]
+    CoachRate                     CoachRate[]
+    CoachPaySlipMiscellaneousItem CoachPaySlipMiscellaneousItem[]
 }
 
 model CoachRate {
@@ -198,9 +197,11 @@ model SkaterInvoiceLineItem {
     skaterLessonSkaterId String?
     skaterLessonLessonId String?
 
-    SkaterInvoiceMiscellaneousItem SkaterInvoiceMiscellaneousItem?
-    SkaterLesson                   SkaterLesson?                   @relation(fields: [skaterLessonSkaterId, skaterLessonLessonId], references: [skaterId, lessonId])
-    Invoice                        SkaterInvoice                   @relation(fields: [invoiceId], references: [id])
+    skaterInvoiceMiscellaneousItemId String?                         @unique
+    skaterInvoiceMiscellaneousItem   SkaterInvoiceMiscellaneousItem? @relation(fields: [skaterInvoiceMiscellaneousItemId], references: [id])
+
+    SkaterLesson SkaterLesson? @relation(fields: [skaterLessonSkaterId, skaterLessonLessonId], references: [skaterId, lessonId])
+    Invoice      SkaterInvoice @relation(fields: [invoiceId], references: [id])
 
     @@unique([skaterLessonSkaterId, skaterLessonLessonId])
 }
@@ -219,11 +220,10 @@ model SkaterInvoiceMiscellaneousItem {
     skaterId String
     Skater   Skater @relation(fields: [skaterId], references: [id])
 
-    coachId String?
-    Coach   Coach?  @relation(fields: [coachId], references: [id])
+    coachPaySlipMiscellaneousItem   CoachPaySlipMiscellaneousItem? @relation(fields: [coachPaySlipMiscellaneousItemId], references: [id], onDelete: Cascade)
+    coachPaySlipMiscellaneousItemId String?                        @unique
 
-    skaterInvoiceLineItemId String?                @unique
-    SkaterInvoiceLineItem   SkaterInvoiceLineItem? @relation(fields: [skaterInvoiceLineItemId], references: [id])
+    SkaterInvoiceLineItem SkaterInvoiceLineItem?
 }
 
 model CoachPaySlip {
@@ -275,8 +275,9 @@ model CoachPaySlipMiscellaneousItem {
     coachId String
     Coach   Coach  @relation(fields: [coachId], references: [id])
 
-    coachPaySlipLineItemId String?               @unique
-    CoachPaySlipLineItem   CoachPaySlipLineItem? @relation(fields: [coachPaySlipLineItemId], references: [id])
+    skaterInvoiceMiscellaneousItem SkaterInvoiceMiscellaneousItem?
+
+    CoachPaySlipLineItem CoachPaySlipLineItem?
 }
 
 model CoachPaySlipLineItem {
@@ -292,9 +293,11 @@ model CoachPaySlipLineItem {
     coachPaySlipId String
     CoachPaySlip   CoachPaySlip @relation(fields: [coachPaySlipId], references: [id])
 
-    lessonId                      String?                        @unique
-    Lesson                        Lesson?                        @relation(fields: [lessonId], references: [id])
-    CoachPaySlipMiscellaneousItem CoachPaySlipMiscellaneousItem?
+    lessonId String? @unique
+    Lesson   Lesson? @relation(fields: [lessonId], references: [id])
+
+    coachPaySlipMiscellaneousItemId String?                        @unique
+    CoachPaySlipMiscellaneousItem   CoachPaySlipMiscellaneousItem? @relation(fields: [coachPaySlipMiscellaneousItemId], references: [id])
 }
 
 model BillingBatch {
@@ -310,7 +313,7 @@ model BillingBatch {
 model SkaterLesson {
     Skater           Skater                 @relation(fields: [skaterId], references: [id])
     skaterId         String
-    Lesson           Lesson                 @relation(fields: [lessonId], references: [id])
+    Lesson           Lesson                 @relation(fields: [lessonId], references: [id], onDelete: Cascade)
     lessonId         String
     InvoiceLineItems SkaterInvoiceLineItem?
 

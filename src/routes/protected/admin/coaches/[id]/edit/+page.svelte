@@ -40,7 +40,7 @@
 	{isHstCharged}
 >
 	<div class="flex gap-2 flex-row">
-		<CancelButton href={`/coaches/${data.coach.id}`} />
+		<CancelButton href={`/protected/coaches/${data.coach.id}`} />
 		<SubmitButton />
 	</div>
 </CoachForm>

@@ -3,10 +3,18 @@
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import SubmitButton from '$lib/components/SubmitButton.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
+	import { enhance } from '$app/forms';
+	import { errorToast, successToast } from '$lib/components/toaster.svelte.js';
 
 	let { data } = $props();
 	let {
-		skaterInvoiceMiscellaneousItem: { date, description, amountInCents, skaterId },
+		coachPaySlipMiscellaneousItem: {
+			date,
+			description,
+			amountInCents,
+			skaterInvoiceMiscellaneousItem
+		},
+
 		skaterOptions
 	} = $derived(data);
 </script>
@@ -15,7 +23,20 @@
 	<BackButton href="/protected/my-info/additional-charges" />
 </PageHeader>
 
-<form method="POST" id="update" action="?/update" class="flex flex-wrap gap-4 items-end mb-4">
+<form
+	use:enhance={() => {
+		return async ({ result, update }) => {
+			if (result.type === 'redirect') {
+				successToast('Item Updated');
+			}
+			await update();
+		};
+	}}
+	method="POST"
+	id="update"
+	action="?/update"
+	class="flex flex-wrap gap-4 items-end mb-4"
+>
 	<input type="hidden" name="transaction-type" value="credit" />
 	<div class="form-control w-full max-w-xs">
 		<label class="label" for="date">
@@ -35,7 +56,12 @@
 		<div class="label">
 			<span class="label-text">Skater</span>
 		</div>
-		<select class="select select-bordered" name="skater-id" value={skaterId} required>
+		<select
+			class="select select-bordered"
+			name="skater-id"
+			value={skaterInvoiceMiscellaneousItem?.skaterId}
+			required
+		>
 			{#each skaterOptions as { label, value }}
 				<option {value}>{label}</option>
 			{/each}
@@ -58,7 +84,19 @@
 	<CurrencyInput name="amount-in-cents" label="Amount" value={amountInCents} />
 </form>
 <div class="flex flex-row gap-2">
-	<form method="POST" action="?/delete">
+	<form
+		use:enhance={() =>
+			async ({ result, update }) => {
+				if (result.type === 'redirect') {
+					successToast('Item Removed');
+				} else {
+					errorToast('Failed to remove item');
+				}
+				await update();
+			}}
+		method="POST"
+		action="?/delete"
+	>
 		<button class="btn btn-error" type="submit">Delete</button>
 	</form>
 	<SubmitButton form="update" />

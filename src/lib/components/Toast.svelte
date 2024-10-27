@@ -1,20 +1,23 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { scale } from 'svelte/transition';
+	import type { EventHandler } from 'svelte/elements';
+	import { fly } from 'svelte/transition';
 
-	interface Props {
+	interface ToastProps {
 		toastVisible?: boolean;
 		timeVisibleInMilliseconds?: number;
 		alertType?: 'success' | 'error' | 'info' | 'warning';
 		children?: import('svelte').Snippet;
+		onoutroend?: EventHandler<CustomEvent<null>, HTMLDivElement>;
 	}
 
 	let {
 		toastVisible = $bindable(true),
 		timeVisibleInMilliseconds = 3000,
 		alertType = 'success',
-		children
-	}: Props = $props();
+		children,
+		onoutroend
+	}: ToastProps = $props();
 
 	onMount(() => {
 		setTimeout(() => {
@@ -24,7 +27,11 @@
 </script>
 
 {#if toastVisible}
-	<div transition:scale class="toast toast-center z-50">
+	<div
+		transition:fly={{ y: 50 }}
+		{onoutroend}
+		class="fixed bottom-8 left-1/2 transform -translate-x-1/2"
+	>
 		<div
 			class:alert-error={alertType === 'error'}
 			class:alert-info={alertType === 'info'}

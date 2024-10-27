@@ -21,6 +21,16 @@ export function getSkatersWithUninvoicedLessons(tx: Prisma.TransactionClient | P
 					Lesson: calculateLessonQuery
 				},
 				where: { InvoiceLineItems: { is: null } }
+			},
+			AdditionalCharges: {
+				include: {
+					coachPaySlipMiscellaneousItem: {
+						include: {
+							Coach: { include: { User: { select: { firstName: true, lastName: true } } } }
+						}
+					}
+				},
+				where: { SkaterInvoiceLineItem: { is: null } }
 			}
 		}
 	});
@@ -49,6 +59,16 @@ export function getSkaterWithUnInvoicedLessonsById(
 					Lesson: calculateLessonQuery
 				},
 				where: { InvoiceLineItems: { is: null } }
+			},
+			AdditionalCharges: {
+				include: {
+					coachPaySlipMiscellaneousItem: {
+						include: {
+							Coach: { include: { User: { select: { firstName: true, lastName: true } } } }
+						}
+					}
+				},
+				where: { SkaterInvoiceLineItem: { is: null } }
 			}
 		}
 	});

@@ -2,8 +2,9 @@ import { prisma } from './db';
 import { wrapErr, wrapOk } from '$lib/rustResult';
 import { generateSkaterInvoices } from './generateSkaterInvoices';
 import { generateCoachPaySlips } from './generateCoachPaySlips';
+import type { Logger } from 'pino';
 
-export async function generateBillingBatch(invoiceDate: Date = new Date()) {
+export async function generateBillingBatch(invoiceDate: Date = new Date(), logger: Logger) {
 	return prisma.$transaction(async (tx) => {
 		// Get Skater Lessons
 		const billingBatch = await tx.billingBatch.create({ data: {} });
@@ -12,7 +13,7 @@ export async function generateBillingBatch(invoiceDate: Date = new Date()) {
 			await tx.billingBatch.delete({ where: { id: billingBatch.id } });
 			return wrapErr({ message: 'No un-invoiced Skater Lessons found' });
 		}
-		await generateCoachPaySlips(tx, billingBatch.id);
+		await generateCoachPaySlips(tx, billingBatch.id, logger);
 
 		const populatedBillingBatch = await tx.billingBatch.findUniqueOrThrow({
 			where: { id: billingBatch.id },

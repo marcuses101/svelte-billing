@@ -4,6 +4,13 @@ import { ACCOUNT_TYPE_CODE, ROLES, type SkaterType } from '../defs';
 
 export const prisma = new PrismaClient();
 
+export function getUserByEmail(email: string) {
+	return prisma.user.findUnique({
+		where: { email },
+		include: { Coach: true, UserRoles: true }
+	});
+}
+
 export function getCoachById(id: string) {
 	return prisma.coach.findUnique({
 		where: { id },

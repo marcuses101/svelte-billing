@@ -1,9 +1,8 @@
 <script lang="ts">
 	import PageHeader from '$lib/components/PageHeader.svelte';
-	import Toast from '$lib/components/Toast.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
 	import LessonForm from '$lib/components/LessonForm.svelte';
-	let { data, form } = $props();
+	let { data } = $props();
 
 	const skaterOptions = data.skaters.map(({ id, firstName, lastName }) => ({
 		value: id,
@@ -22,7 +21,4 @@
 <PageHeader title="Edit Lesson">
 	<BackButton href="/protected/my-info/lessons">Back</BackButton>
 </PageHeader>
-{#if form?.success}
-	<Toast>Lesson Updated</Toast>
-{/if}
 <LessonForm {skaterOptions} {selectedOptions} {date} {minutes} mode="Edit" />

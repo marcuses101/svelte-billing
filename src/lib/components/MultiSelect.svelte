@@ -31,11 +31,13 @@
 		duration: (d) => Math.sqrt(d * 200),
 		easing: quintOut
 	});
-	let unselectionOptions = $derived(options
-		.filter((op) => op.label.toLowerCase().includes(search.toLowerCase()))
-		.filter(
-			(option) => !selectedOptions.some((selectedOption) => option.value === selectedOption.value)
-		));
+	let unselectionOptions = $derived(
+		options
+			.filter((op) => op.label.toLowerCase().includes(search.toLowerCase()))
+			.filter(
+				(option) => !selectedOptions.some((selectedOption) => option.value === selectedOption.value)
+			)
+	);
 	let selectedValues = $derived(selectedOptions.map((option) => option.value));
 
 	function removeValue(value: string) {
@@ -55,15 +57,17 @@
 				<span class="label-text font-bold">{optionsLabel}</span>
 			</label>
 			<label class="input input-sm flex items-center justify-between gap-2 max-w-xs">
-				<input
-					type="text"
-					placeholder="Filter"
-					bind:value={search}
-					onblur={() => {
-						search = '';
-					}}
-				/>
-				<SearchIcon />
+				<input type="text" placeholder="Filter" bind:value={search} />
+				{#if search}
+					<button
+						class="btn btn-circle btn-xs"
+						onclick={() => {
+							search = '';
+						}}><CancelIcon /></button
+					>
+				{:else}
+					<SearchIcon />
+				{/if}
 			</label>
 			{#each selectedValues as value}
 				<input type="hidden" {name} {value} />
@@ -78,9 +82,10 @@
 					>
 						<button
 							type="button"
+							class="flex justify-between"
 							onclick={() => {
 								addOption({ label, value });
-							}}>{label}</button
+							}}>{label}<span class="text-2xl font-extrabold">→</span></button
 						>
 					</li>
 				{/each}

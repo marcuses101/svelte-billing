@@ -22,6 +22,14 @@ export function getCoachesWithInfoForPayslip(tx: Prisma.TransactionClient) {
 					SkaterLessons: { include: { Skater: { select: { id: true, skaterTypeCode: true } } } }
 				},
 				where: { CoachPaySlipLineItem: { is: null } }
+			},
+			CoachPaySlipMiscellaneousItem: {
+				include: {
+					skaterInvoiceMiscellaneousItem: {
+						include: { Skater: { select: { lastName: true, firstName: true } } }
+					}
+				},
+				where: { CoachPaySlipLineItem: { is: null } }
 			}
 		}
 	});
@@ -46,10 +54,17 @@ export function getCoachWithInfoForPayslipById(
 					}
 				}
 			},
-
 			Lessons: {
 				include: {
 					SkaterLessons: { include: { Skater: { select: { id: true, skaterTypeCode: true } } } }
+				},
+				where: { CoachPaySlipLineItem: { is: null } }
+			},
+			CoachPaySlipMiscellaneousItem: {
+				include: {
+					skaterInvoiceMiscellaneousItem: {
+						include: { Skater: { select: { lastName: true, firstName: true } } }
+					}
 				},
 				where: { CoachPaySlipLineItem: { is: null } }
 			}

@@ -25,7 +25,7 @@
 
 <StyledTable>
 	{#snippet head()}
-		<tr >
+		<tr>
 			<th>Batch Id</th>
 			<th>Date</th>
 			<th>Invoices Total</th>

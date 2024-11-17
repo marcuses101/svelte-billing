@@ -14,7 +14,7 @@
 	const charges: ComponentProps<typeof InvoiceDisplay>['charges'] =
 		processedInvoice.lineItemsData.map((entry) => {
 			return {
-				formattedDate: formatDate(entry.date),
+				formattedDate: formatDate(new Date(entry.date)),
 				description: entry.description,
 				chargeAmount: formatCurrency(entry.amountInCents)
 			};

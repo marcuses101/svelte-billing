@@ -4,7 +4,7 @@ import type { PageServerLoad } from './$types';
 import { getCoachWithInfoForPayslipById } from '$lib/getCoachesWithInfoForPayslip';
 import { processCoachForPaySlip } from '$lib/processCoachForPaySlip';
 
-export const load: PageServerLoad = async ({ params: { id } }) => {
+export const load: PageServerLoad = async ({ params: { id }, locals }) => {
 	const coach = await prisma.coach.findUnique({
 		where: { id },
 		include: {
@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ params: { id } }) => {
 	if (!coachWithPaySlipInfo || !coach) {
 		return error(404, `Coach with id ${id} not found`);
 	}
-	const paySlip = processCoachForPaySlip(coachWithPaySlipInfo);
+	const paySlip = processCoachForPaySlip(coachWithPaySlipInfo, locals.logger);
 	const currentPeriodAmount = paySlip.amountDueInCents;
 	return { coach, currentPeriodAmount };
 };

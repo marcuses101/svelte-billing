@@ -2,32 +2,39 @@
 	import { enhance } from '$app/forms';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
-	import Toast from '$lib/components/Toast.svelte';
+	import { errorToast, successToast } from '$lib/components/toaster.svelte.js';
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
+	import type { SubmitFunction } from './$types.js';
 
-	let { data, form } = $props();
+	let { data } = $props();
+
+	const enhanceFunction: SubmitFunction =
+		() =>
+		async ({ update, result }) => {
+			if (result.type === 'success') {
+				successToast('Email Queued');
+			} else {
+				errorToast('Failed to queue email');
+			}
+			await update();
+		};
 </script>
 
-{#if form?.ok}
-	<Toast alertType="success">Confirmation Email Sent</Toast>
-{:else if form && !form.ok}
-	<Toast alertType="error">{form.message}</Toast>
-{/if}
 <PageHeader title="Users" />
 
 <section class="mb-10">
 	<h2 class="text-xl mb-4">Admins</h2>
 	<StyledTable>
 		{#snippet head()}
-				<tr >
+			<tr>
 				<td>Name</td>
 				<td>Email</td>
 				<td>Roles</td>
 				<td>Email Confirmation</td>
 			</tr>
-			{/snippet}
+		{/snippet}
 		{#each data.admins as { id, firstName, lastName, confirmationEmailDeliveryStatus, emailConfirmation, email, UserRoles }}
 			<tr>
 				<td style={`--transition-name:user-${id}`}>
@@ -52,7 +59,12 @@
 							Invalid Email Address
 						</div>
 					{:else if emailConfirmation === 'Pending' && confirmationEmailDeliveryStatus === 'NotSent'}
-						<form method="POST" action="?/send-confirmation" use:enhance data-sveltekit-noscroll>
+						<form
+							method="POST"
+							action="?/send-confirmation"
+							use:enhance={enhanceFunction}
+							data-sveltekit-noscroll
+						>
 							<input type="hidden" name="user-id" value={id} />
 							<button class="btn btn-sm btn-outline btn-secondary" type="submit">
 								Send Confirmation Email
@@ -78,13 +90,13 @@
 	<h2 class="text-xl mb-4">Coaches</h2>
 	<StyledTable>
 		{#snippet head()}
-				<tr >
+			<tr>
 				<td>Name</td>
 				<td>Email</td>
 				<td>Roles</td>
 				<td>Email Confirmation</td>
 			</tr>
-			{/snippet}
+		{/snippet}
 		{#each data.coaches as { id, firstName, lastName, confirmationEmailDeliveryStatus, emailConfirmation, email, UserRoles }}
 			<tr>
 				<td style={`--transition-name:user-${id}`}>
@@ -109,7 +121,12 @@
 							Invalid Email Address
 						</div>
 					{:else if emailConfirmation === 'Pending' && confirmationEmailDeliveryStatus === 'NotSent'}
-						<form method="POST" action="?/send-confirmation" use:enhance data-sveltekit-noscroll>
+						<form
+							method="POST"
+							action="?/send-confirmation"
+							use:enhance={enhanceFunction}
+							data-sveltekit-noscroll
+						>
 							<input type="hidden" name="user-id" value={id} />
 							<button class="btn btn-sm btn-outline btn-secondary" type="submit">
 								Send Confirmation Email
@@ -135,13 +152,13 @@
 	<h2 class="text-xl mb-4">Clients</h2>
 	<StyledTable>
 		{#snippet head()}
-				<tr >
+			<tr>
 				<td>Name</td>
 				<td>Email</td>
 				<td>Roles</td>
 				<td>Email Confirmation</td>
 			</tr>
-			{/snippet}
+		{/snippet}
 		{#each data.clients as { id, firstName, lastName, confirmationEmailDeliveryStatus, emailConfirmation, email, UserRoles }}
 			<tr>
 				<td style={`--transition-name:user-${id}`}>
@@ -166,7 +183,12 @@
 							Invalid Email Address
 						</div>
 					{:else if emailConfirmation === 'Pending' && confirmationEmailDeliveryStatus === 'NotSent'}
-						<form method="POST" action="?/send-confirmation" use:enhance data-sveltekit-noscroll>
+						<form
+							use:enhance={enhanceFunction}
+							method="POST"
+							action="?/send-confirmation"
+							data-sveltekit-noscroll
+						>
 							<input type="hidden" name="user-id" value={id} />
 							<button class="btn btn-sm btn-outline btn-secondary" type="submit">
 								Send Confirmation Email

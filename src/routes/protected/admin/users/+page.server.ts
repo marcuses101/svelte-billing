@@ -33,15 +33,21 @@ export async function load() {
 }
 
 export const actions = {
-	'send-confirmation': async ({ request, fetch }) => {
+	'send-confirmation': async ({ request, fetch, locals }) => {
 		const formData = await request.formData();
+		const logger = locals.logger.child({
+			action: 'send confirmation email',
+			formDate: Object.fromEntries(formData.entries())
+		});
 		const userId = formData.get('user-id');
 		if (typeof userId !== 'string') {
 			return fail(400, { message: 'user-id is required' });
 		}
-		const sendResponse = await sendUserEmailConfirmation(fetch, userId);
+		logger.info('sending email');
+		const sendResponse = await sendUserEmailConfirmation(fetch, userId, logger);
+		logger.info(sendResponse);
 		if (!sendResponse.ok) {
-			error(500, sendResponse.error);
+			return error(500, sendResponse.error);
 		}
 		return sendResponse;
 	}

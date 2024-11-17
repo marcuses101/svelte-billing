@@ -8,9 +8,9 @@
 
 <PageHeader title="Skater List" />
 <AddButton href="/protected/admin/skaters/create">Add Skater</AddButton>
-<StyledTable containerClass="mt-8">
+<StyledTable class="mt-8">
 	{#snippet head()}
-		<tr >
+		<tr>
 			<td>Name</td>
 			<td>Type</td>
 		</tr>

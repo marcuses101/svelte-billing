@@ -15,7 +15,7 @@
 				class:alert-info={toasterState.currentToast?.alertType === 'info'}
 				class:alert-warning={toasterState.currentToast?.alertType === 'warning'}
 				class:alert-success={toasterState.currentToast?.alertType === 'success'}
-				class="alert grid-1"
+				class="alert grid-1 z-[1000]"
 			>
 				<span class="text-center">
 					{toasterState.currentToast?.message}

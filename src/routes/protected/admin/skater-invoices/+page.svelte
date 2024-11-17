@@ -1,14 +1,15 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import StyledTable from '$lib/components/StyledTable.svelte';
-	import Toast from '$lib/components/Toast.svelte';
+	import { errorToast, successToast } from '$lib/components/toaster.svelte';
 	import { formatCurrency } from '$lib/formatCurrency';
 	import { formatDate } from '$lib/formatDate.js';
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
 	import { EmailConfirmation, type EmailDeliveryStatus } from '@prisma/client';
-	let { data, form } = $props();
+	let { data } = $props();
 	const rows: {
 		invoiceId: string;
 		name: string;
@@ -37,17 +38,10 @@
 </script>
 
 <PageHeader title="Invoices" />
-{#if form?.ok === false}
-	<Toast alertType="error">
-		{form.error.message}
-	</Toast>
-{:else if form?.ok === true}
-	<Toast alertType="success">Email Will Send</Toast>
-{/if}
 
 <StyledTable>
 	{#snippet head()}
-		<tr >
+		<tr>
 			<th>Invoice Id</th>
 			<th>Invoice Date</th>
 			<th>Skater Name</th>
@@ -80,7 +74,18 @@
 						Pending
 					</div>
 				{:else if emailDeliveryStatus === 'NotSent' && emailConfirmation === 'Confirmed'}
-					<form method="POST">
+					<form
+						use:enhance={() =>
+							async ({ update, result }) => {
+								if (result.type === 'success') {
+									successToast('Email Queued');
+								} else {
+									errorToast('Failed to queue email');
+								}
+								await update();
+							}}
+						method="POST"
+					>
 						<input type="hidden" name="invoice-id" value={invoiceId} />
 						<button class="btn btn-sm btn-outline btn-secondary" type="submit">
 							Send Invoice Email

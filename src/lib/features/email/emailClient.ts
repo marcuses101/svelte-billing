@@ -41,7 +41,6 @@ export async function sendEmail({
 	textBody?: string;
 	htmlBody?: string;
 }): Promise<Result<PostmarkResponse, SendEmailErrorType>> {
-	console.log({ textBody, htmlBody });
 	if (!htmlBody && !textBody) {
 		return wrapErr({ message: 'No body has been provided' });
 	}

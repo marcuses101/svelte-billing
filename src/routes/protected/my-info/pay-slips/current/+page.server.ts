@@ -17,6 +17,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		locals.logger.error(`getCoachWithInfoForPayslipById could not find coachId: ${coachId}`);
 		return error(404, `Coach with id ${coachId} not found`);
 	}
-	const paySlip = processCoachForPaySlip(coachWithPaySlipInfo);
+	const paySlip = processCoachForPaySlip(coachWithPaySlipInfo, locals.logger);
 	return { paySlip };
 };

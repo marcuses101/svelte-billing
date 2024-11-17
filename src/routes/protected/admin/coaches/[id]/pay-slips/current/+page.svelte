@@ -8,7 +8,7 @@
 	const { firstName, lastName } = data.coach.User;
 	const lineItems: ComponentProps<PaySlipDisplay>['lineItems'] =
 		data.paySlip.coachPaySlipLineItems.map((line) => ({
-			date: line.date,
+			date: new Date(line.date),
 			description: line.description,
 			amountInCents: line.amountInCents
 		}));

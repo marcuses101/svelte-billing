@@ -26,9 +26,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions = {
-	generateBills: async () => {
+	generateBills: async ({ locals }) => {
+		const logger = locals.logger.child({ action: 'generate bills' });
 		try {
-			const data = await generateBillingBatch();
+			const data = await generateBillingBatch(new Date(), logger);
 			return data;
 		} catch (e) {
 			console.log(e);

@@ -6,7 +6,6 @@
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
-	import { wrapOk } from '$lib/rustResult.js';
 
 	let { data } = $props();
 	const rows = data.paySlips.map((slip) => {
@@ -32,7 +31,7 @@
 
 <StyledTable>
 	{#snippet head()}
-		<tr >
+		<tr>
 			<th>Pay Slip Id</th>
 			<th>Date</th>
 			<th>Coach Name</th>
@@ -43,7 +42,9 @@
 	{#each rows as { id, name, amountDue, coachId, date, emailDeliveryStatus, humanReadableId, emailConfirmation }}
 		<tr>
 			<td>
-				<a class="link link-primary" href={`/protected/admin/coach-payslips/${id}`}>{humanReadableId}</a>
+				<a class="link link-primary" href={`/protected/admin/coach-payslips/${id}`}
+					>{humanReadableId}</a
+				>
 			</td>
 			<td>{date}</td>
 			<td>

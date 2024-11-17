@@ -1,5 +1,5 @@
-// import { PrismaClient } from './prisma';
-import { PrismaClient, type Prisma } from '@prisma/client';
+import { PrismaClient } from './prisma';
+import { type Prisma } from '@prisma/client';
 import { ACCOUNT_TYPE_CODE, ROLES, type SkaterType } from '../defs';
 
 export const prisma = new PrismaClient();

@@ -14,9 +14,9 @@ const loggerLevels: string[] = [
 const PINO_LOGGING_LEVEL = env.PINO_LOGGING_LEVEL;
 
 const level = loggerLevels.includes(PINO_LOGGING_LEVEL ?? '') ? PINO_LOGGING_LEVEL : 'info';
-console.log('PINO LOGGING LEVEL', level);
+console.log('PINO LOGGING LEVEL', level.toUpperCase());
 
-export const logger = pino({ level });
+export const logger = pino(pino.destination({ level, dest: './logs' }));
 
 export const loggerHandle: Handle = async ({ event, resolve }) => {
 	const requestId = crypto.randomUUID();

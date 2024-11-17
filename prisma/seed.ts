@@ -10,8 +10,11 @@ import {
 import { generateBillingBatch } from '../src/lib/server/generateBillingBatch';
 import { config } from 'dotenv';
 import { hash } from 'bcrypt';
+import pino from 'pino';
 
 config({ path: './prisma/.env' });
+
+const logger = pino();
 
 const defaultPassword = process.env.DEFAULT_PASSWORD as string;
 if (typeof defaultPassword !== 'string') {
@@ -348,7 +351,7 @@ async function seedLessons(
 ) {
 	const lessons: Lesson[] = [];
 	for (const coachUser of coaches) {
-		const { CoachRate, ...coach } = coachUser.Coach!;
+		const { ...coach } = coachUser.Coach!;
 		const skaterIds: { skaterId: string; skaterTypeCode: string }[] = skaters
 			.slice(0, 3)
 			.map((skater) => ({ skaterId: skater.id, skaterTypeCode: skater.skaterTypeCode }));
@@ -356,7 +359,7 @@ async function seedLessons(
 		const lesson2 = await createLesson(
 			coach,
 			45,
-			[{ skaterId: skaters.at(4)!.id, skaterTypeCode: skaters.at(4)?.skaterTypeCode! }],
+			skaters.slice(4, 5).map(({ id, skaterTypeCode }) => ({ skaterId: id, skaterTypeCode })),
 			'2024-02-07'
 		);
 		const lesson3 = await createLesson(
@@ -380,7 +383,7 @@ async function seedLessons(
 }
 
 async function seedBillingBatch() {
-	const batch = await generateBillingBatch();
+	const batch = await generateBillingBatch(new Date(), logger);
 	/*
 	if (batch.ok) {
 		return batch.value;

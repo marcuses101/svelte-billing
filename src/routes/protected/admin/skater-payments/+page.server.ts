@@ -1,9 +1,9 @@
 import { prisma } from '$lib/server/db';
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { ACCOUNT_TRANSACTION_TYPE, ACCOUNT_TYPE_CODE, LEDGER_CODE } from '$lib/defs';
+import { ACCOUNT_TRANSACTION_TYPE, ACCOUNT_TYPE_CODE } from '$lib/defs';
 import { validateUserIsAdmin } from '$lib/validateUserIsAdmin';
-import type { $Enums } from '@prisma/client';
+import { saveClientPayment } from '$lib/server/transactions/saveClientPayment';
 
 export const load: PageServerLoad = async () => {
 	const skaters = await prisma.skater.findMany({
@@ -22,7 +22,7 @@ export const load: PageServerLoad = async () => {
 		({ id: skaterId, firstName, lastName, Account: { AccountTransaction } }) => {
 			const fullName = `${firstName} ${lastName}`;
 			const balance = AccountTransaction.reduce((acc, transaction) => {
-				const type: $Enums.TransactionType = transaction.AccountTransactionType.type;
+				const type = transaction.AccountTransactionType.type;
 				if (type === 'Credit') {
 					return acc + transaction.amountInCents;
 				}
@@ -70,8 +70,10 @@ async function getAccountBySkaterId(skaterId: string) {
 
 export const actions = {
 	default: async ({ request, locals }) => {
+		const logger = locals.logger.child({ action: 'client payment' });
 		const isAdmin = validateUserIsAdmin(locals);
 		if (!isAdmin) {
+			logger.warn('user is not admin');
 			return fail(403, { message: 'You are not authorized to perform this action' });
 		}
 		const formData = await request.formData();
@@ -84,6 +86,10 @@ export const actions = {
 			!amountInCentsString ||
 			typeof amountInCentsString !== 'string'
 		) {
+			logger.warn({
+				formData: Object.fromEntries(formData.entries()),
+				message: 'validation failed'
+			});
 			return fail(400, {
 				message: 'Both Skater and Amount are required'
 			});
@@ -97,22 +103,10 @@ export const actions = {
 				message: `No account found associated to skater id "${skaterId}"`
 			});
 		}
-		try {
-			await prisma.accountTransaction.create({
-				data: {
-					amountInCents,
-					accountId: account.id,
-					accountTransactionTypeCode: ACCOUNT_TRANSACTION_TYPE.STUDENT_PAYMENT,
-					LedgerTransaction: {
-						create: {
-							amountInCents,
-							debitLedgerCode: LEDGER_CODE.CASH,
-							creditLedgerCode: LEDGER_CODE.ACCOUNTS_RECEIVABLE
-						}
-					}
-				}
-			});
-		} catch (error) {
+		const transactionResult = await saveClientPayment(prisma, account.id, amountInCents);
+
+		if (!transactionResult.ok) {
+			logger.error(transactionResult.error);
 			return fail(500, { message: 'Error creating transaction' });
 		}
 		return { success: true };

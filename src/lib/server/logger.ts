@@ -1,6 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import pino, { type Level } from 'pino';
-import { env } from '$env/dynamic/private';
+import { PINO_LOGGING_LEVEL } from '$env/static/private';
 
 const loggerLevels: string[] = [
 	'fatal',
@@ -10,8 +10,6 @@ const loggerLevels: string[] = [
 	'debug',
 	'trace'
 ] satisfies Level[];
-
-const PINO_LOGGING_LEVEL = env.PINO_LOGGING_LEVEL;
 
 const level = loggerLevels.includes(PINO_LOGGING_LEVEL ?? '') ? PINO_LOGGING_LEVEL : 'info';
 console.log('PINO LOGGING LEVEL', level.toUpperCase());

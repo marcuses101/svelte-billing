@@ -24,10 +24,10 @@
 		email = '',
 		commissionPercentage = 0,
 		rates = {
-		RESIDENT: 60_00,
-		US: 60_00,
-		INTERNATIONAL: 60_00
-	},
+			RESIDENT: 60_00,
+			US: 60_00,
+			INTERNATIONAL: 60_00
+		},
 		isHstCharged = $bindable(false),
 		children
 	}: Props = $props();

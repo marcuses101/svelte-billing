@@ -1,6 +1,6 @@
 import { ACCOUNT_TRANSACTION_TYPE, LEDGER_CODE } from '$lib/defs';
 import { wrapOk, wrapErr } from '$lib/rustResult';
-import type { PrismaClient } from '../prisma';
+import type { PrismaClient } from '@prisma/client';
 
 export async function saveClientPayment(
 	prisma: PrismaClient,

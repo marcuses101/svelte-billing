@@ -15,7 +15,7 @@
 		subTitle = undefined,
 		children,
 		titlePre,
-		 titlePost
+		titlePost
 	}: Props = $props();
 </script>
 

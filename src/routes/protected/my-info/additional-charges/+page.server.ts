@@ -2,7 +2,6 @@ import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { validateFormData } from '$lib/validateFormData';
 import { getSkaterOptions, prisma } from '$lib/server/db';
-import { TransactionType } from '@prisma/client';
 import { wrapOk } from '$lib/rustResult';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
@@ -70,14 +69,14 @@ export const actions = {
 					description: validationResult.value.description,
 					amountInCents: validationResult.value.amountInCents,
 					date,
-					transactionType: TransactionType.Debit,
+					transactionType: 'Debit',
 					skaterInvoiceMiscellaneousItem: {
 						create: {
 							skaterId: validationResult.value.skaterId,
 							description: validationResult.value.description,
 							amountInCents: validationResult.value.amountInCents,
 							date,
-							transactionType: TransactionType.Credit
+							transactionType: 'Credit'
 						}
 					}
 				}

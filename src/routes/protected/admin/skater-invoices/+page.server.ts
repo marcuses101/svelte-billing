@@ -4,7 +4,6 @@ import type { Actions, PageServerLoad } from './$types';
 import { sendSkaterInvoice } from '$lib/features/email/sendSkaterInvoice';
 import { wrapErr } from '$lib/rustResult';
 import { validateUserIsAdmin } from '$lib/validateUserIsAdmin';
-import { generateBillingBatch } from '$lib/server/generateBillingBatch';
 
 export const load: PageServerLoad = async () => {
 	const invoices = await prisma.skaterInvoice.findMany({

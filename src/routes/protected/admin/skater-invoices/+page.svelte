@@ -8,7 +8,7 @@
 	import CheckmarkIcon from '$lib/icons/CheckmarkIcon.svelte';
 	import ErrorIcon from '$lib/icons/ErrorIcon.svelte';
 	import InfoIcon from '$lib/icons/InfoIcon.svelte';
-	import { EmailConfirmation, type EmailDeliveryStatus } from '@prisma/client';
+	import type { EmailConfirmation, EmailDeliveryStatus } from '@prisma/client';
 	let { data } = $props();
 	const rows: {
 		invoiceId: string;

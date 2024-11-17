@@ -1,6 +1,6 @@
 import { calculateLesson } from '$lib/calculateLessonCost';
 import { HST_PERCENTAGE } from '$lib/shared';
-import { TransactionType, Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { formatSkaterLineItemDescription } from './formatSkaterLineItemDescription';
 import { getSkatersWithUninvoicedLessons } from './getSkatersWithUninvoicedLessons';
 
@@ -40,7 +40,7 @@ export function processSkaterInfoForInvoice(
 				amountInCents,
 				date: lessonDate,
 				description,
-				transactionType: TransactionType.Credit
+				transactionType: 'Credit'
 			};
 		});
 

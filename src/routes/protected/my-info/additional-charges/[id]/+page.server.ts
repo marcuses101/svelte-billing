@@ -2,7 +2,6 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { validateFormData } from '$lib/validateFormData';
 import { getSkaterOptions, prisma } from '$lib/server/db';
-import { TransactionType } from '@prisma/client';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const { id } = params;
@@ -94,7 +93,7 @@ export const actions = {
 					description: validationResult.value.description,
 					amountInCents: validationResult.value.amountInCents,
 					date,
-					transactionType: TransactionType.Debit,
+					transactionType: 'Debit',
 					skaterInvoiceMiscellaneousItem: {
 						upsert: {
 							where: { coachPaySlipMiscellaneousItemId: params.id },
@@ -103,14 +102,14 @@ export const actions = {
 								description: validationResult.value.description,
 								amountInCents: validationResult.value.amountInCents,
 								date,
-								transactionType: TransactionType.Credit
+								transactionType: 'Credit'
 							},
 							create: {
 								skaterId: validationResult.value.skaterId,
 								description: validationResult.value.description,
 								amountInCents: validationResult.value.amountInCents,
 								date,
-								transactionType: TransactionType.Credit
+								transactionType: 'Credit'
 							}
 						}
 					}

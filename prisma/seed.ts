@@ -321,6 +321,32 @@ async function seedSkaters() {
 		});
 		skaters.push(skater);
 	}
+	const example_skater = await prisma.skater.create({
+		data: {
+			firstName: 'Example',
+			lastName: 'Skater',
+			SkaterType: { connect: { code: SKATER_TYPE.RESIDENT } },
+			User: {
+				create: {
+					firstName: 'Example',
+					lastName: 'Skater',
+					email: `example_skater@gmail.com`,
+					forcePasswordReset: false,
+					UserRoles: { create: { roleName: ROLES.CLIENT } },
+					hashedPassword: await hash(defaultPassword, 10)
+				}
+			},
+			Account: {
+				create: {
+					accountTypeCode: ACCOUNT_TYPE_CODE.STUDENT,
+					name: `Example Skater Client Account`
+				}
+			}
+		},
+		include: { Account: true }
+	});
+	skaters.push(example_skater);
+
 	console.log('Seed Skaters Complete');
 	return skaters;
 }

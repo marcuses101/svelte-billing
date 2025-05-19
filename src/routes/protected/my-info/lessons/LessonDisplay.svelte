@@ -11,7 +11,7 @@
 	let { lessonTimeInMinutes, skaters, id }: Props = $props();
 </script>
 
-<article class="flex gap-4 rounded-xl shadow px-2 py-0 border border-neutral-400">
+<article class="flex gap-4 rounded-xl shadow-sm px-2 py-0 border border-neutral-400">
 	<article class="flex flex-col items-center">
 		<div class="stat-title">Minutes</div>
 		<div class="stat-value">{lessonTimeInMinutes}</div>

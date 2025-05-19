@@ -7,7 +7,7 @@
 </script>
 
 <PageHeader title="Skater List" />
-<AddButton href="/protected/admin/skaters/create">Add Skater</AddButton>
+<AddButton href="/protected/admin/skaters/create" class="w-full">Add Skater</AddButton>
 <StyledTable class="mt-8">
 	{#snippet head()}
 		<tr>
